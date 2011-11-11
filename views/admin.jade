@@ -1,0 +1,25 @@
+#kegAdmin.grid_6.alpha
+    form(method='post', action='/create/keg')
+        fieldset
+            legend Keg Admin
+            label Name
+            input(type='text', name='keg[name]')
+            label Description
+            input(type='text', name='keg[description]')
+            label Amount
+            input(type='
+            input(type='submit', value='New Keg')
+
+#userAdmin.grid_6.omega
+    form(method='post', action='/create/user')
+        fieldset
+            legend User Admin
+            label Name
+            input(type='text', name='user[name]')
+            label Title
+            input(type='text', name='user[title]')
+            label RFID
+            input(type='text', name='user[badgeId]')
+            input(type='submit', value='New User')
+
+clear

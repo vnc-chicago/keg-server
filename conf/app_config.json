@@ -1,0 +1,7 @@
+{
+    /* Debug mode? */
+    "debug": true,
+
+    /* Device to listen to */
+    "device": "dev"
+}
