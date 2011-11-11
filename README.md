@@ -1,6 +1,6 @@
 # Introduction
 
-This is a project inspired by keg.io, whom we ripped the idea off shamelessly. Check their stuff out too!
+This is a project inspired by [keg.io](https://github.com/vnc/keg.io), whom we ripped the idea off shamelessly. Check their stuff out too!
 
 # Installation
 
