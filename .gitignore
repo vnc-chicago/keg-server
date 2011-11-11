@@ -1,3 +1,4 @@
 .idea/
 keg-server.iml
 logs
+node_modules/
