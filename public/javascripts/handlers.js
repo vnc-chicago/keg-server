@@ -68,27 +68,27 @@ function denyUser(data) {
 
 function updateKegFlow(data) {
     if(flowData && flowChart) {
-        flowData.setValue(0, 1, data.flow);
+        flowData.setValue(0, 1, parseInt(data.flow));
         flowChart.draw(flowData, flowOptions);
     }
 }
 
 function updateKegAmount(data) {
     if(amtData && amtChart) {
-        amtData.setValue(0, 1, data.amount);
+        amtData.setValue(0, 1, parseInt(data.amount));
         amtChart.draw(amtData, amtOptions);
     }
 }
 
 function updateKegTemperature(data) {
     if(tempData && tempChart) {
-        tempData.setValue(0, 1, parseFloat(parseFloat(data.temperature).toFixed(0)));
+        tempData.setValue(0, 1, parseInt(data.temperature));
         tempChart.draw(tempData, tempOptions);
     }
 }
 
 function updateKeg(data) {
-    lastSeenKegAmount = data.keg.amount;
+    lastSeenKegAmount = parseInt(data.keg.amount);
     $('#keg_name').replaceWith("<div id='keg_name'>" + data.keg.name + "</div>");
     $('#keg_description').replaceWith("<div id='keg_description'>" + data.keg.description + "</div>");
     updateKegAmount(lastSeenKegAmount);
