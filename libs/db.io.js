@@ -345,11 +345,22 @@ exports.getAllWeekendWarrior = function(callback) {
     }
 };
 
+/**
+ * Gets achievement name, count of times awarded for a user
+ * @param userId
+ * @param callback
+ */
 exports.getAchievementsForUser = function(userId, callback) {
     if(db != null) {
-
+        db.all('select a.name, count(ua.awarded) from Achievement a, UserAchievement ua where ua.userId = ? and a.id = ua.achievementId group by ua.userId, a.id', [userId], function(error, rows) {
+            if (error) {
+                logger.error(error);
+            } else {
+                _returnValue(callback, rows);
+            }
+        })
     }
-}
+};
 
 /**
  * Inserts a record for a user achievement
