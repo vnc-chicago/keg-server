@@ -345,15 +345,26 @@ exports.getAllWeekendWarrior = function(callback) {
     }
 };
 
+exports.getAchievementsForUser = function(userId, callback) {
+    if(db != null) {
+
+    }
+}
+
 /**
- *
+ * Inserts a record for a user achievement
  * @param user
+ * @param achievementId
  * @param callback
  */
-exports.recordAchievement = function(user, achievement, callback) {
+exports.recordAchievement = function(userId, achievementId, callback) {
     if(db != null) {
-        db.run('', [], function(error) {
-
+        db.run('insert into UserAchievement (userId, achievementId) values (?,?)', [userId, achievementId], function(error) {
+            if (error) {
+                logger.error(error);
+            } else {
+                _returnValue(callback);
+            }
         })
     }
 };

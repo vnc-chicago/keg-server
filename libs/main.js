@@ -127,18 +127,23 @@ function _processPour(data) {
 function _checkPourForAchievements(amount) {
     if(amount > 10) {
         // Das Boot
+        db_io.recordAchievement(lastSeenUser.id, 1, function () { });
     } else if(amount < 2) {
         // Just Topping Off
+        db_io.recordAchievement(lastSeenUser.id, 2, function () { });
     }
 
-    if(new Date().getHours() < 6) {
+    if(new Date().getHours() < 12) {
         // Early Bird
-    } else if(new Date().getHours() > 11) {
+        db_io.recordAchievement(lastSeenUser.id, 3, function () { });
+    } else if(new Date().getHours() > 17) {
         // Night Owl
+        db_io.recordAchievement(lastSeenUser.id, 4, function () { });
     }
 
     if(new Date().getDay() == 0 || new Date().getDay() == 6) {
         // Weekend Warrior
+        db_io.recordAchievement(lastSeenUser.id, 5, function () { });
     }
 }
 

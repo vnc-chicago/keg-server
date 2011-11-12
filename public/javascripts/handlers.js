@@ -73,9 +73,9 @@ function updateKegFlow(data) {
     }
 }
 
-function updateKegAmount(data) {
+function updateKegAmount(amount) {
     if(amtData && amtChart) {
-        amtData.setValue(0, 1, parseInt(data.amount));
+        amtData.setValue(0, 1, parseInt(amount));
         amtChart.draw(amtData, amtOptions);
     }
 }
