@@ -9,10 +9,10 @@ db.serialize(function() {
 
     db.run("PRAGMA foreign_keys = ON");
 
-    db.run("drop table KegStatus");
-    db.run("drop table KegPours");
-    db.run("drop table Keg");
-    db.run("drop table User");
+    db.run("drop table if exists KegStatus");
+    db.run("drop table if exists KegPours");
+    db.run("drop table if exists Keg");
+    db.run("drop table if exists User");
 
     // Create tables
     db.run("create table Keg (" +
