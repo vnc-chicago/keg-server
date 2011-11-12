@@ -9,4 +9,5 @@ install.dep:
 
 create.db: install.dep
 	mkdir -p db
+	mkdir -p logs
 	node setup/recreatedb.js
