@@ -110,17 +110,35 @@ function _processPour(data) {
         pour.userId = lastSeenUser.id;
         pour.amount = data;
         db_io.createKegPour(pour, function() { });
-        db_io.getKegStartingAmount(currentKeg, function(amount) {
-            var newAmount = amount / 100 - data / amount;
-            web_io.updateAmount(newAmount);
-            if(isDebug && newAmount <= 0) {
-                var keg = new Object();
-                keg.name = randomString();
-                keg.description = randomString();
-                keg.amount = 100;
-                db_io.createKeg(keg, function() {});
+        _checkPourForAchievements(data);
+        db_io.getCurrentKeg(function(keg) {
+            web_io.updateKeg(keg);
+            if(isDebug && keg.amount <= 0) {
+                    var keg = new Object();
+                    keg.name = randomString();
+                    keg.description = randomString();
+                    keg.amount = 100;
+                    db_io.createKeg(keg, function() {});
             }
-        })
+        });
+    }
+}
+
+function _checkPourForAchievements(amount) {
+    if(amount > 10) {
+        // Das Boot
+    } else if(amount < 2) {
+        // Just Topping Off
+    }
+
+    if(new Date().getHours() < 6) {
+        // Early Bird
+    } else if(new Date().getHours() > 11) {
+        // Night Owl
+    }
+
+    if(new Date().getDay() == 0 || new Date().getDay() == 6) {
+        // Weekend Warrior
     }
 }
 

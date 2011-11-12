@@ -170,18 +170,6 @@ exports.getKegStatusHistory = function(keg, callback) {
     }
 };
 
-exports.getKegStartingAmount = function(keg, callback) {
-    if(db != null) {
-        db.get('SELECT amount FROM KegStatus WHERE id = ? ORDER BY taken DESC'), [keg.id], function(error, row) {
-            if(error) {
-                logger.error(error);
-            } else {
-                _returnValue(callback, row);
-            }
-        }
-    }
-}
-
 /**
  * Gets all keg pour history
  * Each row contains a status object with the following properties:
@@ -353,6 +341,19 @@ exports.getAllWeekendWarrior = function(callback) {
             } else {
                 _returnValue(callback, rows);
             }
+        })
+    }
+};
+
+/**
+ *
+ * @param user
+ * @param callback
+ */
+exports.recordAchievement = function(user, achievement, callback) {
+    if(db != null) {
+        db.run('', [], function(error) {
+
         })
     }
 };
