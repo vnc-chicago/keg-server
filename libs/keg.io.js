@@ -20,8 +20,10 @@ util.inherits(Keg, process.EventEmitter);
 exports.Keg = Keg;
 
 /**
- *
- * @param device
+ * Initialize function for keg communication
+ * @param device - the device port to connect to
+ * @param isDebug
+ * @param logger
  */
 Keg.prototype.init = function(device, isDebug, logger) {
     this.logger = logger;
