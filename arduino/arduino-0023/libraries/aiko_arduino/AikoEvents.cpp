@@ -61,12 +61,13 @@ namespace Aiko {
     handlerList_.add(handler);
   }
 
-  void EventManager::addHandler(void (*handlerFunction)(), unsigned int period, unsigned int delay) {
+  EventHandler* EventManager::addHandler(void (*handlerFunction)(), unsigned int period, unsigned int delay) {
     EventHandler* handler = static_cast<EventHandler*>(malloc(sizeof(EventHandler)));
     handler->callback_  = functionCallback(handlerFunction);
     handler->period_    = period;
     handler->countdown_ = delay;
     addHandler(handler);
+    return handler;
   }
 
   void EventManager::addOneShotHandler(void (*handlerFunction)(), unsigned int delay) {

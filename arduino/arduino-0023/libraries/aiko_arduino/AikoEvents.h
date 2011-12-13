@@ -38,7 +38,7 @@ namespace Aiko {
     public:
       EventManager() { reset(); }
       void addHandler(EventHandler* handler);
-      void addHandler(void (*handler)(), unsigned int interval, unsigned int delay = 0);
+      EventHandler* addHandler(void (*handler)(), unsigned int interval, unsigned int delay = 0);
       void addOneShotHandler(void (*handler)(), unsigned int delay);
       void loop(unsigned long time = Timing.millis());
       void removeHandler(EventHandler* handler);
