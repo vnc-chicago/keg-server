@@ -25,11 +25,11 @@ exports.Keg = Keg;
  * @param isDebug
  * @param logger
  */
-Keg.prototype.init = function(device, isDebug, logger) {
-    this.logger = logger;
+Keg.prototype.init = function(deviceInstance, isDebugInstance, loggerInstance) {
+    this.logger = loggerInstance;
     this.validMessage = /\\*\\*.+_.+\\*\\*/i;
-    this.isDebug = isDebug;
-    if (!isDebug) {
+    this.isDebug = isDebugInstance;
+    if (!isDebugInstance) {
 
         // attach reader to port
         this.reader = fs.createReadStream(device, { bufferSize: 1 });
@@ -107,17 +107,21 @@ Keg.prototype.isValidMessage = function(message) {
 };
 
 Keg.prototype.onPortError = function() {
-    logger.error('Error from serial port');
-    logger.error('Check serial device configuration');
+    this.logger.error('Error from serial port');
+    this.logger.error('Check serial device configuration');
     process.exit(1);
 };
 
 Keg.prototype.onPortOpen = function() {
-    logger.info('Serial port open');
+    this.logger.info('Serial port open');
 };
 
 Keg.prototype.openValve = function() {
-    this.writer.write(protocol.REQUEST_OPEN);
+    if(this.isDebug) {
+        this.logger.debug(protocol.REQUEST_OPEN);
+    } else {
+        this.writer.write(protocol.REQUEST_OPEN);
+    }
 };
 
 Keg.prototype.fakeFlow = function fakeFlow(flowsLeft, user) {

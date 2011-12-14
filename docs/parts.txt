@@ -1,0 +1,50 @@
+Arduino Uno
+
+DS18B20 Digital Temperature Sensor
+4.7K Resistor
+
+ARDUINO_GND ------------1-|---|
+                          |   |
+PIN_12 -----------------2-|   |
+               |          |   |
+               w--------3-|---|
+              4.7K   |
+                     |
+ARDUINO_5V  ----------
+
+
+
+G1/2 Water Flow Sensor
+10K Resistor
+
+Black   ----------------- ARDUINO_GND
+Red     ----------------- ARDUINO_5V
+            |
+            z 10K
+            |
+Yellow ------------------ PIN_8
+
+12V DC Solenoid Valve
+1K Resistor
+TIP120 Transistor (TIP102 possibly)
+1N4004 Diode (1N4001 possibly)
+                                           ----------- SOLENOID_POWER
+                                       |---|
+                                       |   |
+                                       |   :
+                                 Diode ^   : Solenoid
+                                       |   :
+                                       |   |
+                             Collector------
+PIN_6 ---------w---------------------|
+               1k              Emitter-
+                                       |
+                                       |
+ARDUINO_GND -----------------------------------------------SOLENOID_GND
+                                      GND
+
+Parallax RFID Card Reader
+PIN_4 = RFID_SOUT
+PIN_3 = RFID_ENABLE
+ARDUINO_GND = RFID_GND
+ARDUINO_5V = RFID_VCC

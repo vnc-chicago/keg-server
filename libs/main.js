@@ -1,20 +1,20 @@
 var web_io = require('./web.io.js'),
     db_io = require('./db.io.js'),
     keg_io = require('./keg.io.js'),
-    keg = null,
+    keg, 
     protocol = require('./protocol.js'),
     admin = require('../routes/admin.js'),
-    isDebug = true,
-    device = null,
-    sockets = null,
-    logger = null,
-    lastSeenUser = null,
-    currentKeg = null,
-    adminResponse = null;
+    isDebug,
+    device,
+    sockets,
+    logger,
+    lastSeenUser,
+    currentKeg,
+    adminResponse;
 
-exports.start = function(isDebug, device, socketsInstance, loggerInstance) {
-    this.isDebug = isDebug;
-    this.device = device;
+exports.start = function(isDebugInstance, deviceInstance, socketsInstance, loggerInstance) {
+    isDebug = isDebugInstance;
+    device = deviceInstance;
     sockets = socketsInstance;
     logger = loggerInstance;
 
@@ -31,8 +31,8 @@ exports.createUser = function(req, res) {
 };
 
 function _createUserResponse(error) {
-    if(adminResponse) {
-        if(error) {
+    if (adminResponse) {
+        if (error) {
             adminResponse.redirect('/500');
         }
         adminResponse.redirect('/admin');
@@ -47,7 +47,7 @@ exports.createKeg = function(req, res) {
 };
 
 function _setCurrentKegAfterAdmin(error) {
-    if(error) {
+    if (error) {
         adminResponse.redirect('/500');
     } else {
         db_io.getCurrentKeg(_createKegResponse);
@@ -57,7 +57,7 @@ function _setCurrentKegAfterAdmin(error) {
 function _createKegResponse(keg) {
     currentKeg = keg;
     web_io.updateKeg(currentKeg);
-    if(adminResponse) {
+    if (adminResponse) {
         adminResponse.redirect('/admin');
     }
     adminResponse = null;
@@ -89,11 +89,11 @@ function _setCurrentKeg(keg) {
 }
 
 function _processFlow(data) {
-    if (this.isDebug) {
+    if (isDebug) {
         logger.debug('Main._processFlow : ' + data);
     }
 
-    if(data != 'END') {
+    if (data != 'END') {
         web_io.updateFlow(data);
     } else {
         web_io.updateFlow(0);
@@ -101,7 +101,7 @@ function _processFlow(data) {
 }
 
 function _processPour(data) {
-    if (this.isDebug) {
+    if (isDebug) {
         logger.debug('Main._processPour : ' + data);
     }
     if (lastSeenUser != null && currentKeg != null) {
@@ -109,46 +109,53 @@ function _processPour(data) {
         pour.kegId = currentKeg.id;
         pour.userId = lastSeenUser.id;
         pour.amount = data;
-        db_io.createKegPour(pour, function() { });
+        db_io.createKegPour(pour, function() {
+        });
         _checkPourForAchievements(data);
         db_io.getCurrentKeg(function(keg) {
             web_io.updateKeg(keg);
-            if(isDebug && keg.amount <= 0) {
-                    var keg = new Object();
-                    keg.name = randomString();
-                    keg.description = randomString();
-                    keg.amount = 100;
-                    db_io.createKeg(keg, function() {});
+            if (isDebug && keg.amount <= 0) {
+                var keg = new Object();
+                keg.name = randomString();
+                keg.description = randomString();
+                keg.amount = 100;
+                db_io.createKeg(keg, function() {
+                });
             }
         });
     }
 }
 
 function _checkPourForAchievements(amount) {
-    if(amount > 10) {
+    if (amount > 10) {
         // Das Boot
-        db_io.recordAchievement(lastSeenUser.id, 1, function () { });
-    } else if(amount < 2) {
+        db_io.recordAchievement(lastSeenUser.id, 1, function () {
+        });
+    } else if (amount < 2) {
         // Just Topping Off
-        db_io.recordAchievement(lastSeenUser.id, 2, function () { });
+        db_io.recordAchievement(lastSeenUser.id, 2, function () {
+        });
     }
 
-    if(new Date().getHours() < 12) {
+    if (new Date().getHours() < 12) {
         // Early Bird
-        db_io.recordAchievement(lastSeenUser.id, 3, function () { });
-    } else if(new Date().getHours() > 17) {
+        db_io.recordAchievement(lastSeenUser.id, 3, function () {
+        });
+    } else if (new Date().getHours() > 17) {
         // Night Owl
-        db_io.recordAchievement(lastSeenUser.id, 4, function () { });
+        db_io.recordAchievement(lastSeenUser.id, 4, function () {
+        });
     }
 
-    if(new Date().getDay() == 0 || new Date().getDay() == 6) {
+    if (new Date().getDay() == 0 || new Date().getDay() == 6) {
         // Weekend Warrior
-        db_io.recordAchievement(lastSeenUser.id, 5, function () { });
+        db_io.recordAchievement(lastSeenUser.id, 5, function () {
+        });
     }
 }
 
 function _processTag(data) {
-    if (this.isDebug) {
+    if (isDebug) {
         logger.debug('Main._processTag : ' + data);
     }
     db_io.getUserByRFID(data, _processUserScan);
@@ -156,10 +163,10 @@ function _processTag(data) {
 
 function _processUserScan(user) {
     if (user != undefined) {
-        if (this.isDebug) {
-            logger.debug('User scanned : ' + user.toString());
-            keg.openValve();
+        if (isDebug) {
+            logger.debug('User scanned : ' + user.name);
         }
+        keg.openValve();
         lastSeenUser = user;
         web_io.welcomeUser(user);
     } else {
@@ -168,7 +175,7 @@ function _processUserScan(user) {
 }
 
 function _processTemp(data) {
-    if (this.isDebug) {
+    if (isDebug) {
         logger.debug('Main._processTemp : ' + data);
     }
     var status = new Object();
@@ -180,12 +187,12 @@ function _processTemp(data) {
 }
 
 function randomString() {
-	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-	var string_length = 8;
-	var randomstring = '';
-	for (var i=0; i<string_length; i++) {
-		var rnum = Math.floor(Math.random() * chars.length);
-		randomstring += chars.substring(rnum,rnum+1);
-	}
+    var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+    var string_length = 8;
+    var randomstring = '';
+    for (var i = 0; i < string_length; i++) {
+        var rnum = Math.floor(Math.random() * chars.length);
+        randomstring += chars.substring(rnum, rnum + 1);
+    }
     return randomstring;
 }
