@@ -1,23 +1,52 @@
-var fs = require('fs'),
-    protocol = require('./protocol.js'),
-    sys = require('sys'),
-    util = require(process.binding('natives').util ? 'util' : 'sys');
+var fs = require('fs'), protocol = require('./protocol.js'), sys = require('sys'), util = require(process.binding('natives').util ? 'util' : 'sys'), serialPort = require("serialport"), SerialPort = serialPort.SerialPort, logger;
+
+/**
+ * @author Erik Karlsson, www.nonobtrusive.com
+ */
+function Dispatcher() {
+    this.events = [];
+}
+Dispatcher.prototype.addEventlistener = function(event, callback) {
+    this.events[event] = this.events[event] || [];
+    if (this.events[event]) {
+        this.events[event].push(callback);
+    }
+}
+Dispatcher.prototype.removeEventlistener = function(event, callback) {
+    if (this.events[event]) {
+        var listeners = this.events[event];
+        for (var i = listeners.length - 1; i >= 0; --i) {
+            if (listeners[i] === callback) {
+                listeners.splice(i, 1);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+Dispatcher.prototype.dispatch = function(event, data) {
+    if (this.events[event]) {
+        var listeners = this.events[event], len = listeners.length;
+        while (len--) {
+            listeners[len](data);	//callback with self
+        }
+    }
+}
 
 /**
  * Model for keg interaction
  * Initializes all variables
  */
 Keg = function() {
-    process.EventEmitter.call(this);
+    Dispatcher.call(this);
     this.isDebug = false;
-    this.reader = null;
-    this.writer = null;
-    this.logger = null;
+    this.port = null;
 };
 
-util.inherits(Keg, process.EventEmitter);
 
 exports.Keg = Keg;
+
+Keg.prototype = new Dispatcher();
 
 /**
  * Initialize function for keg communication
@@ -26,48 +55,35 @@ exports.Keg = Keg;
  * @param logger
  */
 Keg.prototype.init = function(deviceInstance, isDebugInstance, loggerInstance) {
-    this.logger = loggerInstance;
-    this.validMessage = /\\*\\*.+_.+\\*\\*/i;
+    logger = loggerInstance;
+    this.validMessage = /\*{2}.+_.+\*{2}/i;
     this.isDebug = isDebugInstance;
+    var self = this;
     if (!isDebugInstance) {
 
         // attach reader to port
-        this.reader = fs.createReadStream(device, { bufferSize: 1 });
+        this.port = new SerialPort(deviceInstance, {
+            parser: serialPort.parsers.readline("\n")
+        });
 
-        this.reader.addListener('error', this.onPortError);
-        this.reader.addListener('open', this.onPortOpen);
+        this.port.on("data", function(data) {
+            self.onReaderData(data);
+        });
 
-        var id = '';
-        this.reader.addListener('data', this.onReaderData, id);
-
-        // attach writer to port
-        this.writer = fs.createWriteStream(device);
-        this.writer.addListener('error', this.onPortError);
-        this.writer.addListener('open', this.onPortOpen);
     } else {
         this.fakePour();
         this.fakeTemp();
     }
 };
 
-Keg.prototype.onReaderData = function(data, id) {
-    var c = data.toString('ascii').match(/.*/)[0]; // Only keep hex chars
-
-    if (c == '') { // Found non-hex char
-        if (id != '') // The ID isn't blank
-            this.parseMessage(id);
-        id = ''; // Prepare for the next ID chunks
-        return;
-    }
-
-    id += c; // Add to the ID
+Keg.prototype.onReaderData = function(data) {
+    this.parseMessage(data);
 };
 
 Keg.prototype.parseMessage = function parseMessage(message) {
-
     // don't continue if the message received isn't valid
     if (!this.isValidMessage(message)) {
-        this.logger.debug("Invalid Arduino Message : " + message);
+        logger.debug("Invalid Arduino Message : " + message);
         return;
     }
 
@@ -78,6 +94,7 @@ Keg.prototype.parseMessage = function parseMessage(message) {
             var endSlice = message.indexOf('*', message.indexOf('_'));
 
             var data = message.slice(startSlice, endSlice);
+            logger.debug("Data: " + data);
 
             var eventName = protocol.messages[i];
 
@@ -91,10 +108,10 @@ Keg.prototype.parseMessage = function parseMessage(message) {
                 case protocol.TEMP:
                     break;
                 default:
-                    this.logger.warn('Invalid arduino message : ' + message);
+                    logger.warn('Invalid arduino message : ' + message);
             }
 
-            this.emit(eventName, data);
+            this.dispatch(eventName, data);
         }
     }
 };
@@ -102,25 +119,27 @@ Keg.prototype.parseMessage = function parseMessage(message) {
 Keg.prototype.isValidMessage = function(message) {
     var result = null;
     if (message)
-        result = (this.validMessage).exec(message);
-    return result && result[0] == message;
+        result = (this.validMessage).test(message);
+    return result;
 };
 
 Keg.prototype.onPortError = function() {
-    this.logger.error('Error from serial port');
-    this.logger.error('Check serial device configuration');
+    logger.error('Error from serial port');
+    logger.error('Check serial device configuration');
     process.exit(1);
 };
 
 Keg.prototype.onPortOpen = function() {
-    this.logger.info('Serial port open');
+    if (logger != undefined) {
+        logger.info('Serial port open');
+    }
 };
 
 Keg.prototype.openValve = function() {
-    if(this.isDebug) {
-        this.logger.debug(protocol.REQUEST_OPEN);
+    if (this.isDebug) {
+        logger.debug(protocol.REQUEST_OPEN);
     } else {
-        this.writer.write(protocol.REQUEST_OPEN);
+        this.port.write(protocol.REQUEST_OPEN);
     }
 };
 
@@ -171,7 +190,7 @@ Keg.prototype.fakePour = function fakePour() {
     user.pouredLength = 0;
 
     this.parseMessage("**TAG_" + userRFID + "**");
-    if(randomUser != 4)
+    if (randomUser != 4)
         self.fakeFlow(10, user); // flow for 10 seconds
 
     setTimeout(function() {

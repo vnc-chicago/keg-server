@@ -26,7 +26,7 @@ db.serialize(function() {
 
     db.run("create table User (" +
         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        "badgeId INTEGER NOT NULL, " +
+        "badgeId TEXT NOT NULL, " +
         "name TEXT NOT NULL, " +
         "title TEXT NOT NULL, " +
         "totalPours INTEGER DEFAULT 0, " +
@@ -66,7 +66,7 @@ db.serialize(function() {
         db.close();
     }, 5000);
 
-    db.run("insert into User (badgeId, name, title) values (0123456789, 'Jay', 'Developer')", errorHandler);
+    db.run("insert into User (badgeId, name, title) values ('0000B36CE0', 'Jay', 'Developer')", errorHandler);
     db.run("insert into User (badgeId, name, title) values (1234567890, 'Kurt', 'Developer')", errorHandler);
     db.run("insert into User (badgeId, name, title) values (2345678901, 'Tom', 'Support')", errorHandler);
     db.run("insert into User (badgeId, name, title) values (3456789012, 'Gaylord', 'Fallen Hero')", errorHandler);

@@ -9,13 +9,14 @@ using namespace Aiko;
 String message = "";
 
 // Temperature
-#define ONE_WIRE_BUS 1 // Define the pin the OneWire sensors are on, currently a single temp sensor
+#define ONE_WIRE_BUS 12 // Define the pin the OneWire sensors are on, currently a single temp sensor
+#define REFRESH_TEMP_SPEED 600000 // Define the time to refresh in ms
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 DeviceAddress temp1Address;
 
 // Flow
-#define FLOW_IN_PIN 3
+#define FLOW_IN_PIN 8
 #define FLOW_SAMPLE_RATE 500 // Define a sample rate to measure flow in ms, currently take a measure every .5 sec
 #define IDLE_COUNT 10 // Amount of time to wait in seconds to time out pour
 int lastFlow = 0;
@@ -26,14 +27,15 @@ volatile int flowFan;
 int calc;
 
 // RFID
-#define RFID_IN_PIN 7
-#define RFID_OUT_PIN 8
+#define RFID_IN_PIN 4
+#define RFID_OUT_PIN 2
 NewSoftSerial rfid = NewSoftSerial(RFID_IN_PIN, RFID_OUT_PIN);
 char code[11]; // Array to hold tag digits
 int offset = 0; // How far into the tag we've read
+String lastRFID;
 
 // Solenoid
-#define SOLENOID_OUT_PIN 2
+#define SOLENOID_OUT_PIN 8
 int idleCount;
 
 // Initialization phase
@@ -46,8 +48,9 @@ void setup(void) {
   setupFlowMeter();
   setupSolenoid();
 
-  // Schedule to refresh temps every minute
-  Events.addHandler(refreshTemps, 60000);
+  // Schedule to refresh temps every REFRESH_TEMP_SPEED
+  Events.addHandler(refreshTemps, REFRESH_TEMP_SPEED);
+  Events.addHandler(clearLastRFID, 10000);
 }
 
 void setupSensors() {
@@ -67,9 +70,13 @@ void setupSensors() {
 void setupRFID() {
   // Start the RFID reader
   rfid.begin(2400);
+  
+  // Setup LED pin for debugging
+  pinMode(13, OUTPUT);
 
   // Setup pin for RFID reader
   pinMode(RFID_OUT_PIN, OUTPUT);
+  pinMode(RFID_IN_PIN, INPUT);
 
   // Activate the RFID reader
   digitalWrite(RFID_OUT_PIN, LOW);
@@ -107,10 +114,14 @@ void refreshTemps() {
   // Write temps to server
   Serial.print("**TEMP_");
   Serial.print(temp1);
-  Serial.print("**");
+  Serial.println("**");
 
   // Request temperatures for next time
   sensors.requestTemperatures();
+}
+
+void clearLastRFID() {
+  lastRFID = "";
 }
 
 void flowMeterInterrupt() {
@@ -146,17 +157,17 @@ void pourHandler() {
       lastPour += lastFlow;
       Serial.print("**FLOW_");
       Serial.print(lastFlow);
-      Serial.print("**");
+      Serial.println("**");
     }
   } 
 
   if(idleCount == IDLE_COUNT) {
     closeSolenoid();
     idleCount = 0;
-    Serial.print("**FLOW_END**");
+    Serial.println("**FLOW_END**");
     Serial.print("**POUR_");
     Serial.print(lastPour);
-    Serial.print("**");
+    Serial.println("**");
   }
 }
 
@@ -186,7 +197,7 @@ void rfidHandler() {
   if (rfid.available() > 0) {
 
     if (offset > 10) {
-      Serial.print("RFID buffer overflow");
+      Serial.println("RFID buffer overflow");
       offset = 0;
     }
 
@@ -196,11 +207,15 @@ void rfidHandler() {
     // If end of line
     if (c == '\r' || c == '\n') {
       code[offset] = 0;
-      if (c == '\r') {
+      if (c == '\r' && lastRFID != code) {
+        digitalWrite(13, HIGH);
         // Print out to server
         Serial.print("**TAG_");
         Serial.print(code);
-        Serial.print("**");
+        Serial.println("**");
+        digitalWrite(13, LOW);
+        
+        lastRFID = code;
       }
       offset = 0;
     } 
@@ -210,14 +225,3 @@ void rfidHandler() {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -1,7 +1,7 @@
 var web_io = require('./web.io.js'),
     db_io = require('./db.io.js'),
     keg_io = require('./keg.io.js'),
-    keg, 
+    keg,
     protocol = require('./protocol.js'),
     admin = require('../routes/admin.js'),
     isDebug,
@@ -69,10 +69,10 @@ function _continueSetup(error) {
         keg.init(device, isDebug, logger);
 
         // Listen for events and route accordingly
-        keg.on(protocol.FLOW, _processFlow);
-        keg.on(protocol.POUR, _processPour);
-        keg.on(protocol.TAG, _processTag);
-        keg.on(protocol.TEMP, _processTemp);
+        keg.addEventlistener(protocol.FLOW, _processFlow);
+        keg.addEventlistener(protocol.POUR, _processPour);
+        keg.addEventlistener(protocol.TAG, _processTag);
+        keg.addEventlistener(protocol.TEMP, _processTemp);
 
         // Populate variables
         db_io.getCurrentKeg(_setCurrentKeg);
@@ -89,9 +89,7 @@ function _setCurrentKeg(keg) {
 }
 
 function _processFlow(data) {
-    if (isDebug) {
-        logger.debug('Main._processFlow : ' + data);
-    }
+    logger.debug('Main._processFlow : ' + data);
 
     if (data != 'END') {
         web_io.updateFlow(data);
@@ -101,9 +99,8 @@ function _processFlow(data) {
 }
 
 function _processPour(data) {
-    if (isDebug) {
-        logger.debug('Main._processPour : ' + data);
-    }
+    logger.debug('Main._processPour : ' + data);
+    
     if (lastSeenUser != null && currentKeg != null) {
         var pour = new Object();
         pour.kegId = currentKeg.id;
@@ -155,17 +152,15 @@ function _checkPourForAchievements(amount) {
 }
 
 function _processTag(data) {
-    if (isDebug) {
-        logger.debug('Main._processTag : ' + data);
-    }
+    logger.debug('Main._processTag : ' + data);
+    
     db_io.getUserByRFID(data, _processUserScan);
 }
 
 function _processUserScan(user) {
     if (user != undefined) {
-        if (isDebug) {
-            logger.debug('User scanned : ' + user.name);
-        }
+        logger.info('User scanned : ' + user.name);
+        
         keg.openValve();
         lastSeenUser = user;
         web_io.welcomeUser(user);
@@ -175,9 +170,8 @@ function _processUserScan(user) {
 }
 
 function _processTemp(data) {
-    if (isDebug) {
-        logger.debug('Main._processTemp : ' + data);
-    }
+    logger.debug('Main._processTemp : ' + data);
+    
     var status = new Object();
     status.kegId = currentKeg.id;
     status.temperature = data;

@@ -1,7 +1,7 @@
 {
     /* Debug mode? */
-    "debug": true,
+    "debug": false,
 
     /* Device to listen to */
-    "device": "dev"
+    "device": "/dev/ttyACM0"
 }
