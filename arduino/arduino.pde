@@ -10,7 +10,7 @@ String message = "";
 
 // Temperature
 #define ONE_WIRE_BUS 12 // Define the pin the OneWire sensors are on, currently a single temp sensor
-#define REFRESH_TEMP_SPEED 600000 // Define the time to refresh in ms
+#define REFRESH_TEMP_SPEED 60000 // Define the time to refresh in ms
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 DeviceAddress temp1Address;
@@ -23,7 +23,7 @@ int lastFlow = 0;
 int lastPour = 0;
 boolean isInitialTry = true;
 EventHandler* flowEventHandler;
-volatile int flowFan;
+volatile int flow;
 int calc;
 
 // RFID
@@ -42,7 +42,10 @@ int idleCount;
 void setup(void) {
   // Start the serial port
   Serial.begin(9600);
-
+  
+  pinMode(13, OUTPUT);
+  digitalWrite(13, LOW);
+  
   setupSensors();
   setupRFID();
   setupFlowMeter();
@@ -50,7 +53,7 @@ void setup(void) {
 
   // Schedule to refresh temps every REFRESH_TEMP_SPEED
   Events.addHandler(refreshTemps, REFRESH_TEMP_SPEED);
-  Events.addHandler(clearLastRFID, 10000);
+  Events.addHandler(clearRFID, 5000);
 }
 
 void setupSensors() {
@@ -70,9 +73,6 @@ void setupSensors() {
 void setupRFID() {
   // Start the RFID reader
   rfid.begin(2400);
-  
-  // Setup LED pin for debugging
-  pinMode(13, OUTPUT);
 
   // Setup pin for RFID reader
   pinMode(RFID_OUT_PIN, OUTPUT);
@@ -120,27 +120,25 @@ void refreshTemps() {
   sensors.requestTemperatures();
 }
 
-void clearLastRFID() {
+void clearRFID() {
   lastRFID = "";
 }
 
 void flowMeterInterrupt() {
-  flowFan++;
+  flow++;
 }
 
 void measureFlow() {
   // Convert our pulse frequency to a oz/s and store in lastFlow
-  lastFlow = ((flowFan * 60) / 7.5) * 0.00939278408;
-  flowFan = 0;
+  lastFlow = ((flow * 60) / 7.5) * 0.00939278408;
+  flow = 0;
   pourHandler();
 }
 
 void openSolenoid() {
+  digitalWrite(13, HIGH);
   digitalWrite(SOLENOID_OUT_PIN, HIGH);
   isInitialTry = true;
-
-  // Measure flow every half second
-  flowEventHandler = Events.addHandler(measureFlow, 500);
 
   // Try in case user is super quick
   measureFlow();
@@ -149,16 +147,22 @@ void openSolenoid() {
 void pourHandler() {
   // while idle count < IDLE_COUNT sec
   while(idleCount < IDLE_COUNT) {
-    // Measure flow for a .5 sec, this is done with the event handler above    
+    
+    // Convert our pulse frequency to a oz/s and store in lastFlow
+    lastFlow = ((flow * 60) / 7.5) * 0.00939278408;
+    flow = 0;
+    
     if(lastFlow == 0) {
       if(!isInitialTry) idleCount++;
-    } 
-    else {
+    } else {
       lastPour += lastFlow;
       Serial.print("**FLOW_");
       Serial.print(lastFlow);
       Serial.println("**");
     }
+    
+    isInitialTry = false;
+    delay(1000);
   } 
 
   if(idleCount == IDLE_COUNT) {
@@ -172,6 +176,7 @@ void pourHandler() {
 }
 
 void closeSolenoid() {
+  digitalWrite(13, LOW);
   digitalWrite(SOLENOID_OUT_PIN, LOW);
   if(flowEventHandler != NULL) {
     Events.removeHandler(flowEventHandler);
@@ -179,8 +184,8 @@ void closeSolenoid() {
 }
 
 void serialHandler() {
-  if (Serial.available()) {
-    message += Serial.read();
+  if (Serial.available() > 0) {
+    message += byte(Serial.read());
     if(message == "**REQUEST_TEMP**") {
       refreshTemps();
       message = "";

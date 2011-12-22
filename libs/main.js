@@ -101,7 +101,7 @@ function _processFlow(data) {
 function _processPour(data) {
     logger.debug('Main._processPour : ' + data);
     
-    if (lastSeenUser != null && currentKeg != null) {
+    if (lastSeenUser != null && currentKeg != null && data != 0) {
         var pour = new Object();
         pour.kegId = currentKeg.id;
         pour.userId = lastSeenUser.id;
