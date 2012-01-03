@@ -16,7 +16,7 @@ DallasTemperature sensors(&oneWire);
 DeviceAddress temp1Address;
 
 // Flow
-#define FLOW_IN_PIN 7 
+#define FLOW_IN_PIN 2 
 #define FLOW_SAMPLE_RATE 500 // Define a sample rate to measure flow in ms, currently take a measure every .5 sec
 #define IDLE_COUNT 10 // Amount of time to wait in seconds to time out pour
 int lastFlow = 0;
@@ -27,7 +27,7 @@ int calc;
 
 // RFID
 #define RFID_IN_PIN 4
-#define RFID_OUT_PIN 2
+#define RFID_OUT_PIN 7 
 NewSoftSerial rfid = NewSoftSerial(RFID_IN_PIN, RFID_OUT_PIN);
 char code[11]; // Array to hold tag digits
 int offset = 0; // How far into the tag we've read
