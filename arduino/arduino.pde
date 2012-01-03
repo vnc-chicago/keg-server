@@ -16,13 +16,12 @@ DallasTemperature sensors(&oneWire);
 DeviceAddress temp1Address;
 
 // Flow
-#define FLOW_IN_PIN 8
+#define FLOW_IN_PIN 7 
 #define FLOW_SAMPLE_RATE 500 // Define a sample rate to measure flow in ms, currently take a measure every .5 sec
 #define IDLE_COUNT 10 // Amount of time to wait in seconds to time out pour
 int lastFlow = 0;
 int lastPour = 0;
 boolean isInitialTry = true;
-EventHandler* flowEventHandler;
 volatile int flow;
 int calc;
 
@@ -87,7 +86,7 @@ void setupFlowMeter() {
   pinMode(FLOW_IN_PIN, INPUT);
 
   // Create the interrupt if the meter is flowing
-  attachInterrupt(1, flowMeterInterrupt, RISING);
+  attachInterrupt(0, flowMeterInterrupt, RISING);
 }
 
 void setupSolenoid() {
@@ -140,6 +139,7 @@ void openSolenoid() {
   digitalWrite(SOLENOID_OUT_PIN, HIGH);
   isInitialTry = true;
 
+  sei();
   // Try in case user is super quick
   measureFlow();
 }
@@ -178,9 +178,7 @@ void pourHandler() {
 void closeSolenoid() {
   digitalWrite(13, LOW);
   digitalWrite(SOLENOID_OUT_PIN, LOW);
-  if(flowEventHandler != NULL) {
-    Events.removeHandler(flowEventHandler);
-  }
+  cli();
 }
 
 void serialHandler() {
