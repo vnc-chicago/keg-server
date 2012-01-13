@@ -41,10 +41,10 @@ int idleCount;
 void setup(void) {
   // Start the serial port
   Serial.begin(9600);
-  
+
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
-  
+
   setupSensors();
   setupRFID();
   setupFlowMeter();
@@ -84,9 +84,6 @@ void setupRFID() {
 void setupFlowMeter() {
   // Attach our flow meter
   pinMode(FLOW_IN_PIN, INPUT);
-
-  // Create the interrupt if the meter is flowing
-  attachInterrupt(0, flowMeterInterrupt, RISING);
 }
 
 void setupSolenoid() {
@@ -127,58 +124,68 @@ void flowMeterInterrupt() {
   flow++;
 }
 
+void openSolenoid() {
+  isInitialTry = true;
+  lastPour = 0;
+  
+  digitalWrite(SOLENOID_OUT_PIN, HIGH);
+  
+  // Create the interrupt if the meter is flowing
+  attachInterrupt(0, flowMeterInterrupt, RISING);
+  
+  // Try in case user is super quick
+  measureFlow();
+}
+
 void measureFlow() {
   // Convert our pulse frequency to a oz/s and store in lastFlow
   lastFlow = ((flow * 60) / 7.5) * 0.00939278408;
   flow = 0;
+
+  if(lastFlow != 0) {    
+    lastPour += lastFlow;
+    Serial.print("**FLOW_");
+    Serial.print(lastFlow);
+    Serial.println("**");
+  }
+
   pourHandler();
-}
-
-void openSolenoid() {
-  digitalWrite(13, HIGH);
-  digitalWrite(SOLENOID_OUT_PIN, HIGH);
-  isInitialTry = true;
-
-  sei();
-  // Try in case user is super quick
-  measureFlow();
 }
 
 void pourHandler() {
   // while idle count < IDLE_COUNT sec
   while(idleCount < IDLE_COUNT) {
-    
+
     // Convert our pulse frequency to a oz/s and store in lastFlow
     lastFlow = ((flow * 60) / 7.5) * 0.00939278408;
     flow = 0;
-    
+
     if(lastFlow == 0) {
       if(!isInitialTry) idleCount++;
-    } else {
+    } 
+    else {
       lastPour += lastFlow;
       Serial.print("**FLOW_");
       Serial.print(lastFlow);
       Serial.println("**");
     }
-    
+
     isInitialTry = false;
     delay(1000);
-  } 
-
-  if(idleCount == IDLE_COUNT) {
-    closeSolenoid();
-    idleCount = 0;
-    Serial.println("**FLOW_END**");
-    Serial.print("**POUR_");
-    Serial.print(lastPour);
-    Serial.println("**");
   }
+
+  closeSolenoid();
+  idleCount = 0;
+  Serial.println("**FLOW_END**");
+  Serial.print("**POUR_");
+  Serial.print(lastPour);
+  Serial.println("**");
+  lastPour = 0;
 }
 
 void closeSolenoid() {
-  digitalWrite(13, LOW);
   digitalWrite(SOLENOID_OUT_PIN, LOW);
-  cli();
+  detachInterrupt(0);
 }
 
 void serialHandler() {
@@ -217,7 +224,7 @@ void rfidHandler() {
         Serial.print(code);
         Serial.println("**");
         digitalWrite(13, LOW);
-        
+
         lastRFID = code;
       }
       offset = 0;
@@ -228,3 +235,6 @@ void rfidHandler() {
     }
   }
 }
+
+
+
