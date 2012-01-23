@@ -68,7 +68,7 @@ exports.createKegStatus = function(status, callback) {
  */
 exports.createKegPour = function(pour, callback) {
     if (db != null) {
-        db.run("INSERT INTO KegPours (kegId, userId, amount) values (?,?,?)", [pour.kegId, pour.userId, pour.amount], function(error) {
+        db.run("INSERT INTO KegPours (kegId, userId, amount, poured) values (?,?,?, strftime('%Y-%m-%d %H:00:00'))", [pour.kegId, pour.userId, pour.amount], function(error) {
             if (error) {
                 logger.error(error);
                 _returnValue(callback, error);
@@ -118,7 +118,7 @@ exports.updateKegAmount = function(pourAmount, callback) {
  */
 exports.getCurrentKeg = function(callback) {
     if (db != null) {
-        db.get("SELECT * FROM Keg ORDER BY loaded DESC", function(error, row) {
+        db.get("SELECT id, amount, description, loaded, name FROM Keg ORDER BY loaded DESC", function(error, row) {
             if (error) {
                 logger.error(error);
             } else {
@@ -137,7 +137,7 @@ exports.getCurrentKeg = function(callback) {
  */
 exports.getKegHistory = function(callback) {
     if (db != null) {
-        db.all("SELECT * FROM Keg", function(error, rows) {
+        db.all("SELECT id, amount, description, loaded, name FROM Keg", function(error, rows) {
             if (error) {
                 logger.error(error);
             } else {
@@ -160,7 +160,7 @@ exports.getKegHistory = function(callback) {
  */
 exports.getKegStatusHistory = function(keg, callback) {
     if (db != null) {
-        db.all("SELECT * FROM KegStatus WHERE id = ?", keg.id, function(error, rows) {
+        db.all("SELECT id, kegId, amountLeft, taken, temperature FROM KegStatus WHERE id = ?", keg.id, function(error, rows) {
             if (error) {
                 logger.error(error);
             } else {
@@ -183,7 +183,7 @@ exports.getKegStatusHistory = function(keg, callback) {
  */
 exports.getKegPoursHistory = function(keg, callback) {
     if (db != null) {
-        db.all("SELECT * FROM KegStatus WHERE id = ?", keg.id, function(error, rows) {
+        db.all("SELECT id, kegId, userId, poured, amount FROM KegStatus WHERE kegId = ?", keg.id, function(error, rows) {
             if (error) {
                 logger.error(error);
             } else {
@@ -207,7 +207,7 @@ exports.getKegPoursHistory = function(keg, callback) {
  */
 exports.getUserByRFID = function(rfid, callback) {
     if (db != null) {
-        db.get('SELECT * FROM User WHERE badgeId = ?', [rfid], function(error, row) {
+        db.get('SELECT id, badgeId, joined, name, title, totalPours FROM User WHERE badgeId = ?', [rfid], function(error, row) {
             if (error) {
                 logger.error(error);
             } else {
@@ -234,12 +234,12 @@ exports.getLastDrinker = function(callback) {
 };
 
 /**
- * Gets name, id, and amount poured for all users ordered from most to least all time
+ * Gets name and amount poured for all users ordered from most to least all time
  * @param callback
  */
-exports.getAllTimePourAmounts = function(callback) {
+exports.getAllTimePourAmountsPerPerson = function(callback) {
     if(db != null) {
-        db.all('select u.name, u.id, sum(p.amount) as totalAmount from User u, KegPours p where u.id = p.userId group by u.id order by totalAmount desc', function(error, rows) {
+        db.all('select u.name, sum(p.amount) as totalAmount from User u, KegPours p where u.id = p.userId group by u.id order by totalAmount desc', function(error, rows) {
             if (error) {
                 logger.error(error);
             } else {
@@ -250,12 +250,44 @@ exports.getAllTimePourAmounts = function(callback) {
 };
 
 /**
- * Gets name, id, and amount poured for all users ordered from most to least in this keg
+ * Gets time and amount poured for all users ordered from most to least all time
  * @param callback
  */
-exports.getKegPourAmounts = function(callback) {
+exports.getAllTimePourAmountsPerTime = function(callback) {
     if(db != null) {
-        db.all('select u.name, u.id, sum(p.amount) as totalAmount from User u, KegPours p, Keg k where u.id = p.userId and p.kegId = (select inKeg.id from Keg inKeg order by inKeg.loaded desc limit 1) group by u.id order by totalAmount desc', function(error, rows) {
+        db.all('select time(poured) as timePoured, sum(amount) as totalAmount from KegPours group by timePoured order by timePoured', function(error, rows) {
+            if (error) {
+                logger.error(error);
+            } else {
+                _returnValue(callback, rows);
+            }
+        })
+    }
+};
+
+/**
+ * Gets name and amount poured for all users ordered from most to least in this keg
+ * @param callback
+ */
+exports.getKegPourAmountsPerPerson = function(callback) {
+    if(db != null) {
+        db.all('select u.name, sum(p.amount) as totalAmount from User u, KegPours p, Keg k where u.id = p.userId and p.kegId = (select inKeg.id from Keg inKeg order by inKeg.loaded desc limit 1) group by u.id order by totalAmount desc', function(error, rows) {
+            if (error) {
+                logger.error(error);
+            } else {
+                _returnValue(callback, rows);
+            }
+        })
+    }
+};
+
+/**
+ * Gets time and amount poured for all users ordered from most to least for current keg
+ * @param callback
+ */
+exports.getKegPourAmountsPerTime = function(callback) {
+    if(db != null) {
+        db.all('select time(p.poured) as timePoured, sum(p.amount) as totalAmount from KegPours p where p.kegId = (select inKeg.id from Keg inKeg order by inKeg.loaded desc limit 1) group by timePoured order by timePoured', function(error, rows) {
             if (error) {
                 logger.error(error);
             } else {

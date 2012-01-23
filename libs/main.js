@@ -19,8 +19,8 @@ exports.start = function(isDebugInstance, deviceInstance, socketsInstance, logge
     logger = loggerInstance;
 
     // Setup our handlers
-    web_io.start(socketsInstance, loggerInstance, this);
     db_io.start(_continueSetup, loggerInstance);
+    web_io.start(socketsInstance, loggerInstance, db_io);
 
 
 };

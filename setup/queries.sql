@@ -1,5 +1,5 @@
--- All Time Pour Amounts
-select u.name, u.id, sum(p.amount) as totalAmount
+-- All Time Pour Amounts Per Person
+select u.name, sum(p.amount) as totalAmount
   from User u, KegPours p
   where u.id = p.userId
   group by u.id

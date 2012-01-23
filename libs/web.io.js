@@ -1,6 +1,6 @@
 var logger = null,
     sockets = null,
-    main = null,
+    db = null,
     currentClients = new Array(),
     currentKeg = null,
     lastUser = null;
@@ -9,14 +9,15 @@ var logger = null,
  * Initializes the web communication layer
  * @param socketsInstance
  * @param loggerInstance
- * @param mainInstance
+ * @param dbInstance
  */
-exports.start = function(socketsInstance, loggerInstance, mainInstance) {
+exports.start = function(socketsInstance, loggerInstance, dbInstance) {
     sockets = socketsInstance;
     sockets.on('connection', _onConnection);
-    sockets.on('getAllTimePours', exports.getAllTimePours);
+    sockets.on('getAllTimePoursPerPerson', _getAllTimePoursPerPerson);
+    sockets.on('getAllTimePoursPerTime', _getAllTimePoursPerTime);
     logger = loggerInstance;
-    main = mainInstance;
+    db = dbInstance;
 };
 
 /**
@@ -49,6 +50,7 @@ exports.updateFlow = function(flow) {
  */
 exports.updateAmount = function(amount) {
     currentClients.forEach(_emitAmountUpdate, formatKegAmount(amount));
+    exports.updateStats();
 };
 
 /**
@@ -68,17 +70,46 @@ exports.updateKeg = function(keg) {
     currentClients.forEach(_emitKegUpdate, keg);
 };
 
-/**
- * Pushes all time pours to the client
- * @param client
- */
-exports.getAllTimePours = function(client) {
-    if(main) {
-        main.db_io.getAllTimePourAmounts(function(rows) {
-            client.emit('allTimePours', { rows: rows });
+exports.updateStats = function() {
+    for(var i = 0; i < currentClients.length; i++) {
+        _getAllTimePoursPerPerson(currentClients[i]);
+        _getAllTimePoursPerTime(currentClients[i]);
+        _getKegPoursPerPerson(currentClients[i]);
+        _getKegPoursPerTime(currentClients[i]);
+    }
+};
+
+
+function _getAllTimePoursPerPerson(client) {
+    if(db) {
+        db.getAllTimePourAmountsPerPerson(function(rows) {
+            client.emit('allTimePoursPerPersonUpdate', { rows: rows });
         });
     }
+}
 
+function _getAllTimePoursPerTime(client) {
+    if(db) {
+        db.getAllTimePourAmountsPerTime(function(rows) {
+            client.emit('allTimePoursPerTimeUpdate', { rows: rows });
+        });
+    }
+}
+
+function _getKegPoursPerPerson(client) {
+    if(db) {
+        db.getKegPourAmountsPerPerson(function(rows) {
+            client.emit('kegPoursPerPersonUpdate', { rows: rows });
+        });
+    }
+}
+
+function _getKegPoursPerTime(client) {
+    if(db) {
+        db.getKegPourAmountsPerTime(function(rows) {
+            client.emit('kegPoursPerTimeUpdate', { rows: rows });
+        });
+    }
 }
 
 function _emitWelcome(client) {
@@ -119,6 +150,7 @@ function _onConnection(client) {
     if(lastUser) {
         currentClients.forEach(_emitWelcome, lastUser);
     }
+    exports.updateStats();
     client.on('disconnect', _onDisconnect);
 }
 
