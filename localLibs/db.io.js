@@ -4,7 +4,7 @@ var sqlite3 = require('sqlite3').verbose(),
 
 exports.start = function(dbCallback, loggerInstance) {
     logger = loggerInstance;
-    db = new sqlite3.Database('./db/keg.db', dbCallback);
+    db = new sqlite3.Database('../db/keg.db', dbCallback);
 };
 
 /**
@@ -73,14 +73,14 @@ exports.createKegPour = function(pour, callback) {
                 logger.error(error);
                 _returnValue(callback, error);
             } else {
-                exports.updateUserPourCount(pour.userId, function() {});
-                exports.updateKegAmount(pour.amount, callback);
+                _updateUserPourCount(pour.userId, function() {});
+                _updateKegAmount(pour.amount, callback);
             }
         });
     }
 };
 
-exports.updateUserPourCount = function(userId, callback) {
+function _updateUserPourCount(userId, callback) {
     if(db != null) {
         db.run("UPDATE User SET totalPours = totalPours + 1 WHERE id = ?", [userId], function(error) {
             if(error) {
@@ -91,9 +91,9 @@ exports.updateUserPourCount = function(userId, callback) {
             }
         })
     }
-};
+}
 
-exports.updateKegAmount = function(pourAmount, callback) {
+function _updateKegAmount(pourAmount, callback) {
     if(db != null) {
         db.run("UPDATE Keg SET amount = amount - ? where id = (select id from Keg order by loaded desc limit 1)", [pourAmount], function(error) {
             if(error) {
@@ -104,7 +104,7 @@ exports.updateKegAmount = function(pourAmount, callback) {
             }
         })
     }
-};
+}
 
 /**
  * Get the current keg
@@ -219,6 +219,12 @@ exports.getUserByRFID = function(rfid, callback) {
 
 /**
  * Gets the last drinker
+ * Returns a user with the following properties
+ *   1. id (integer)
+ *   2. name (string)
+ *   3. title (string)
+ *   4. joined (UTC string)
+ *   5. totalPours (integer)
  * @param callback
  */
 exports.getLastDrinker = function(callback) {

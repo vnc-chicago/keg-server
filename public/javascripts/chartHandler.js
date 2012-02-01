@@ -1,7 +1,7 @@
 var charts = [showCurrentKegPoursPerPerson, showCurrentKegPoursPerTime, showAllTimePoursPerPerson, showAllTimePoursPerTime];
 var currentChart = 0;
 var chartsInitialized = false;
-var chartWidth = 620;
+var chartWidth = 460;
 var ROTATE_INTERVAL = 5000;
 
 var currentKegPoursPerTime;
@@ -19,7 +19,6 @@ var currentKegPoursPerPersonSeries;
 var allTimePoursPerTimeSeries;
 var allTimePoursPerPersonSeries;
 
-/* Replace with handler function to update stats */
 $(document).ready(function() {
     setTheme();
 });
@@ -56,7 +55,7 @@ function showCurrentKegPoursPerPerson() {
         },
         yAxis : {
             title : {
-                text : 'Pours'
+                text : 'Pour Amount'
             },
             allowDecimals : false
         },
@@ -96,7 +95,7 @@ function showCurrentKegPoursPerTime() {
         },
         yAxis : {
             title : {
-                text : 'Pours'
+                text : 'Pour Amount'
             },
             allowDecimals : false
         },
@@ -137,7 +136,7 @@ function showAllTimePoursPerPerson() {
         },
         yAxis : {
             title : {
-                text : 'Pours'
+                text : 'Pour Amount'
             },
             allowDecimals : false
         },
@@ -178,7 +177,7 @@ function showAllTimePoursPerTime() {
         },
         yAxis : {
             title : {
-                text : 'Pours'
+                text : 'Pour Amount'
             },
             allowDecimals : false
         },

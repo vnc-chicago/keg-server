@@ -26,8 +26,8 @@ volatile int flow;
 int calc;
 
 // RFID
-#define RFID_IN_PIN 4
-#define RFID_OUT_PIN 7 
+#define RFID_IN_PIN 9
+#define RFID_OUT_PIN 6 
 NewSoftSerial rfid = NewSoftSerial(RFID_IN_PIN, RFID_OUT_PIN);
 char code[11]; // Array to hold tag digits
 int offset = 0; // How far into the tag we've read
@@ -52,7 +52,6 @@ void setup(void) {
 
   // Schedule to refresh temps every REFRESH_TEMP_SPEED
   Events.addHandler(refreshTemps, REFRESH_TEMP_SPEED);
-  Events.addHandler(clearRFID, 5000);
 }
 
 void setupSensors() {
@@ -125,6 +124,7 @@ void flowMeterInterrupt() {
 }
 
 void openSolenoid() {
+  digitalWrite(13, HIGH);
   isInitialTry = true;
   lastPour = 0;
   
@@ -159,7 +159,7 @@ void pourHandler() {
     // Convert our pulse frequency to a oz/s and store in lastFlow
     lastFlow = ((flow * 60) / 7.5) * 0.00939278408;
     flow = 0;
-
+ 
     if(lastFlow == 0) {
       if(!isInitialTry) idleCount++;
     } 
@@ -184,8 +184,10 @@ void pourHandler() {
 }
 
 void closeSolenoid() {
+  digitalWrite(13, LOW);
   digitalWrite(SOLENOID_OUT_PIN, LOW);
   detachInterrupt(0);
+  clearRFID();
 }
 
 void serialHandler() {
@@ -205,7 +207,6 @@ void serialHandler() {
 void rfidHandler() {
   // RFID Handler
   if (rfid.available() > 0) {
-
     if (offset > 10) {
       Serial.println("RFID buffer overflow");
       offset = 0;
@@ -218,12 +219,10 @@ void rfidHandler() {
     if (c == '\r' || c == '\n') {
       code[offset] = 0;
       if (c == '\r' && lastRFID != code) {
-        digitalWrite(13, HIGH);
         // Print out to server
         Serial.print("**TAG_");
         Serial.print(code);
         Serial.println("**");
-        digitalWrite(13, LOW);
 
         lastRFID = code;
       }
@@ -233,8 +232,5 @@ void rfidHandler() {
       // Add our character to the array
       code[offset++] = c;
     }
-  }
+  } 
 }
-
-
-

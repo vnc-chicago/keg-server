@@ -1,10 +1,21 @@
+/**
+ * Local server
+ *
+ * Responsibilities
+ * <ul>
+ *     <li>Interact with keg</li>
+ *     <li>Store data</li>
+ *     <li>Register users</li>
+ *     <li>Push to external server</li>
+ * </ul>
+ */
+
 var express = require('express'),
-    socket = require('socket.io'),
+    socket_io = require('socket.io'),
     fs = require('fs'),
-    main = require('./libs/main.js'),
+    log4js = require('log4js'),
     index = require('./routes/index.js'),
-    admin = require('./routes/admin.js'),
-    log4js = require('log4js');
+    main = require('./localLibs/main.js');
 
 
 // Configuration
@@ -48,8 +59,9 @@ app.configure('production', function() {
 
 // Routes
 
-app.get('/', index.show);
-app.get('/admin', admin.show);
+app.get('/', function(request, response){
+    index.show(request, response);
+});
 
 app.get('/500', function(request, response) {
     response.render('500', { title: 'Internal server error' });
@@ -62,17 +74,17 @@ app.use(function(request, response) {
 app.listen(3000);
 
 // Socket io
-socket = socket.listen(app);
+var io = socket_io.listen(app);
 
-socket.configure(function() {
-    socket.set('log level', 1);
+io.configure(function() {
+    io.set('log level', 1);
 });
 
-socket.configure('production', function() {
-    socket.enable('browser client minification');
-    socket.enable('browser client etag');
-    socket.enable('browser client gzip');
-    socket.set('transports', [
+io.configure('production', function() {
+    io.enable('browser client minification');
+    io.enable('browser client etag');
+    io.enable('browser client gzip');
+    io.set('transports', [
         'websocket',
         'flashsocket',
         'htmlfile',
@@ -81,6 +93,6 @@ socket.configure('production', function() {
     ])
 });
 
-main.start(config.debug, config.device, socket.sockets, logger);
+main.start(logger, devicePath, isDebug, io.sockets);
 
 logger.info("Express server listening on port " + app.address().port + " in " + app.settings.env + " mode");

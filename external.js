@@ -1,10 +1,18 @@
+/**
+ * External Server
+ *
+ * Responsibilities
+ * <ul>
+ *     <li>Receive data from local server</li>
+ *     <li>Show website</li>
+ * </ul>
+ */
+
 var express = require('express'),
     socket = require('socket.io'),
     fs = require('fs'),
-    main = require('./libs/main.js'),
-    index = require('./routes/index.js'),
-    admin = require('./routes/admin.js'),
-    log4js = require('log4js');
+    log4js = require('log4js'),
+    main = require('./externalLibs/main.js');
 
 
 // Configuration
@@ -48,18 +56,41 @@ app.configure('production', function() {
 
 // Routes
 
-app.get('/', index.show);
-app.get('/admin', admin.show);
-
-app.get('/500', function(request, response) {
-    response.render('500', { title: 'Internal server error' });
+app.post('/user/welcome', function(request, response) {
+    logger.debug(request);
+    var data = JSON.parse(request.body);
+    logger.debug(data);
+    main.welcomeUser(JSON.parse(request.body));
+});
+app.post('/user/deny', function(request, response) {
+    main.denyUser();
+});
+app.post('/update/flow', function(request, response) {
+    logger.debug(request);
+    var data = JSON.parse(request.body);
+    logger.debug(data);
+    main.updateFlow(JSON.parse(request.body));
+});
+app.post('/update/amount', function(request, response) {
+    logger.debug(request);
+    var data = JSON.parse(request.body);
+    logger.debug(data);
+    main.updateAmount(JSON.parse(request.body));
+});
+app.post('/update/temp', function(request, response) {
+    logger.debug(request);
+    var data = JSON.parse(request.body);
+    logger.debug(data);
+    main.updateTemp(JSON.parse(request.body));
+});
+app.post('/update/keg', function(request, response) {
+    logger.debug(request);
+    var data = JSON.parse(request.body);
+    logger.debug(data);
+    main.updateKeg(JSON.parse(request.body));
 });
 
-app.use(function(request, response) {
-    response.render('404', { title: "Page not found" });
-});
-
-app.listen(3000);
+app.listen(80);
 
 // Socket io
 socket = socket.listen(app);
@@ -81,6 +112,6 @@ socket.configure('production', function() {
     ])
 });
 
-main.start(config.debug, config.device, socket.sockets, logger);
+main.start(socket.sockets);
 
 logger.info("Express server listening on port " + app.address().port + " in " + app.settings.env + " mode");

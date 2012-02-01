@@ -4,6 +4,7 @@ socket.on('flowUpdate', updateKegFlow);
 socket.on('amountUpdate', updateKegAmount);
 socket.on('temperatureUpdate', updateKegTemperature);
 socket.on('kegUpdate', updateKeg);
+socket.on('lastUserUpdate', updateLastUser);
 socket.on('allTimePoursPerPersonUpdate', updateAllTimePoursPerPerson);
 socket.on('allTimePoursPerTimeUpdate', updateAllTimePoursPerTime);
 socket.on('kegPoursPerPersonUpdate', updateKegPoursPerPerson);
@@ -46,6 +47,10 @@ function updateKeg(data) {
     $('#keg_name').replaceWith("<div id='keg_name'>" + data.keg.name + "</div>");
     $('#keg_description').replaceWith("<div id='keg_description'>" + data.keg.description + "</div>");
     updateKegAmount(data.keg.amount);
+}
+
+function updateLastUser(data) {
+    welcomeUser(data);
 }
 
 /**

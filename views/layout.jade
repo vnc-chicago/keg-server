@@ -14,19 +14,12 @@ html
         var socket = io.connect();
 
     script(type='text/javascript', src='/javascripts/jquery-1.7.min.js')
-    script(type='text/javascript', src='/javascripts/jquery.formalize.min.js')
     script(type='text/javascript', src='/javascripts/highcharts.js')
     script(type='text/javascript', src='/javascripts/chartHandler.js')
     script(type='text/javascript', src='/javascripts/handlers.js')
   body
     .container_12
         header.grid_3.prefix_9.alpha
-            nav
-                ul#nav
-                    li
-                        a(href="/") Home
-                    li
-                        a(href="/admin") Admin
         .clear
         .grid_12!= body
         footer

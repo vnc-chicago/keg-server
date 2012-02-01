@@ -2,9 +2,7 @@
  * Sets up the initial database
  */
 
-var sqlite3 = require('sqlite3'),
-    db = new sqlite3.Database('./db/keg.db'),
-    isDebug = true;
+var sqlite3 = require('sqlite3'), db = new sqlite3.Database('./db/keg.db'), isDebug = false, isInsertPours = false;
 
 db.serialize(function() {
 
@@ -62,40 +60,42 @@ db.serialize(function() {
         "PRIMARY KEY (userId, achievementId, awarded))", errorHandler);
 
     db.run("insert into Achievement (name) values ('Das Boot')", errorHandler);
-        db.run("insert into Achievement (name) values ('Just Topping Off')", errorHandler);
-        db.run("insert into Achievement (name) values ('Early Bird')", errorHandler);
-        db.run("insert into Achievement (name) values ('Night Owl')", errorHandler);
-        db.run("insert into Achievement (name) values ('Weekend Warrior')", errorHandler);
+    db.run("insert into Achievement (name) values ('Just Topping Off')", errorHandler);
+    db.run("insert into Achievement (name) values ('Early Bird')", errorHandler);
+    db.run("insert into Achievement (name) values ('Night Owl')", errorHandler);
+    db.run("insert into Achievement (name) values ('Weekend Warrior')", errorHandler);
 
-    if (isDebug == true) {
+    if (isDebug) {
         db.run("insert into Keg (description, name, amount, loaded) values ('Tasty brew local to Chicago', '312', 100, strftime('%Y-%m-01'))", errorHandler);
         db.run("insert into Keg (description, name, amount, loaded) values ('Excellent lager with great taste', 'Samuel Adams Boston Lager', 100, strftime('%Y-%m-02'))", errorHandler);
 
-        db.run("insert into User (badgeId, name, title) values ('0000B36CE0', 'Jay', 'Developer')", errorHandler);
-        db.run("insert into User (badgeId, name, title) values (1234567890, 'Kurt', 'Developer')", errorHandler);
-        db.run("insert into User (badgeId, name, title) values (2345678901, 'Tom', 'Support')", errorHandler);
-        db.run("insert into User (badgeId, name, title) values (3456789012, 'Gaylord', 'Fallen Hero')", errorHandler);
+        db.run("insert into User (badgeId, name, title) values ('0123456789', 'Jay', 'Developer')", errorHandler);
+        db.run("insert into User (badgeId, name, title) values ('1234567890', 'Kurt', 'Developer')", errorHandler);
+        db.run("insert into User (badgeId, name, title) values ('2345678901', 'Tom', 'Support')", errorHandler);
+        db.run("insert into User (badgeId, name, title) values ('3456789012', 'Gaylord', 'Fallen Hero')", errorHandler);
 
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 1, 8, strftime('%Y-%m-01 14:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 1, 3, strftime('%Y-%m-02 14:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 1, 2, strftime('%Y-%m-04 15:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 1, 10, strftime('%Y-%m-05 15:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 1, 6, strftime('%Y-%m-07 15:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 2, 6, strftime('%Y-%m-10 14:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 2, 6, strftime('%Y-%m-13 14:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 2, 5, strftime('%Y-%m-13 15:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 2, 9, strftime('%Y-%m-16 15:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 2, 3, strftime('%Y-%m-17 15:00:00'))", errorHandler);
+        if (isInsertPours) {
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 1, 8, strftime('%Y-%m-01 13:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 1, 3, strftime('%Y-%m-02 14:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 1, 2, strftime('%Y-%m-04 14:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 1, 10, strftime('%Y-%m-05 15:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 1, 6, strftime('%Y-%m-07 15:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 2, 6, strftime('%Y-%m-10 15:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 2, 6, strftime('%Y-%m-13 12:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 2, 5, strftime('%Y-%m-14 16:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 2, 9, strftime('%Y-%m-16 16:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 2, 3, strftime('%Y-%m-17 15:00:00'))", errorHandler);
 
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 1, 10, strftime('%Y-%m-01 14:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 1, 3, strftime('%Y-%m-04 15:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 1, 8, strftime('%Y-%m-05 15:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 1, 9, strftime('%Y-%m-09 15:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 2, 3, strftime('%Y-%m-10 14:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 2, 2, strftime('%Y-%m-12 14:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 2, 7, strftime('%Y-%m-14 15:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 2, 10, strftime('%Y-%m-16 15:00:00'))", errorHandler);
-        db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 2, 4, strftime('%Y-%m-21 15:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 1, 10, strftime('%Y-%m-01 14:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 1, 3, strftime('%Y-%m-04 14:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 1, 8, strftime('%Y-%m-05 15:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 1, 9, strftime('%Y-%m-09 15:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 2, 3, strftime('%Y-%m-10 15:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 2, 2, strftime('%Y-%m-12 16:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 2, 7, strftime('%Y-%m-14 15:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 2, 10, strftime('%Y-%m-16 16:00:00'))", errorHandler);
+            db.run("insert into KegPours (userId, kegId, amount, poured) values(2, 2, 4, strftime('%Y-%m-21 14:00:00'))", errorHandler);
+        }
 
     }
 

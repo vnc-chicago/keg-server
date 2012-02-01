@@ -1,5 +1,5 @@
 #kegAdmin.grid_6.alpha
-    form(method='post', action='/create/keg')
+    form(action='#')
         fieldset
             legend Keg Admin
             label Name
@@ -7,11 +7,11 @@
             label Description
             input(type='text', name='keg[description]')
             label Amount
-            input(type='
+            input(type='text', name='keg[amount]')
             input(type='submit', value='New Keg')
 
 #userAdmin.grid_6.omega
-    form(method='post', action='/create/user')
+    form(action='#')
         fieldset
             legend User Admin
             label Name

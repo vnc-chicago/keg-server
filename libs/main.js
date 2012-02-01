@@ -3,12 +3,12 @@ var web_io = require('./web.io.js'),
     keg_io = require('./keg.io.js'),
     keg,
     protocol = require('./protocol.js'),
-    admin = require('../routes/admin.js'),
     isDebug,
     device,
     sockets,
     logger,
     lastSeenUser,
+    lastSeenUserTime,
     currentKeg,
     adminResponse;
 
@@ -76,7 +76,11 @@ function _continueSetup(error) {
 
         // Populate variables
         db_io.getCurrentKeg(_setCurrentKeg);
-        db_io.getLastDrinker(_processUserScan);
+        db_io.getLastDrinker(function(user) {
+            lastSeenUser = user;
+            lastSeenUserTime = new Date();
+            web_io.updateStats();
+        });
     } else {
         logger.error(error);
         process.exit(1);
@@ -112,58 +116,83 @@ function _processPour(data) {
         db_io.getCurrentKeg(function(keg) {
             web_io.updateKeg(keg);
             if (isDebug && keg.amount <= 0) {
-                var keg = new Object();
-                keg.name = randomString();
-                keg.description = randomString();
-                keg.amount = 100;
-                db_io.createKeg(keg, function() {
+                var kegObject = new Object();
+                kegObject.name = randomString();
+                kegObject.description = randomString();
+                kegObject.amount = 100;
+                db_io.createKeg(kegObject, function() {
                 });
             }
         });
+        web_io.updateStats();
     }
 }
 
 function _checkPourForAchievements(amount) {
+    var achievements = new Array();
     if (amount > 10) {
         // Das Boot
         db_io.recordAchievement(lastSeenUser.id, 1, function () {
         });
+        achievements.push(1);
     } else if (amount < 2) {
         // Just Topping Off
         db_io.recordAchievement(lastSeenUser.id, 2, function () {
         });
+        achievements.push(2);
     }
 
     if (new Date().getHours() < 12) {
         // Early Bird
         db_io.recordAchievement(lastSeenUser.id, 3, function () {
         });
+        achievements.push(3);
     } else if (new Date().getHours() > 17) {
         // Night Owl
         db_io.recordAchievement(lastSeenUser.id, 4, function () {
         });
+        achievements.push(4);
     }
 
     if (new Date().getDay() == 0 || new Date().getDay() == 6) {
         // Weekend Warrior
         db_io.recordAchievement(lastSeenUser.id, 5, function () {
         });
+        achievements.push(5);
+    }
+}
+
+function _pushAchievements(achievements) {
+    for(var i = 0; i < achievements.length; i++) {
+
     }
 }
 
 function _processTag(data) {
     logger.debug('Main._processTag : ' + data);
-    
     db_io.getUserByRFID(data, _processUserScan);
 }
 
 function _processUserScan(user) {
     if (user != undefined) {
-        logger.info('User scanned : ' + user.name);
-        
-        keg.openValve();
-        lastSeenUser = user;
-        web_io.welcomeUser(user);
+
+        var difference = new Date().getTime() - lastSeenUserTime.getTime();
+        logger.debug("Difference: " + difference);
+
+        logger.debug("First: " + (lastSeenUser == undefined));
+
+        if(lastSeenUser) {
+            logger.debug("Second: " + (lastSeenUser.id != user.id));
+        }
+        logger.debug("Third: " + (difference > 30000));
+
+        if(lastSeenUser == undefined || lastSeenUser.id != user.id || difference > 30000) {
+            logger.info('User scanned : ' + user.name);
+            keg.openValve();
+            lastSeenUser = user;
+            lastSeenUserTime = new Date();
+            web_io.welcomeUser(user);
+        }
     } else {
         web_io.denyUser();
     }
@@ -171,13 +200,15 @@ function _processUserScan(user) {
 
 function _processTemp(data) {
     logger.debug('Main._processTemp : ' + data);
-    
-    var status = new Object();
-    status.kegId = currentKeg.id;
-    status.temperature = data;
-    db_io.createKegStatus(status, function() {
-        web_io.updateTemperature(data);
-    });
+
+    if(currentKeg) {
+        var status = new Object();
+        status.kegId = currentKeg.id;
+        status.temperature = data;
+        db_io.createKegStatus(status, function() {
+            web_io.updateTemperature(data);
+        });
+    }
 }
 
 function randomString() {

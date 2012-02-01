@@ -1,4 +1,10 @@
-var fs = require('fs'), protocol = require('./protocol.js'), sys = require('sys'), util = require(process.binding('natives').util ? 'util' : 'sys'), serialPort = require("serialport"), SerialPort = serialPort.SerialPort, logger;
+var fs = require('fs'),
+    protocol = require('../libs/protocol.js'),
+    sys = require('sys'),
+    util = require(process.binding('natives').util ? 'util' : 'sys'),
+    serialPort = require("serialport"),
+    SerialPort = serialPort.SerialPort,
+    logger;
 
 /**
  * @author Erik Karlsson, www.nonobtrusive.com
@@ -69,17 +75,13 @@ Keg.prototype.init = function(deviceInstance, isDebugInstance, loggerInstance) {
         });
 
         this.port.on("data", function(data) {
-            self.onReaderData(data);
+            self.parseMessage(data);
         });
 
     } else {
         this.fakePour();
         this.fakeTemp();
     }
-};
-
-Keg.prototype.onReaderData = function(data) {
-    this.parseMessage(data);
 };
 
 Keg.prototype.parseMessage = function parseMessage(message) {
@@ -96,23 +98,7 @@ Keg.prototype.parseMessage = function parseMessage(message) {
             var endSlice = message.indexOf('*', message.indexOf('_'));
 
             var data = message.slice(startSlice, endSlice);
-            logger.debug("Data: " + data);
-
             var eventName = protocol.messages[i];
-
-            switch (protocol.messages[i]) {
-                case protocol.FLOW:
-                    break;
-                case protocol.POUR:
-                    break;
-                case protocol.TAG:
-                    break;
-                case protocol.TEMP:
-                    break;
-                default:
-                    logger.warn('Invalid arduino message : ' + message);
-            }
-
             this.dispatch(eventName, data);
         }
     }

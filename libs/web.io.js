@@ -14,8 +14,6 @@ var logger = null,
 exports.start = function(socketsInstance, loggerInstance, dbInstance) {
     sockets = socketsInstance;
     sockets.on('connection', _onConnection);
-    sockets.on('getAllTimePoursPerPerson', _getAllTimePoursPerPerson);
-    sockets.on('getAllTimePoursPerTime', _getAllTimePoursPerTime);
     logger = loggerInstance;
     db = dbInstance;
 };
@@ -70,15 +68,34 @@ exports.updateKeg = function(keg) {
     currentClients.forEach(_emitKegUpdate, keg);
 };
 
-exports.updateStats = function() {
-    for(var i = 0; i < currentClients.length; i++) {
-        _getAllTimePoursPerPerson(currentClients[i]);
-        _getAllTimePoursPerTime(currentClients[i]);
-        _getKegPoursPerPerson(currentClients[i]);
-        _getKegPoursPerTime(currentClients[i]);
+exports.updateStats = function(client) {
+    if(client == undefined) {
+        for(var i = 0; i < currentClients.length; i++) {
+            _getAllTimePoursPerPerson(currentClients[i]);
+            _getAllTimePoursPerTime(currentClients[i]);
+            _getKegPoursPerPerson(currentClients[i]);
+            _getKegPoursPerTime(currentClients[i]);
+        }
+    } else {
+        _getAllTimePoursPerPerson(client);
+        _getAllTimePoursPerTime(client);
+        _getKegPoursPerPerson(client);
+        _getKegPoursPerTime(client);
     }
 };
 
+function _pushLastUserInformation(client) {
+    db.getLastDrinker(function(row) {
+        client.emit('lastUserUpdate', { user: row });
+    });
+}
+
+function _pushCurrentKeg(client) {
+    db.getCurrentKeg(function(row) {
+        currentKeg = row;
+        client.emit('kegUpdate', { keg: row });
+    })
+}
 
 function _getAllTimePoursPerPerson(client) {
     if(db) {
@@ -113,7 +130,7 @@ function _getKegPoursPerTime(client) {
 }
 
 function _emitWelcome(client) {
-    client.emit('welcome', { user: this });
+    client.emit('welcome', { user: lastUser });
 }
 
 function _emitDenial(client) {
@@ -133,8 +150,8 @@ function _emitTemperatureUpdate(client) {
 }
 
 function _emitKegUpdate(client) {
-    this.amount = formatKegAmount(this.amount);
-    client.emit('kegUpdate', { keg: this });
+    currentKeg.amount = formatKegAmount(currentKeg.amount);
+    client.emit('kegUpdate', { keg: currentKeg });
 }
 
 function formatKegAmount(amount) {
@@ -145,12 +162,14 @@ function _onConnection(client) {
     logger.info('Client connected');
     currentClients.push(client);
     if(currentKeg) {
-        currentClients.forEach(_emitKegUpdate, currentKeg);
+        _emitKegUpdate(client);
+    } else {
+        db_io.getCurrentKeg(exports.updateKeg);
     }
     if(lastUser) {
-        currentClients.forEach(_emitWelcome, lastUser);
+        _emitWelcome(client);
     }
-    exports.updateStats();
+    exports.updateStats(client);
     client.on('disconnect', _onDisconnect);
 }
 
