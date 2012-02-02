@@ -13,7 +13,7 @@ var db_io = require('./db.io.js'),
 
 exports.start = function(loggerInstance, deviceInstance, isDebugInstance, socketsInstance) {
     logger = loggerInstance;
-    device = deviceInstance;
+    devicePath = deviceInstance;
     isDebug = isDebugInstance;
     db_io.start(_continueSetup, loggerInstance);
     web_io.start(socketsInstance, loggerInstance, this);
@@ -22,13 +22,13 @@ exports.start = function(loggerInstance, deviceInstance, isDebugInstance, socket
 function _continueSetup(error) {
     if(error == undefined) {
         // Setup keg handlers
-        keg = new this.keg_io.Keg();
-        keg.init(this.devicePath, this.isDebug, this.logger);
+        keg = new keg_io.Keg();
+        keg.init(devicePath, isDebug, logger);
 
         keg.addEventlistener(protocol.FLOW, _handleFlow);
-        keg.addEventListener(protocol.TEMP, _handleTemp);
-        keg.addEventListener(protocol.TAG, _handleTag);
-        keg.addEventListener(protocol.POUR, _handlePour);
+        keg.addEventlistener(protocol.TEMP, _handleTemp);
+        keg.addEventlistener(protocol.TAG, _handleTag);
+        keg.addEventlistener(protocol.POUR, _handlePour);
 
         // Populate variables
         db_io.getCurrentKeg(function(keg) {
@@ -38,6 +38,8 @@ function _continueSetup(error) {
         db_io.getLastDrinker(function(user) {
             lastDrinker = user;
         });
+    } else {
+        logger.error(error);
     }
 }
 
@@ -82,20 +84,24 @@ function _handleTag(tag) {
 }
 
 function _handlePour(pour) {
-    // Store pour
-    var record = new Object();
-    record.kegId = currentKeg.id;
-    record.amount = pour;
-    record.userId = currentDrinker.id;
-    db_io.createKegPour(record, function(error) {
-        if(error == undefined) {
-            _checkPour(pour, function() {
-                lastDrinker = currentDrinker;
-                currentDrinker = null;
-                web_io.updateStats();
-            });
-        }
-    } );
+    if(currentKeg) {
+        // Store pour
+        var record = new Object();
+        record.kegId = currentKeg.id;
+        record.amount = pour;
+        record.userId = currentDrinker.id;
+        db_io.createKegPour(record, function(error) {
+            if(error == undefined) {
+                _checkPour(pour, function() {
+                    lastDrinker = currentDrinker;
+                    currentDrinker = null;
+                    web_io.updateStats();
+                });
+            }
+        });
+    } else {
+        logger.warn("No keg, how did we pour?");
+    }
 }
 
 function _checkPour(pour, callback) {

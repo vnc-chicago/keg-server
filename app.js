@@ -81,6 +81,6 @@ socket.configure('production', function() {
     ])
 });
 
-main.start(config.debug, config.device, socket.sockets, logger);
+main.start(config.isDebug, config.devicePath, socket.sockets, logger);
 
 logger.info("Express server listening on port " + app.address().port + " in " + app.settings.env + " mode");

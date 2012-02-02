@@ -56,41 +56,35 @@ app.configure('production', function() {
 
 // Routes
 
+app.get('/', function(request, response) {
+    response.sendfile('./views/index.html');
+});
+
 app.post('/user/welcome', function(request, response) {
-    logger.debug(request);
     var data = JSON.parse(request.body);
-    logger.debug(data);
     main.welcomeUser(JSON.parse(request.body));
 });
 app.post('/user/deny', function(request, response) {
     main.denyUser();
 });
 app.post('/update/flow', function(request, response) {
-    logger.debug(request);
     var data = JSON.parse(request.body);
-    logger.debug(data);
     main.updateFlow(JSON.parse(request.body));
 });
 app.post('/update/amount', function(request, response) {
-    logger.debug(request);
     var data = JSON.parse(request.body);
-    logger.debug(data);
     main.updateAmount(JSON.parse(request.body));
 });
 app.post('/update/temp', function(request, response) {
-    logger.debug(request);
     var data = JSON.parse(request.body);
-    logger.debug(data);
     main.updateTemp(JSON.parse(request.body));
 });
 app.post('/update/keg', function(request, response) {
-    logger.debug(request);
     var data = JSON.parse(request.body);
-    logger.debug(data);
     main.updateKeg(JSON.parse(request.body));
 });
 
-app.listen(80);
+app.listen(8000);
 
 // Socket io
 socket = socket.listen(app);

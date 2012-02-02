@@ -4,7 +4,7 @@ var sqlite3 = require('sqlite3').verbose(),
 
 exports.start = function(dbCallback, loggerInstance) {
     logger = loggerInstance;
-    db = new sqlite3.Database('../db/keg.db', dbCallback);
+    db = new sqlite3.Database('./db/keg.db', dbCallback);
 };
 
 /**

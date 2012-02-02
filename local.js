@@ -93,6 +93,6 @@ io.configure('production', function() {
     ])
 });
 
-main.start(logger, devicePath, isDebug, io.sockets);
+main.start(logger, config["devicePath"], config["isDebug"], io.sockets);
 
 logger.info("Express server listening on port " + app.address().port + " in " + app.settings.env + " mode");

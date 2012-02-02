@@ -22,9 +22,8 @@ exports.start = function(socketsInstance, loggerInstance, mainInstance) {
  * @param user
  */
 exports.welcomeUser = function(user) {
-    var data = JSON.stringify(user);
-    var request = http.request(generatePostInfo('/user/welcome', data));
-    request.write(data);
+    var request = http.request(generatePostInfo('/user/welcome'));
+    request.write(user);
     request.end();
 };
 
@@ -32,7 +31,7 @@ exports.welcomeUser = function(user) {
  * Denies the newly scanned RFID
  */
 exports.denyUser = function() {
-    var request = http.request(generatePostInfo('/user/deny', new Object()));
+    var request = http.request(generatePostInfo('/user/deny'));
     request.write();
     request.end();
 };
@@ -42,11 +41,9 @@ exports.denyUser = function() {
  * @param flow
  */
 exports.updateFlow = function(flow) {
-    var data = {
-        'flow' : flow
-    };
-    var request = http.request(generatePostInfo('/update/flow', data));
-    request.write(data);
+    var obj = {flow: flow};
+    var request = http.request(generatePostInfo('/update/flow'));
+    request.write(obj);
     request.end();
 };
 
@@ -55,11 +52,9 @@ exports.updateFlow = function(flow) {
  * @param amount
  */
 exports.updateAmount = function(amount) {
-    var data = {
-        'amount' : amount
-    };
-    var request = http.request(generatePostInfo('/update/amount', data));
-    request.write(data);
+    var obj = {amount: amount};
+    var request = http.request(generatePostInfo('/update/amount'));
+    request.write(obj);
     request.end();
 };
 
@@ -68,11 +63,9 @@ exports.updateAmount = function(amount) {
  * @param temperature
  */
 exports.updateTemperature = function(temperature) {
-    var data = {
-        'temp' : temperature
-    };
-    var request = http.request(generatePostInfo('/update/temp', data));
-    request.write(data);
+    var obj = {temp: temperature};
+    var request = http.request(generatePostInfo('/update/temp'));
+    request.write(obj);
     request.end();
 };
 
@@ -81,9 +74,8 @@ exports.updateTemperature = function(temperature) {
  * @param keg
  */
 exports.updateKeg = function(keg) {
-    var data = JSON.stringify(keg);
-    var request = http.request(generatePostInfo('/update/keg', data));
-    request.write(data);
+    var request = http.request(generatePostInfo('/update/keg'));
+    request.write(keg);
     request.end();
 };
 
@@ -94,16 +86,12 @@ exports.updateStats = function() {
 
 };
 
-function generatePostInfo(path, data) {
+function generatePostInfo(path) {
     var postOptions = {
-      host: "beerondemand.com",
-      port: 80,
+      host: "localhost",
+      port: 8000,
       path: path,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Content-Length': data.length
-      }
+      method: 'POST'
     };
     return postOptions;
 }
