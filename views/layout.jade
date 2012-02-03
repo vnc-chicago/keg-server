@@ -8,19 +8,22 @@ html
     link(rel='stylesheet', href='/stylesheets/960.css')
     link(rel='stylesheet', href='/stylesheets/formalize.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/jquery-ui-1.8.17.custom.css')
 
     script(type='text/javascript', src='/socket.io/socket.io.js')
     script(type='text/javascript')
         var socket = io.connect();
 
-    script(type='text/javascript', src='/javascripts/jquery-1.7.min.js')
+    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js')
+    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js')
+    script(type='text/javascript', src='/javascripts/jquery.formalize.min.js')
     script(type='text/javascript', src='/javascripts/highcharts.js')
     script(type='text/javascript', src='/javascripts/chartHandler.js')
     script(type='text/javascript', src='/javascripts/handlers.js')
+
   body
     .container_12
         header.grid_3.prefix_9.alpha
         .clear
         .grid_12!= body
         footer
-

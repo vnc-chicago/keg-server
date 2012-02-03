@@ -3,5 +3,5 @@
  */
 
 exports.show = function(req, res) {
-    res.render('index', { title: 'Administration' })
+    res.render('admin', { title: 'Administration' })
 };

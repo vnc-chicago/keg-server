@@ -1,6 +1,7 @@
 var sqlite3 = require('sqlite3').verbose(),
     db = null,
-    logger;
+    logger,
+    FULL_KEG = 1984; //oz
 
 exports.start = function(dbCallback, loggerInstance) {
     logger = loggerInstance;
@@ -14,7 +15,7 @@ exports.start = function(dbCallback, loggerInstance) {
  */
 exports.createKeg = function(keg, callback) {
     if (db != null) {
-        db.run("INSERT INTO Keg (name, description, amount) values (?,?,?)", [keg.name, keg.description, keg.amount], function(error) {
+        db.run("INSERT INTO Keg (name, description, amount) values (?,?,?)", [keg.name, keg.description, FULL_KEG], function(error) {
             if (error) {
                 logger.error(error);
                 _returnValue(callback, error)
@@ -27,12 +28,12 @@ exports.createKeg = function(keg, callback) {
 
 /**
  * Record a new user
- * Requires name, title, badgeId
+ * Requires name, affiliation, badgeId
  * @param user
  */
 exports.createUser = function(user, callback) {
     if (db != null) {
-        db.run("INSERT INTO User (name, title, badgeId) values (?,?,?)", [user.name, user.title, user.badgeId], function(error) {
+        db.run("INSERT INTO User (name, affiliation, badgeId) values (?,?,?)", [user.name, user.affiliation, user.tag], function(error) {
             if (error) {
                 logger.error(error);
                 _returnValue(callback, error)
@@ -200,14 +201,14 @@ exports.getKegPoursHistory = function(keg, callback) {
  *   2. badgeId (integer)
  *   3. joined (UTC string)
  *   4. name (string)
- *   5. title (string)
+ *   5. affiliation (string)
  *   6. totalPours (integer)
  * @param rfid
  * @param callback
  */
 exports.getUserByRFID = function(rfid, callback) {
     if (db != null) {
-        db.get('SELECT id, badgeId, joined, name, title, totalPours FROM User WHERE badgeId = ?', [rfid], function(error, row) {
+        db.get('SELECT id, badgeId, joined, name, affiliation, totalPours FROM User WHERE badgeId = ?', [rfid], function(error, row) {
             if (error) {
                 logger.error(error);
             } else {
@@ -222,14 +223,14 @@ exports.getUserByRFID = function(rfid, callback) {
  * Returns a user with the following properties
  *   1. id (integer)
  *   2. name (string)
- *   3. title (string)
+ *   3. affiliation (string)
  *   4. joined (UTC string)
  *   5. totalPours (integer)
  * @param callback
  */
 exports.getLastDrinker = function(callback) {
     if(db != null) {
-        db.get('select u.id, u.name, u.title, u.joined, u.totalPours from User u, KegPours p where u.id = p.userId order by poured desc', function(error, rows) {
+        db.get('select u.id, u.name, u.affiliation, u.joined, u.totalPours from User u, KegPours p where u.id = p.userId order by poured desc', function(error, rows) {
             if(error) {
                 logger.error(error);
             } else {

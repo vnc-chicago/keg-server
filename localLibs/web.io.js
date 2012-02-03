@@ -2,7 +2,7 @@ var http = require('http'),
     logger = null,
     sockets = null,
     main = null,
-    currentClients = new Array();
+    admin = null;
 
 /**
  * Initializes the web communication layer
@@ -22,8 +22,14 @@ exports.start = function(socketsInstance, loggerInstance, mainInstance) {
  * @param user
  */
 exports.welcomeUser = function(user) {
-    var request = http.request(generatePostInfo('/user/welcome'));
-    request.write(user);
+    var data = JSON.stringify(user);
+    var request = http.request(generatePostInfo('/user/welcome', data), function(res) {
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+            console.log('Response: ' + chunk);
+        });
+    });
+    request.write(data);
     request.end();
 };
 
@@ -31,7 +37,12 @@ exports.welcomeUser = function(user) {
  * Denies the newly scanned RFID
  */
 exports.denyUser = function() {
-    var request = http.request(generatePostInfo('/user/deny'));
+    var request = http.request(generatePostInfo('/user/deny', new Object()), function(res) {
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+            console.log('Response: ' + chunk);
+        });
+    });
     request.write();
     request.end();
 };
@@ -42,8 +53,14 @@ exports.denyUser = function() {
  */
 exports.updateFlow = function(flow) {
     var obj = {flow: flow};
-    var request = http.request(generatePostInfo('/update/flow'));
-    request.write(obj);
+    var data = JSON.stringify(obj);
+    var request = http.request(generatePostInfo('/update/flow', data), function(res) {
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+            console.log('Response: ' + chunk);
+        });
+    });
+    request.write(data);
     request.end();
 };
 
@@ -53,8 +70,14 @@ exports.updateFlow = function(flow) {
  */
 exports.updateAmount = function(amount) {
     var obj = {amount: amount};
-    var request = http.request(generatePostInfo('/update/amount'));
-    request.write(obj);
+    var data = JSON.stringify(obj);
+    var request = http.request(generatePostInfo('/update/amount', data), function(res) {
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+            console.log('Response: ' + chunk);
+        });
+    });
+    request.write(data);
     request.end();
 };
 
@@ -64,8 +87,14 @@ exports.updateAmount = function(amount) {
  */
 exports.updateTemperature = function(temperature) {
     var obj = {temp: temperature};
-    var request = http.request(generatePostInfo('/update/temp'));
-    request.write(obj);
+    var data = JSON.stringify(obj);
+    var request = http.request(generatePostInfo('/update/temp', data), function(res) {
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+            console.log('Response: ' + chunk);
+        });
+    });
+    request.write(data);
     request.end();
 };
 
@@ -74,8 +103,14 @@ exports.updateTemperature = function(temperature) {
  * @param keg
  */
 exports.updateKeg = function(keg) {
-    var request = http.request(generatePostInfo('/update/keg'));
-    request.write(keg);
+    var data = JSON.stringify(keg);
+    var request = http.request(generatePostInfo('/update/keg', data), function(res) {
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+            console.log('Response: ' + chunk);
+        });
+    });
+    request.write(data);
     request.end();
 };
 
@@ -86,12 +121,38 @@ exports.updateStats = function() {
 
 };
 
-function generatePostInfo(path) {
+/**
+ * Prompts user to scan card
+ */
+exports.promptUser = function() {
+    admin.emit('promptForCard');
+};
+
+/**
+ * Pushes to the user that they are created correctly
+ */
+exports.createSuccess = function() {
+    admin.emit('createSuccess');
+};
+
+/**
+ * Pushes to the user the error message on creation
+ * @param error
+ */
+exports.createFail = function(error) {
+    admin.emit('createFailure', {error: error});
+};
+
+function generatePostInfo(path, data) {
     var postOptions = {
       host: "localhost",
-      port: 8000,
+      port: 8080,
       path: path,
-      method: 'POST'
+      method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': data.length
+        }
     };
     return postOptions;
 }
@@ -99,9 +160,12 @@ function generatePostInfo(path) {
 function _onConnection(client) {
     logger.info('Client connected');
     client.on('disconnect', _onDisconnect);
-    currentClients.push(client);
+    admin = client;
+    main.isUserEntry = true;
 }
 
 function _onDisconnect() {
     logger.info("Client disconnected");
+    admin = null;
+    main.isUserEntry = false;
 }

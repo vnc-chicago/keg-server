@@ -61,30 +61,50 @@ app.get('/', function(request, response) {
 });
 
 app.post('/user/welcome', function(request, response) {
-    var data = JSON.parse(request.body);
+    for(var prop in request.body) {
+        request.body = prop;
+    }
+
+    logger.debug(request.body);
     main.welcomeUser(JSON.parse(request.body));
 });
 app.post('/user/deny', function(request, response) {
     main.denyUser();
 });
 app.post('/update/flow', function(request, response) {
-    var data = JSON.parse(request.body);
+    for(var prop in request.body) {
+        request.body = prop;
+    }
+
+    logger.debug(request.body);
     main.updateFlow(JSON.parse(request.body));
 });
 app.post('/update/amount', function(request, response) {
-    var data = JSON.parse(request.body);
+    for(var prop in request.body) {
+        request.body = prop;
+    }
+
+    logger.debug(request.body);
     main.updateAmount(JSON.parse(request.body));
 });
 app.post('/update/temp', function(request, response) {
-    var data = JSON.parse(request.body);
+    for(var prop in request.body) {
+        request.body = prop;
+    }
+
+    logger.debug(request.body);
     main.updateTemp(JSON.parse(request.body));
 });
 app.post('/update/keg', function(request, response) {
-    var data = JSON.parse(request.body);
+    for(var prop in request.body) {
+        request.body = prop;
+    }
+
+    logger.debug(request.body);
     main.updateKeg(JSON.parse(request.body));
 });
 
-app.listen(8000);
+app.listen(8080);
 
 // Socket io
 socket = socket.listen(app);

@@ -63,6 +63,14 @@ app.get('/', function(request, response){
     index.show(request, response);
 });
 
+app.post('/create/user', function(request, response) {
+    response.redirect('/');
+
+    setTimeout(function() {
+        main.promptUser(request.body.user);
+    }, 1000);
+});
+
 app.get('/500', function(request, response) {
     response.render('500', { title: 'Internal server error' });
 });

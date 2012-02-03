@@ -1,25 +1,83 @@
-#kegAdmin.grid_6.alpha
-    form(action='#')
-        fieldset
-            legend Keg Admin
-            label Name
-            input(type='text', name='keg[name]')
-            label Description
-            input(type='text', name='keg[description]')
-            label Amount
-            input(type='text', name='keg[amount]')
-            input(type='submit', value='New Keg')
-
-#userAdmin.grid_6.omega
-    form(action='#')
+#userAdmin
+    form(method="POST", action="/create/user")
         fieldset
             legend User Admin
-            label Name
-            input(type='text', name='user[name]')
-            label Title
-            input(type='text', name='user[title]')
-            label RFID
-            input(type='text', name='user[badgeId]')
-            input(type='submit', value='New User')
 
-clear
+            .block
+                label First Name
+                input(type="text", name="user[firstName]").input_small
+
+            .block
+                label Last Name
+                input(type="text", name="user[lastName]").input_small
+
+            .block
+                label Affiliation
+                select(name="user[affiliation]")
+                    option(value="Administrative") Administrative
+                    option(value="Ad Operations COE") Ad Operations COE
+                    optgroup(label="AOD")
+                        option(value="Activation") Activation
+                        option(value="Brand Relations") Brand Relations
+                        option(value="Emerging Solutions") Emerging Solutions
+                        option(value="Optimization") Optimization
+                        option(value="Platform") Platform
+                        option(value="Planning") Planning
+                        option(value="Leadership") Leadership
+                        option(value="Search - Bid Strategy") Search - Bid Strategy
+                        option(value="Search - Brand Relations") Search - Brand Relations
+                        option(value="Search - Creative Services") Search - Creative Services
+                        option(value="Search - Offshore") Search - Offshore
+                        option(value="Social") Social
+                    optgroup(label="Engineering")
+                        option(value="Benchtools") Benchtools
+                        option(value="COD") COD
+                        option(value="Data") Data
+                        option(value="IOD") IOD
+                    option(value="Finance") Finance
+                    option(value="HR") HR
+                    option(value="Marketing") Marketing
+                    option(value="Product Management") Product Management
+                    option(value="Program Management") Program Management
+                    option(value="The Pool") The Pool
+                    option(value="Ventures/Partnerships") Ventures/Partnerships
+                    optgroup(label="VivaKi Agency")
+                        option(value="Digitas") Digitas
+                        option(value="Optimedia") Optimedia
+                        option(value="Performics") Performics
+                        option(value="Starcom") Starcom
+                        option(value="Razorfish") Razorfish
+
+            .block
+                input(type="submit", value="Create")
+
+#kegAdmin
+    form(method="POST", action="/create/keg")
+        fieldset
+            legend Keg Admin
+
+            .block
+                label Brewer
+                input(type="text", name="keg[brewer]").input_small
+
+            .block
+                label Name
+                input(type="text", name="keg[name]").input_small
+
+            .block
+                label Description
+                input(type="text", name="keg[description]").input_small
+
+            .block
+                input(type="submit", value="Create")
+
+#promptForCard
+    p Please scan card
+
+#createSuccess
+    p Creation complete
+
+#createFailure
+    p#error
+
+script(type='text/javascript', src='/javascripts/admin_handlers.js')

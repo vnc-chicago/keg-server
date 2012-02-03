@@ -2,7 +2,10 @@
  * Sets up the initial database
  */
 
-var sqlite3 = require('sqlite3'), db = new sqlite3.Database('./db/keg.db'), isDebug = false, isInsertPours = false;
+var sqlite3 = require('sqlite3'),
+    db = new sqlite3.Database('./db/keg.db'),
+    isDebug = false,
+    isInsertPours = false;
 
 db.serialize(function() {
 
@@ -27,7 +30,7 @@ db.serialize(function() {
         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
         "badgeId TEXT NOT NULL, " +
         "name TEXT NOT NULL, " +
-        "title TEXT NOT NULL, " +
+        "affiliation TEXT NOT NULL, " +
         "totalPours INTEGER DEFAULT 0, " +
         "joined TEXT DEFAULT CURRENT_DATE)", errorHandler);
 

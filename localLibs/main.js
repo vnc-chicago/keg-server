@@ -2,14 +2,17 @@ var db_io = require('./db.io.js'),
     keg_io = require('./keg.io.js'),
     protocol = require('../libs/protocol.js'),
     web_io = require('./web.io.js'),
-    logger,
-    keg,
-    isDebug,
-    devicePath,
-    currentKeg,
-    currentDrinker,
-    lastDrinker,
-    isUserEntry;
+    logger = null,
+    keg = null,
+    isDebug = null,
+    devicePath = null,
+    currentKeg = null,
+    currentDrinker = null,
+    lastDrinker = null,
+    isUserEntry = null,
+    firstName = null,
+    lastName = null,
+    affiliation = null;
 
 exports.start = function(loggerInstance, deviceInstance, isDebugInstance, socketsInstance) {
     logger = loggerInstance;
@@ -18,6 +21,14 @@ exports.start = function(loggerInstance, deviceInstance, isDebugInstance, socket
     db_io.start(_continueSetup, loggerInstance);
     web_io.start(socketsInstance, loggerInstance, this);
 };
+
+exports.promptUser = function(user) {
+    isUserEntry = true;
+    firstName = user.firstName;
+    lastName = user.lastName;
+    affiliation = user.affiliation;
+    web_io.promptUser();
+}
 
 function _continueSetup(error) {
     if(error == undefined) {
@@ -60,13 +71,18 @@ function _handleTemp(temp) {
 }
 
 function _handleTag(tag) {
-
     if(isUserEntry) {
         var user = new Object();
-        user.name = "";
-        user.title = "";
+        user.name = firstName + " " + lastName;
+        user.affiliation = affiliation;
         user.tag = tag;
-        db_io.createUser(tag, function() {} );
+        db_io.createUser(user, function(error) {
+            if(error == undefined) {
+                web_io.createSuccess();
+            } else {
+                web_io.createFail(error);
+            }
+        });
     } else {
         // Get user
         db_io.getUserByRFID(tag, function(user) {
