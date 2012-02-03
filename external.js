@@ -57,51 +57,61 @@ app.configure('production', function() {
 // Routes
 
 app.get('/', function(request, response) {
-    response.sendfile('./views/index.html');
+    response.sendfile('./views/index2.html');
 });
 
 app.post('/user/welcome', function(request, response) {
     for(var prop in request.body) {
         request.body = prop;
     }
-
-    logger.debug(request.body);
     main.welcomeUser(JSON.parse(request.body));
+    response.setHeader("200");
+    response.end();
 });
 app.post('/user/deny', function(request, response) {
     main.denyUser();
+    response.setHeader("200");
+    response.end();
 });
 app.post('/update/flow', function(request, response) {
     for(var prop in request.body) {
         request.body = prop;
     }
-
-    logger.debug(request.body);
     main.updateFlow(JSON.parse(request.body));
+    response.setHeader("200");
+    response.end();
 });
 app.post('/update/amount', function(request, response) {
     for(var prop in request.body) {
         request.body = prop;
     }
-
-    logger.debug(request.body);
     main.updateAmount(JSON.parse(request.body));
+    response.setHeader("200");
+    response.end();
 });
 app.post('/update/temp', function(request, response) {
     for(var prop in request.body) {
         request.body = prop;
     }
-
-    logger.debug(request.body);
     main.updateTemp(JSON.parse(request.body));
+    response.setHeader("200");
+    response.end();
 });
 app.post('/update/keg', function(request, response) {
     for(var prop in request.body) {
         request.body = prop;
     }
-
-    logger.debug(request.body);
     main.updateKeg(JSON.parse(request.body));
+    response.setHeader("200");
+    response.end();
+});
+app.post('/update/stats', function(request, response) {
+    for(var prop in request.body) {
+        request.body = prop;
+    }
+    main.updateStats(JSON.parse(request.body));
+    response.setHeader("200");
+    response.end();
 });
 
 app.listen(8080);
@@ -126,6 +136,6 @@ socket.configure('production', function() {
     ])
 });
 
-main.start(socket.sockets);
+main.start(socket.sockets, logger);
 
 logger.info("Express server listening on port " + app.address().port + " in " + app.settings.env + " mode");

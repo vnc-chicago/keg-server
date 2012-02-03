@@ -10,6 +10,8 @@ socket.on('allTimePoursPerTimeUpdate', updateAllTimePoursPerTime);
 socket.on('kegPoursPerPersonUpdate', updateKegPoursPerPerson);
 socket.on('kegPoursPerTimeUpdate', updateKegPoursPerTime);
 
+var lastTemp = 0;
+
 function welcomeUser(data) {
     $('#user').replaceWith('<div id="user">Welcome ' + data.user.name + '</div>');
 }
@@ -32,7 +34,17 @@ function updateKegAmount(amount) {
  * @param data
  */
 function updateKegTemperature(data) {
-    parseInt(data.temperature);
+    var temp = parseInt(data.temp.temp);
+    var rotation = 0;
+    if(lastTemp = 0) {
+        rotation = temp;
+    } else {
+        rotation = lastTemp - temp;
+    }
+
+    $('#gauge .gaugeNeedle').rotate({
+        rotate: rotation
+    });
 }
 
 /**
@@ -55,9 +67,9 @@ function updateLastUser(data) {
 
 /**
  * Takes in an object with the following properties
- * rows - array of objects
- * rows[*].name - string
- * rows[*].totalAmount - number
+ * data - array of objects
+ * data[*].name - string
+ * data[*].totalAmount - number
  * @param data
  */
 function updateAllTimePoursPerPerson(data) {
@@ -65,8 +77,8 @@ function updateAllTimePoursPerPerson(data) {
     var chartData = new Array();
 
 
-    for (var i = 0; i < data.rows.length; i++) {
-        var row = data.rows[i];
+    for (var i = 0; i < data.data.length; i++) {
+        var row = data.data[i];
         xAxis.push(row.name);
         chartData.push(row.totalAmount);
     }
@@ -78,9 +90,9 @@ function updateAllTimePoursPerPerson(data) {
 
 /**
  * Takes in an object with the following properties
- * rows - array of objects
- * rows[*].timePoured - string 'HH:00:00'
- * rows[*].totalAmount - number
+ * data - array of objects
+ * data[*].timePoured - string 'HH:00:00'
+ * data[*].totalAmount - number
  * @param data
  */
 function updateAllTimePoursPerTime(data) {
@@ -88,8 +100,8 @@ function updateAllTimePoursPerTime(data) {
     var chartData = new Array();
 
 
-    for (var i = 0; i < data.rows.length; i++) {
-        var row = data.rows[i];
+    for (var i = 0; i < data.data.length; i++) {
+        var row = data.data[i];
         xAxis.push(formatTime(row.timePoured));
         chartData.push(row.totalAmount);
     }
@@ -101,9 +113,9 @@ function updateAllTimePoursPerTime(data) {
 
 /**
  * Takes in an object with the following properties
- * rows - array of objects
- * rows[*].timePoured - string 'HH:00:00'
- * rows[*].totalAmount - number
+ * data - array of objects
+ * data[*].timePoured - string 'HH:00:00'
+ * data[*].totalAmount - number
  * @param data
  */
 function updateKegPoursPerTime(data) {
@@ -111,8 +123,8 @@ function updateKegPoursPerTime(data) {
     var chartData = new Array();
 
 
-    for (var i = 0; i < data.rows.length; i++) {
-        var row = data.rows[i];
+    for (var i = 0; i < data.data.length; i++) {
+        var row = data.data[i];
         xAxis.push(formatTime(row.timePoured));
         chartData.push(row.totalAmount);
     }
@@ -124,9 +136,9 @@ function updateKegPoursPerTime(data) {
 
 /**
  * Takes in an object with the following properties
- * rows - array of objects
- * rows[*].name - string
- * rows[*].totalAmount - number
+ * data - array of objects
+ * data[*].name - string
+ * data[*].totalAmount - number
  * @param data
  */
 function updateKegPoursPerPerson(data) {
@@ -134,8 +146,8 @@ function updateKegPoursPerPerson(data) {
     var chartData = new Array();
 
 
-    for (var i = 0; i < data.rows.length; i++) {
-        var row = data.rows[i];
+    for (var i = 0; i < data.data.length; i++) {
+        var row = data.data[i];
         xAxis.push(row.name);
         chartData.push(row.totalAmount);
     }

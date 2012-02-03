@@ -20,6 +20,7 @@ exports.start = function(loggerInstance, deviceInstance, isDebugInstance, socket
     isDebug = isDebugInstance;
     db_io.start(_continueSetup, loggerInstance);
     web_io.start(socketsInstance, loggerInstance, this);
+    setTimeout(_updateStats, 5000);
 };
 
 exports.promptUser = function(user) {
@@ -111,13 +112,64 @@ function _handlePour(pour) {
                 _checkPour(pour, function() {
                     lastDrinker = currentDrinker;
                     currentDrinker = null;
-                    web_io.updateStats();
+                    _updateStats();
                 });
             }
         });
     } else {
         logger.warn("No keg, how did we pour?");
     }
+}
+
+function _updateStats() {
+    var stats = new Object();
+    db_io.getAllTimePourAmountsPerPerson(function(rows) {
+        if(rows.length > 0) {
+            stats['allTimePourAmountsPerPerson'] = _generatePerPersonObject(rows);
+        } else {
+            stats['allTimePourAmountsPerPerson'] = new Object();
+        }
+        db_io.getAllTimePourAmountsPerTime(function(rows2) {
+            if(rows2.length > 0) {
+                stats['allTimePourAmountsPerTime'] = _generatePerTimeObject(rows2);
+            } else {
+                stats['allTimePourAmountsPerTime'] = new Object();
+            }
+            db_io.getKegPourAmountsPerPerson(function(rows3) {
+                if(rows3.length > 0) {
+                    stats['kegPourAmountsPerPerson'] = _generatePerPersonObject(rows3);
+                } else {
+                    stats['kegPourAmountsPerPerson'] = new Object();
+                }
+                db_io.getKegPourAmountsPerTime(function(rows4) {
+                    if(rows4.length > 0) {
+                        stats['kegPourAmountsPerTime'] = _generatePerTimeObject(rows4);
+                    } else {
+                        stats['kegPourAmountsPerTime'] = new Object();
+                    }
+                    web_io.updateStats(stats);
+                });
+            });
+        });
+    });
+}
+
+function _generatePerPersonObject(rows) {
+    var result = new Object();
+    for(var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        result[row.name] = row.totalAmount;
+    }
+    return result;
+}
+
+function _generatePerTimeObject(rows) {
+    var result = new Object();
+    for(var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        result[row.timePoured] = row.totalAmount;
+    }
+    return result;
 }
 
 function _checkPour(pour, callback) {

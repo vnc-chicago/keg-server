@@ -23,28 +23,20 @@ exports.start = function(socketsInstance, loggerInstance, mainInstance) {
  */
 exports.welcomeUser = function(user) {
     var data = JSON.stringify(user);
-    var request = http.request(generatePostInfo('/user/welcome', data), function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('Response: ' + chunk);
-        });
-    });
+    var request = http.request(_generatePostInfo('/user/welcome', data));
     request.write(data);
     request.end();
+    logger.debug("Welcome user: " + data);
 };
 
 /**
  * Denies the newly scanned RFID
  */
 exports.denyUser = function() {
-    var request = http.request(generatePostInfo('/user/deny', new Object()), function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('Response: ' + chunk);
-        });
-    });
-    request.write();
+    var request = http.request(_generatePostInfo('/user/deny', new Object()));
+    request.write("");
     request.end();
+    logger.debug("Deny user");
 };
 
 /**
@@ -54,14 +46,10 @@ exports.denyUser = function() {
 exports.updateFlow = function(flow) {
     var obj = {flow: flow};
     var data = JSON.stringify(obj);
-    var request = http.request(generatePostInfo('/update/flow', data), function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('Response: ' + chunk);
-        });
-    });
+    var request = http.request(_generatePostInfo('/update/flow', data));
     request.write(data);
     request.end();
+    logger.debug("Update flow: " + flow);
 };
 
 /**
@@ -71,14 +59,10 @@ exports.updateFlow = function(flow) {
 exports.updateAmount = function(amount) {
     var obj = {amount: amount};
     var data = JSON.stringify(obj);
-    var request = http.request(generatePostInfo('/update/amount', data), function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('Response: ' + chunk);
-        });
-    });
+    var request = http.request(_generatePostInfo('/update/amount', data));
     request.write(data);
     request.end();
+    logger.debug("Update amount: " + amount);
 };
 
 /**
@@ -88,14 +72,10 @@ exports.updateAmount = function(amount) {
 exports.updateTemperature = function(temperature) {
     var obj = {temp: temperature};
     var data = JSON.stringify(obj);
-    var request = http.request(generatePostInfo('/update/temp', data), function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('Response: ' + chunk);
-        });
-    });
+    var request = http.request(_generatePostInfo('/update/temp', data));
     request.write(data);
     request.end();
+    logger.debug("Update temp: " + temperature);
 };
 
 /**
@@ -104,21 +84,21 @@ exports.updateTemperature = function(temperature) {
  */
 exports.updateKeg = function(keg) {
     var data = JSON.stringify(keg);
-    var request = http.request(generatePostInfo('/update/keg', data), function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('Response: ' + chunk);
-        });
-    });
+    var request = http.request(_generatePostInfo('/update/keg', data));
     request.write(data);
     request.end();
+    logger.debug("Update keg: " + keg);
 };
 
 /**
  * Pushes the updated stats to all clients
  */
-exports.updateStats = function() {
-
+exports.updateStats = function(stats) {
+    var data = JSON.stringify(stats);
+    var request = http.request(_generatePostInfo('/update/stats', data));
+    request.write(data);
+    request.end();
+    logger.debug("Update stats: " + data);
 };
 
 /**
@@ -143,7 +123,7 @@ exports.createFail = function(error) {
     admin.emit('createFailure', {error: error});
 };
 
-function generatePostInfo(path, data) {
+function _generatePostInfo(path, data) {
     var postOptions = {
       host: "localhost",
       port: 8080,

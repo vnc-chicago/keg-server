@@ -4,8 +4,8 @@
 
 var sqlite3 = require('sqlite3'),
     db = new sqlite3.Database('./db/keg.db'),
-    isDebug = false,
-    isInsertPours = false;
+    isDebug = true,
+    isInsertPours = true;
 
 db.serialize(function() {
 
@@ -72,10 +72,10 @@ db.serialize(function() {
         db.run("insert into Keg (description, name, amount, loaded) values ('Tasty brew local to Chicago', '312', 100, strftime('%Y-%m-01'))", errorHandler);
         db.run("insert into Keg (description, name, amount, loaded) values ('Excellent lager with great taste', 'Samuel Adams Boston Lager', 100, strftime('%Y-%m-02'))", errorHandler);
 
-        db.run("insert into User (badgeId, name, title) values ('0123456789', 'Jay', 'Developer')", errorHandler);
-        db.run("insert into User (badgeId, name, title) values ('1234567890', 'Kurt', 'Developer')", errorHandler);
-        db.run("insert into User (badgeId, name, title) values ('2345678901', 'Tom', 'Support')", errorHandler);
-        db.run("insert into User (badgeId, name, title) values ('3456789012', 'Gaylord', 'Fallen Hero')", errorHandler);
+        db.run("insert into User (badgeId, name, affiliation) values ('0123456789', 'Jay', 'Developer')", errorHandler);
+        db.run("insert into User (badgeId, name, affiliation) values ('1234567890', 'Kurt', 'Developer')", errorHandler);
+        db.run("insert into User (badgeId, name, affiliation) values ('2345678901', 'Tom', 'Support')", errorHandler);
+        db.run("insert into User (badgeId, name, affiliation) values ('3456789012', 'Gaylord', 'Fallen Hero')", errorHandler);
 
         if (isInsertPours) {
             db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 1, 8, strftime('%Y-%m-01 13:00:00'))", errorHandler);
