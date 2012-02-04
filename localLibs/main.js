@@ -2,23 +2,25 @@ var db_io = require('./db.io.js'),
     keg_io = require('./keg.io.js'),
     protocol = require('../libs/protocol.js'),
     web_io = require('./web.io.js'),
-    logger = null,
-    keg = null,
-    isDebug = null,
-    devicePath = null,
-    currentKeg = null,
-    currentDrinker = null,
-    lastDrinker = null,
-    isUserEntry = null,
-    firstName = null,
-    lastName = null,
-    affiliation = null;
+    logger,
+    keg,
+    isDebug,
+    devicePath,
+    currentKeg,
+    currentDrinker,
+    lastDrinker,
+    isUserEntry,
+    firstName,
+    lastName,
+    affiliation;
 
 exports.start = function(loggerInstance, deviceInstance, isDebugInstance, socketsInstance) {
     logger = loggerInstance;
     devicePath = deviceInstance;
     isDebug = isDebugInstance;
-    db_io.start(_continueSetup, loggerInstance);
+    db_io.start(function() {
+        setTimeout(_continueSetup, 5000);
+    }, loggerInstance);
     web_io.start(socketsInstance, loggerInstance, this);
     setTimeout(_updateStats, 5000);
 };
@@ -101,7 +103,7 @@ function _handleTag(tag) {
 }
 
 function _handlePour(pour) {
-    if(currentKeg) {
+    if(currentKeg && currentDrinker) {
         // Store pour
         var record = new Object();
         record.kegId = currentKeg.id;
@@ -117,7 +119,7 @@ function _handlePour(pour) {
             }
         });
     } else {
-        logger.warn("No keg, how did we pour?");
+        logger.error("No keg or user, how did we pour?");
     }
 }
 

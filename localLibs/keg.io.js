@@ -79,8 +79,8 @@ Keg.prototype.init = function(deviceInstance, isDebugInstance, loggerInstance) {
         });
 
     } else {
-        this.fakePour();
         this.fakeTemp();
+        this.fakePour();
     }
 };
 
@@ -177,8 +177,11 @@ Keg.prototype.fakePour = function fakePour() {
     user.pouredLength = 0;
 
     this.parseMessage("**TAG_" + userRFID + "**");
-    if (randomUser != 4)
-        self.fakeFlow(10, user); // flow for 10 seconds
+    if (randomUser != 4) {
+        setTimeout(function() {
+            self.fakeFlow(10, user); // flow for 10 seconds
+        }, 5000);
+    }
 
     setTimeout(function() {
         setTimeout(self.fakePour(), frequencyInMs);

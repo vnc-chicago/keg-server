@@ -1,6 +1,6 @@
 {
     /* Debug mode? */
-    "isDebug": false,
+    "isDebug": true,
 
     /* Device to listen to */
     "devicePath": "/dev/ttyACM0"

@@ -1,5 +1,5 @@
-socket.on('welcome', welcomeUser);
-socket.on('denial', denyUser);
+socket.on('welcomeUser', welcomeUser);
+socket.on('denyUser', denyUser);
 socket.on('flowUpdate', updateKegFlow);
 socket.on('amountUpdate', updateKegAmount);
 socket.on('temperatureUpdate', updateKegTemperature);
@@ -10,22 +10,37 @@ socket.on('allTimePoursPerTimeUpdate', updateAllTimePoursPerTime);
 socket.on('kegPoursPerPersonUpdate', updateKegPoursPerPerson);
 socket.on('kegPoursPerTimeUpdate', updateKegPoursPerTime);
 
-var lastTemp = 0;
+var lastTemp = 0,
+    lastFlow = 0;
 
 function welcomeUser(data) {
-    $('#user').replaceWith('<div id="user">Welcome ' + data.user.name + '</div>');
+    //alert("Welcome " + data.user.name);
 }
 
 function denyUser(data) {
-    $('#user').replaceWith('<div id="user">Sorry</div>');
+    alert("Sorry");
 }
 
 function updateKegFlow(data) {
-    parseInt(data.flow);
+    //alert("Flow: " + parseInt(data.flow.flow));
+    var flow = parseInt(data.flow.flow);
+    //alert("Temp: " + temp);
+    var rotation = 0;
+    if(lastFlow == 0) {
+        rotation = flow;
+    } else if(lastFlow > flow) {
+        rotation = flow - lastFlow;
+    } else {
+        rotation = lastFlow - flow;
+    }
+
+    $('#gauge2 .gaugeNeedle').rotate({animateTo: rotation});
+
+    lastFlow = flow;
 }
 
 function updateKegAmount(amount) {
-    parseInt(amount);
+    alert("Amount: " + parseInt(amount.amount));
 }
 
 /**
@@ -35,16 +50,19 @@ function updateKegAmount(amount) {
  */
 function updateKegTemperature(data) {
     var temp = parseInt(data.temp.temp);
+    //alert("Temp: " + temp);
     var rotation = 0;
-    if(lastTemp = 0) {
+    if(lastTemp == 0) {
         rotation = temp;
+    } else if(lastTemp > temp) {
+        rotation = temp - lastTemp;
     } else {
         rotation = lastTemp - temp;
     }
 
-    $('#gauge .gaugeNeedle').rotate({
-        rotate: rotation
-    });
+    $('#gauge .gaugeNeedle').rotate({animateTo: rotation});
+
+    lastTemp = temp;
 }
 
 /**

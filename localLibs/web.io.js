@@ -34,7 +34,7 @@ exports.welcomeUser = function(user) {
  */
 exports.denyUser = function() {
     var request = http.request(_generatePostInfo('/user/deny', new Object()));
-    request.write("");
+    request.write("{}");
     request.end();
     logger.debug("Deny user");
 };

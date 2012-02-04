@@ -1,11 +1,10 @@
 var sockets = null,
     logger = null,
-    currentClients = new Array();
-
-var kegPourAmountsPerTime = null;
-var allTimePourAmountsPerTime = null;
-var kegPourAmountsPerPerson = null;
-var allTimePourAmountsPerPerson = null;
+    clients = [],
+    kegPourAmountsPerTime,
+    allTimePourAmountsPerTime,
+    kegPourAmountsPerPerson,
+    allTimePourAmountsPerPerson;
 
 exports.start = function(socketsInstance, loggerInstance) {
     sockets = socketsInstance;
@@ -14,39 +13,39 @@ exports.start = function(socketsInstance, loggerInstance) {
 };
 
 exports.welcomeUser = function(user) {
-    for(var i = 0; i < currentClients.length; i++) {
-        currentClients[i].emit('welcomeUser', {user: user});
-    }
+    clients.forEach(function(client) {
+        client.emit('welcomeUser', {user: user});
+    });
 };
 
 exports.denyUser = function() {
-    for(var i = 0; i < currentClients.length; i++) {
-        currentClients[i].emit('denyUser', {});
-    }
+    clients.forEach(function(client) {
+        client.emit('denyUser', {});
+    });
 };
 
 exports.updateFlow = function(flow) {
-    for(var i = 0; i < currentClients.length; i++) {
-        currentClients[i].emit('flowUpdate', {flow: flow});
-    }
+    clients.forEach(function(client) {
+        client.emit('flowUpdate', {flow: flow});
+    });
 };
 
 exports.updateAmount = function(amount) {
-    for(var i = 0; i < currentClients.length; i++) {
-        currentClients[i].emit('amountUpdate', {amount: amount});
-    }
+    clients.forEach(function(client) {
+        client.emit('amountUpdate', {amount: amount});
+    });
 };
 
 exports.updateTemp = function(temp) {
-    for(var i = 0; i < currentClients.length; i++) {
-        currentClients[i].emit('temperatureUpdate', {temp: temp});
+    clients.forEach(function(client) {
+        client.emit('temperatureUpdate', {temp: temp});
     }
 };
 
 exports.updateKeg = function(keg) {
-    for(var i = 0; i < currentClients.length; i++) {
-        currentClients[i].emit('kegUpdate', {keg: keg});
-    }
+    clients.forEach(function(client) {
+        client.emit('kegUpdate', {keg: keg});
+    });
 };
 
 exports.updateStats = function(stats) {
@@ -62,13 +61,12 @@ exports.updateStats = function(stats) {
         }
     }
 
-    for(var i = 0; i < currentClients.length; i++) {
-        logger.debug("Emitting: " + i);
-        _emitAllTimePoursPerPersonUpdate(allTimePourAmountsPerPerson, currentClients[i]);
-        _emitAllTimePoursPerTimeUpdate(allTimePourAmountsPerTime, currentClients[i]);
-        _emitKegPoursPerPersonUpdate(kegPourAmountsPerPerson, currentClients[i]);
-        _emitKegPoursPerTimeUpdate(kegPourAmountsPerTime, currentClients[i]);
-    }
+    clients.forEach(function(client) {
+        _emitAllTimePoursPerPersonUpdate(allTimePourAmountsPerPerson, client);
+        _emitAllTimePoursPerTimeUpdate(allTimePourAmountsPerTime, client);
+        _emitKegPoursPerPersonUpdate(kegPourAmountsPerPerson, client);
+        _emitKegPoursPerTimeUpdate(kegPourAmountsPerTime, client);
+    });
 };
 
 function _formatPourPerTime(data) {
@@ -116,11 +114,11 @@ function _emitKegPoursPerTimeUpdate(data, client) {
 }
 
 function _onConnection(client) {
+    clients.push(client);
+
     if(logger) {
         logger.info("Client connected: " + client.toString());
     }
-
-    currentClients.push(client);
 
     if(allTimePourAmountsPerPerson) {
         _emitAllTimePoursPerPersonUpdate(allTimePourAmountsPerPerson, client);
@@ -138,12 +136,7 @@ function _onConnection(client) {
         _emitKegPoursPerTimeUpdate(kegPourAmountsPerTime, client);
     }
 
-    client.on('disconnect', _onDisconnect);
-}
-
-function _onDisconnect(client) {
-    var index = currentClients.indexOf(client);
-    if(index >= 0 && index < currentClients.length) {
-        currentClients.splice(index, 1);
-    }
+    client.on('disconnect', function() {
+        clients.splice(clients.indexOf(client), 1);
+    })
 }
