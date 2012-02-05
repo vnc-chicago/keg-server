@@ -16,5 +16,7 @@ This is a project inspired by [keg.io](https://github.com/vnc/keg.io), whom we r
 
 # Running
 
-  node external.js
-  node local.js
+1. node external.js
+2. node local.js
+
+The local server is running on port 3000 and the external server is running on port 8080.
