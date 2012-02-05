@@ -16,4 +16,5 @@ This is a project inspired by [keg.io](https://github.com/vnc/keg.io), whom we r
 
 # Running
 
-  node app.js
+  node external.js
+  node local.js
