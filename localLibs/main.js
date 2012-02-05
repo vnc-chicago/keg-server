@@ -47,10 +47,12 @@ function _continueSetup(error) {
         // Populate variables
         db_io.getCurrentKeg(function(keg) {
             currentKeg = keg;
+            web_io.collectCurrentKeg(keg);
         });
 
         db_io.getLastDrinker(function(user) {
             lastDrinker = user;
+            web_io.collectLastUser(user);
         });
     } else {
         logger.error(error);
@@ -124,6 +126,12 @@ function _handlePour(pour) {
 }
 
 function _updateStats() {
+    db_io.getCurrentKeg(function(keg) {
+        currentKeg = keg;
+        web_io.updateKeg(keg);
+    });
+
+
     var stats = new Object();
     db_io.getAllTimePourAmountsPerPerson(function(rows) {
         if(rows.length > 0) {

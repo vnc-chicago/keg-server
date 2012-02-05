@@ -60,6 +60,14 @@ app.get('/', function(request, response) {
     response.sendfile('./views/index2.html');
 });
 
+app.post('/init/data', function(request, response) {
+    for(var prop in request.body) {
+        request.body = prop;
+    }
+    main.initStats(JSON.parse(request.body));
+    response.setHeader("200");
+    response.end();
+});
 app.post('/user/welcome', function(request, response) {
     for(var prop in request.body) {
         request.body = prop;

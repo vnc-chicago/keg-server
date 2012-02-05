@@ -19,9 +19,10 @@ var currentKegPoursPerPersonSeries;
 var allTimePoursPerTimeSeries;
 var allTimePoursPerPersonSeries;
 
-$(document).ready(function() {
+function startCharts() {
     setTheme();
-});
+    chartWidth = $('#chartSection').width();
+}
 
 function initializeCharts() {
     if(!chartsInitialized) {

@@ -4,7 +4,9 @@ var sockets = null,
     kegPourAmountsPerTime,
     allTimePourAmountsPerTime,
     kegPourAmountsPerPerson,
-    allTimePourAmountsPerPerson;
+    allTimePourAmountsPerPerson,
+    currentKeg,
+    lastUser;
 
 exports.start = function(socketsInstance, loggerInstance) {
     sockets = socketsInstance;
@@ -12,41 +14,76 @@ exports.start = function(socketsInstance, loggerInstance) {
     logger = loggerInstance;
 };
 
+exports.initStats = function(data) {
+    currentKeg = data.currentKeg;
+    lastUser = data.lastUser;
+};
+
 exports.welcomeUser = function(user) {
+    lastUser = user;
     clients.forEach(function(client) {
-        client.emit('welcomeUser', {user: user});
+        _emitWelcomeUser(user, client);
     });
 };
+
+function _emitWelcomeUser(user, client) {
+    client.emit('welcomeUser', {user: user});
+}
 
 exports.denyUser = function() {
     clients.forEach(function(client) {
-        client.emit('denyUser', {});
+        _emitDenyUser(client);
     });
 };
+
+function _emitDenyUser(client) {
+    client.emit('denyUser', {});
+}
 
 exports.updateFlow = function(flow) {
     clients.forEach(function(client) {
-        client.emit('flowUpdate', {flow: flow});
+        _emitUpdateFlow(flow, client);
     });
 };
+
+function _emitUpdateFlow(flow, client) {
+    client.emit('flowUpdate', {flow: flow});
+}
 
 exports.updateAmount = function(amount) {
     clients.forEach(function(client) {
-        client.emit('amountUpdate', {amount: amount});
+        _emitUpdateAmount(amount, client);
     });
 };
+
+function _emitUpdateAmount(amount, client) {
+    client.emit('amountUpdate', {amount: amount});
+}
 
 exports.updateTemp = function(temp) {
     clients.forEach(function(client) {
-        client.emit('temperatureUpdate', {temp: temp});
-    }
-};
-
-exports.updateKeg = function(keg) {
-    clients.forEach(function(client) {
-        client.emit('kegUpdate', {keg: keg});
+        _emitUpdateTemp(temp, client);
     });
 };
+
+function _emitUpdateTemp(temp, client) {
+    client.emit('temperatureUpdate', {temp: temp});
+}
+
+exports.updateKeg = function(keg) {
+    currentKeg = keg;
+    clients.forEach(function(client) {
+        _emitUpdateKeg(keg, client);
+    });
+};
+
+function _emitUpdateKeg(keg, client) {
+    client.emit('kegUpdate', {keg: keg});
+}
+
+function _emitUpdateLastUser(client) {
+    client.emit('lastUserUpdate', {user: lastUser});
+}
 
 exports.updateStats = function(stats) {
     for (var prop in stats) {
@@ -118,6 +155,14 @@ function _onConnection(client) {
 
     if(logger) {
         logger.info("Client connected: " + client.toString());
+    }
+
+    if(currentKeg) {
+        _emitUpdateKeg(currentKeg, client);
+    }
+
+    if(lastUser) {
+        _emitUpdateLastUser(client);
     }
 
     if(allTimePourAmountsPerPerson) {

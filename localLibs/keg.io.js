@@ -144,6 +144,7 @@ Keg.prototype.fakeFlow = function fakeFlow(flowsLeft, user) {
         }, frequencyInMs);
     }
     else {
+        self.parseMessage('**FLOW_0**');
         self.parseMessage('**FLOW_END**');
         self.parseMessage('**POUR_' + user.pouredLength + '**');
 

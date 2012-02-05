@@ -10,37 +10,77 @@ socket.on('allTimePoursPerTimeUpdate', updateAllTimePoursPerTime);
 socket.on('kegPoursPerPersonUpdate', updateKegPoursPerPerson);
 socket.on('kegPoursPerTimeUpdate', updateKegPoursPerTime);
 
-var lastTemp = 0,
-    lastFlow = 0;
+function startHandlers() {
+    $('#welcomeUser').hide();
+    $('#denyUser').hide();
+    $('#welcomeUser').dialog({
+    autoOpen:false,
+    modal: true,
+    show: 'fade',
+    hide: 'fade'
+});
+    $('#denyUser').dialog({
+    autoOpen:false,
+    modal: true,
+    show: 'fade',
+    hide: 'fade'
+});
+}
+
 
 function welcomeUser(data) {
     //alert("Welcome " + data.user.name);
+
+    $('#welcomeUser').empty();
+    $('#welcomeUser').append("<p>Welcome " + data.user.name + "</p>")
+
+    $('#welcomeUser').dialog('open');
+    setTimeout(function() {
+        $('#welcomeUser').dialog('close');
+    }, 5000);
+
+    updateUserSection(data);
+}
+
+function updateUserSection(data) {
+    $('#userName').empty();
+    $('#userName').append("Name: " + data.user.name);
+
+    $('#userAffiliation').empty();
+    $('#userAffiliation').append("Affiliation: " + data.user.affiliation);
+
+    $('#userJoined').empty();
+    $('#userJoined').append("Signed Up: " + data.user.joined);
+
+    $('#userTotalPours').empty();
+    $('#userTotalPours').append("Total Pours: " + data.user.totalPours);
 }
 
 function denyUser(data) {
-    alert("Sorry");
+    $('#denyUser').dialog('open');
+    setTimeout(function() {
+        $('#denyUser').dialog('close');
+    }, 5000);
 }
 
 function updateKegFlow(data) {
     //alert("Flow: " + parseInt(data.flow.flow));
     var flow = parseInt(data.flow.flow);
-    //alert("Temp: " + temp);
-    var rotation = 0;
-    if(lastFlow == 0) {
-        rotation = flow;
-    } else if(lastFlow > flow) {
-        rotation = flow - lastFlow;
-    } else {
-        rotation = lastFlow - flow;
+    if(!isNaN(flow)) {
+        $('#gauge2 .gaugeNeedle').rotate({animateTo: flow});
     }
-
-    $('#gauge2 .gaugeNeedle').rotate({animateTo: rotation});
-
-    lastFlow = flow;
 }
 
 function updateKegAmount(amount) {
-    alert("Amount: " + parseInt(amount.amount));
+    $('#kegAmount').empty();
+
+    var kegAmount;
+    if(amount.hasOwnProperty("amount")) {
+        kegAmount = parseInt(amount.amount);
+    } else {
+        kegAmount = parseInt(amount);
+    }
+    $('#kegAmount').append(kegAmount);
 }
 
 /**
@@ -50,19 +90,7 @@ function updateKegAmount(amount) {
  */
 function updateKegTemperature(data) {
     var temp = parseInt(data.temp.temp);
-    //alert("Temp: " + temp);
-    var rotation = 0;
-    if(lastTemp == 0) {
-        rotation = temp;
-    } else if(lastTemp > temp) {
-        rotation = temp - lastTemp;
-    } else {
-        rotation = lastTemp - temp;
-    }
-
-    $('#gauge .gaugeNeedle').rotate({animateTo: rotation});
-
-    lastTemp = temp;
+    $('#gauge .gaugeNeedle').rotate({animateTo: temp});
 }
 
 /**
@@ -74,13 +102,27 @@ function updateKegTemperature(data) {
  * @param data
  */
 function updateKeg(data) {
-    $('#keg_name').replaceWith("<div id='keg_name'>" + data.keg.name + "</div>");
-    $('#keg_description').replaceWith("<div id='keg_description'>" + data.keg.description + "</div>");
+    $('#kegImage').empty();
+
+
+    $('#kegTitle').empty();
+    $('#kegTitle').append(data.keg.name);
+
+    $('#kegInstalled').empty();
+    $('#kegInstalled').append(data.keg.loaded);
+
+    $('#kegDescription').empty();
+    $('#kegDescription').append(data.keg.description);
+
     updateKegAmount(data.keg.amount);
 }
 
+/**
+ *
+ * @param data
+ */
 function updateLastUser(data) {
-    welcomeUser(data);
+    updateUserSection(data);
 }
 
 /**

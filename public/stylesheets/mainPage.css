@@ -18,8 +18,8 @@ body {margin:0; padding:0; line-height:1.50em; font-family:Verdana, Geneva, sans
 #centerSection {width:100%; height:100%; color:#FFFFFF; float:right;}
 #centerSection .top {width:100%; height:58px; background:url('../images/fluid/leftTopExtendedBG.png'); background-repeat:repeat-x;}
 
-.beerDeets {width:200px;}
-.beerSubDeets {line-height:1.35em;}
+.kegDeets {width:200px;}
+.kegSubDeets {line-height:1.35em;}
 
 #contentWrapper2 {float:left; width:100%;}
 #contentColumn2 {margin-left:275px; /* Set left margin to LeftColumnWidth */}

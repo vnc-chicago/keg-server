@@ -2,7 +2,9 @@ var http = require('http'),
     logger = null,
     sockets = null,
     main = null,
-    admin = null;
+    admin = null,
+    currentKeg,
+    lastUser;
 
 /**
  * Initializes the web communication layer
@@ -16,6 +18,40 @@ exports.start = function(socketsInstance, loggerInstance, mainInstance) {
     logger = loggerInstance;
     main = mainInstance;
 };
+
+/**
+ * Collects the current keg and tries to push initial data
+ * @param keg
+ */
+exports.collectCurrentKeg = function(keg) {
+    currentKeg = keg;
+    _pushStartingData();
+};
+
+/**
+ * Collects the last user and tries to push initial data
+ * @param user
+ */
+exports.collectLastUser = function(user) {
+    lastUser = user;
+    _pushStartingData();
+};
+
+/**
+ * Pushes the initial data out to the external server
+ */
+function _pushStartingData() {
+    if(currentKeg && lastUser) {
+        var obj = {
+            currentKeg : currentKeg,
+            lastUser : lastUser
+        };
+        var data = JSON.stringify(obj);
+        var request = http.request(_generatePostInfo('/init/data', data));
+        request.write(data);
+        request.end();
+    }
+}
 
 /**
  * Welcomes the newly scanned RFID
@@ -33,8 +69,8 @@ exports.welcomeUser = function(user) {
  * Denies the newly scanned RFID
  */
 exports.denyUser = function() {
-    var request = http.request(_generatePostInfo('/user/deny', new Object()));
-    request.write("{}");
+    var request = http.request(_generatePostInfo('/user/deny', ""));
+    request.write("");
     request.end();
     logger.debug("Deny user");
 };

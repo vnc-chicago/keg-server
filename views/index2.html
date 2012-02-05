@@ -1,24 +1,35 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Beer On Demand</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+    <title>Beer On Demand</title>
 
-<link rel="stylesheet" type="text/css" href="/stylesheets/mainPage.css" />
-<link rel="stylesheet" type="text/css" href="/stylesheets/gauge2.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/text.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui-1.8.17.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/mainPage.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/gauge2.css"/>
 
-<script src="/socket.io/socket.io.js" type="text/javascript"></script>
-<script type="text/javascript">
-var socket = io.connect();
-</script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js" type="text/javascript"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="/socket.io/socket.io.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var socket = io.connect();
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"
+            type="text/javascript"></script>
     <script type="text/javascript" src="/javascripts/jQueryRotateCompressed.2.1.js"></script>
-<script src="/javascripts/jquery.formalize.min.js" type="text/javascript"></script>
-<script src="/javascripts/highcharts.js" type="text/javascript"></script>
-<script src="/javascripts/chartHandler.js" type="text/javascript"></script>
-<script src="/javascripts/handlers.js" type="text/javascript"></script>
+    <script src="/javascripts/jquery.formalize.min.js" type="text/javascript"></script>
+    <script src="/javascripts/highcharts.js" type="text/javascript"></script>
+    <script src="/javascripts/chartHandler.js" type="text/javascript"></script>
+    <script src="/javascripts/handlers.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            startCharts();
+            startHandlers();
+        });
+    </script>
 
 </head>
 
@@ -44,64 +55,62 @@ var socket = io.connect();
         <div id="contentColumn2">
             <div id="centerSection">
                 <div class="top"></div>
-                <div id="chartSection">
-                    <div id="chartNav">
-                    	<div class="buttonLeftOff"></div>
-                        <div class="buttonRightOff"></div>
-                    </div>
-                </div>
+                <div id="chartSection"></div>
                 <div id="userSection">
-                    <p id="name" />
-                    <p id="affiliation" />
-
-                </div>        
+                    <div id="userName"></div>
+                    <div id="userAffiliation"></div>
+                    <div id="userJoined"></div>
+                    <div id="userTotalPours"></div>
+                </div>
+                <div id="chartNav">
+                    <div class="buttonLeftOff"></div>
+                    <div class="buttonRightOff"></div>
+                </div>
             </div>
         </div>
     </div>
-    
+
     <div id="leftColumn">
         <div id="leftSection">
             <div class="top"></div>
-            <div class="center">
+            <div class="center kegDeets">
                 <b>On Tap: </b>
-                <br />
-                <br />
-				<img src="/images/fluid/beer/honkersAle.png" width="200" height="170" alt="" title="" border="0"/>   
-                <br />
-                <br />         
-                <div class="beerSubDeets" style="width:200px;">
-                <b>Temperature: </b>39&deg;
-                <br />
-                <br />
-                <b>Installed: </b>18 Jan 2012
-				<br />	
-                <br />
-                <b>Brew Notes: </b>
-                <br />
-                <br />
-                Inspired by visits to English country pubs, Honker's Ale combines a fruity hop aroma with a rich malt 
-                middle to create a perfectly balanced beer. Immensely drinkable, Honker's Ale is not only the beer 
-                you can trust but one you'll look forward to time and again.
-                <br />	
-                <br />
-                <b>Brewer: </b>Goose Island Brewery (Chicago, IL)
+                <div id="kegImage"></div>
+                <div class="kegSubDeets" style="width:200px;">
+                    <div id="kegTitle" style="font-weight: bold;"></div>
+                    <b>Installed:</b>
+                    <div id="kegInstalled"></div>
+                    <b>Brew Notes:</b>
+                    <div id="kegDescription"></div>
+                    <b>Brewer:</b>
+                    <div id="kegBrewer"></div>
+                    <b>Amount Left:</b>
+                    <div id="kegAmount"></div>
                 </div>
             </div>
         </div>
     </div>
-</div>   
+</div>
 
 <div id="gauge">
+    <b>Current Temperature</b>
     <div class="gaugeBack"></div>
     <div class="gaugeNeedle"></div>
     <div class="gaugeGlass"></div>
 </div>
 
 <div id="gauge2">
+    <b>Current Flow</b>
     <div class="gaugeBack"></div>
     <div class="gaugeNeedle"></div>
     <div class="gaugeGlass"></div>
-</div> 
+</div>
+
+<div id="welcomeUser"></div>
+
+<div id="denyUser">
+    <p>Sorry, you are not in our system, please contact an administrator</p>
+</div>
 
 </body>
 </html>
