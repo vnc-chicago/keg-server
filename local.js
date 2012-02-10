@@ -1,21 +1,19 @@
 /**
- * Local server
+ * Local Server
  *
  * Responsibilities
  * <ul>
- *     <li>Interact with keg</li>
- *     <li>Store data</li>
- *     <li>Register users</li>
- *     <li>Push to external server</li>
+ *     <li>Receive data from keg hardware</li>
+ *     <li>Store data into db</li>
+ *     <li>Administrate user and keg creation</li>
  * </ul>
  */
 
-var express = require('express'),
-    socket_io = require('socket.io'),
-    fs = require('fs'),
-    log4js = require('log4js'),
-    index = require('./routes/index.js'),
-    main = require('./localLibs/main.js');
+var express = require('express');
+var socket = require('socket.io');
+var fs = require('fs');
+var log4js = require('log4js');
+var Config = require('./common/Config.js') 
 
 
 // Configuration
@@ -25,14 +23,6 @@ log4js.addAppender(log4js.consoleAppender);
 log4js.addAppender(log4js.fileAppender('logs/app.log'));
 
 var logger = log4js.getLogger('default');
-
-var config = JSON.parse(fs.readFileSync("./conf/app_config.json").toString());
-
-logger.debug("CONFIG:");
-for (var prop in config) {
-    if (config.hasOwnProperty(prop))
-        logger.debug(prop + ": " + config[prop]);
-}
 
 app.configure(function() {
     app.set('views', __dirname + '/views');
@@ -54,45 +44,24 @@ app.configure('production', function() {
 
 // Routes
 
-app.get('/', function(request, response){
-    index.show(request, response);
+app.get('/', function(request, response) {
+    response.sendfile('./views/index2.html');
 });
 
-app.post('/create/user', function(request, response) {
-    response.redirect('/');
-
-    setTimeout(function() {
-        main.promptUser(request.body.user);
-    }, 1000);
-});
-
-app.post('/create/keg', function(request, response) {
-    response.redirect('/');
-    main.createKeg(request.body.keg);
-})
-
-app.get('/500', function(request, response) {
-    response.render('500', { title: 'Internal server error' });
-});
-
-app.use(function(request, response) {
-    response.render('404', { title: "Page not found" });
-});
-
-app.listen(3000);
+app.listen(Config.localPort);
 
 // Socket io
-var io = socket_io.listen(app);
+socket = socket.listen(app);
 
-io.configure(function() {
-    io.set('log level', 1);
+socket.configure(function() {
+    socket.set('log level', 1);
 });
 
-io.configure('production', function() {
-    io.enable('browser client minification');
-    io.enable('browser client etag');
-    io.enable('browser client gzip');
-    io.set('transports', [
+socket.configure('production', function() {
+    socket.enable('browser client minification');
+    socket.enable('browser client etag');
+    socket.enable('browser client gzip');
+    socket.set('transports', [
         'websocket',
         'flashsocket',
         'htmlfile',
@@ -100,7 +69,5 @@ io.configure('production', function() {
         'jsonp-polling'
     ])
 });
-
-main.start(logger, config["devicePath"], config["isDebug"], io.sockets, config['hasCamera'], config['alwaysOpen']);
 
 logger.info("Express server listening on port " + app.address().port + " in " + app.settings.env + " mode");

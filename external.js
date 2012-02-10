@@ -8,11 +8,12 @@
  * </ul>
  */
 
-var express = require('express'),
-    socket = require('socket.io'),
-    fs = require('fs'),
-    log4js = require('log4js'),
-    main = require('./externalLibs/main.js');
+var express = require('express');
+var socket = require('socket.io');
+var fs = require('fs');
+var log4js = require('log4js');
+var main = require('./externalLibs/main.js');
+var Config = require('./common/Config.js');
 
 
 // Configuration
@@ -22,19 +23,6 @@ log4js.addAppender(log4js.consoleAppender);
 log4js.addAppender(log4js.fileAppender('logs/app.log'));
 
 var logger = log4js.getLogger('default');
-
-var config = JSON.parse(
-    fs.readFileSync("./conf/app_config.json").toString().replace(
-        new RegExp("\\/\\*(.|\\r|\\n)*?\\*\\/", "g"),
-        "" // strip out C-style comments (/* */)
-    )
-);
-
-logger.debug("CONFIG:");
-for (var prop in config) {
-    if (config.hasOwnProperty(prop))
-        logger.debug(prop + ": " + config[prop]);
-}
 
 app.configure(function() {
     app.set('views', __dirname + '/views');
@@ -122,7 +110,7 @@ app.post('/update/stats', function(request, response) {
     response.end();
 });
 
-app.listen(8080);
+app.listen(Config.externalPort);
 
 // Socket io
 socket = socket.listen(app);
