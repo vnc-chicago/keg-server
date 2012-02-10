@@ -11,6 +11,8 @@
         "socket.io": "",
         "log4js": "",
         "sqlite3": "",
-	"serialport": ""
+	"serialport": "",
+	"node-uuid": "",
+        "winston": "0.3.3"
     }
 }

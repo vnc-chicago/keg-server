@@ -4,7 +4,7 @@
 
 var sqlite3 = require('sqlite3'),
     db = new sqlite3.Database('./db/keg.db'),
-    isDebug = true,
+    isDebug = false,
     isInsertPours = true;
 
 db.serialize(function() {
@@ -21,14 +21,14 @@ db.serialize(function() {
     // Create tables
     db.run("create table Keg (" +
         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        "brewer TEXT NOT NULL, " +
         "name TEXT NOT NULL, " +
         "description TEXT NOT NULL, " +
         "amount INTEGER NOT NULL, " +
         "loaded TEXT DEFAULT CURRENT_DATE)", errorHandler);
 
     db.run("create table User (" +
-        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        "badgeId TEXT NOT NULL, " +
+        "badgeId TEXT PRIMARY KEY, " +
         "name TEXT NOT NULL, " +
         "affiliation TEXT NOT NULL, " +
         "totalPours INTEGER DEFAULT 0, " +

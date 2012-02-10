@@ -10,12 +10,12 @@ exports.start = function(dbCallback, loggerInstance) {
 
 /**
  * Record a new keg
- * Requires name, description
+ * Requires brewer, name, description
  * @param keg
  */
 exports.createKeg = function(keg, callback) {
     if (db != null) {
-        db.run("INSERT INTO Keg (name, description, amount) values (?,?,?)", [keg.name, keg.description, FULL_KEG], function(error) {
+        db.run("INSERT INTO Keg (brewer, name, description, amount) values (?,?,?,?)", [keg.brewer, keg.name, keg.description, FULL_KEG], function(error) {
             if (error) {
                 logger.error(error);
                 _returnValue(callback, error)
@@ -83,7 +83,7 @@ exports.createKegPour = function(pour, callback) {
 
 function _updateUserPourCount(userId, callback) {
     if(db != null) {
-        db.run("UPDATE User SET totalPours = totalPours + 1 WHERE id = ?", [userId], function(error) {
+        db.run("UPDATE User SET totalPours = totalPours + 1 WHERE badgeId = ?", [userId], function(error) {
             if(error) {
                 logger.error(error);
                 _returnValue(callback, error);
@@ -119,7 +119,7 @@ function _updateKegAmount(pourAmount, callback) {
  */
 exports.getCurrentKeg = function(callback) {
     if (db != null) {
-        db.get("SELECT id, amount, description, loaded, name FROM Keg ORDER BY loaded DESC", function(error, row) {
+        db.get("SELECT id, brewer, amount, description, loaded, name FROM Keg ORDER BY loaded DESC", function(error, row) {
             if (error) {
                 logger.error(error);
             } else {
@@ -203,12 +203,13 @@ exports.getKegPoursHistory = function(keg, callback) {
  *   4. name (string)
  *   5. affiliation (string)
  *   6. totalPours (integer)
+ *   7. path (string)
  * @param rfid
  * @param callback
  */
 exports.getUserByRFID = function(rfid, callback) {
     if (db != null) {
-        db.get('SELECT id, badgeId, joined, name, affiliation, totalPours FROM User WHERE badgeId = ?', [rfid], function(error, row) {
+        db.get('SELECT badgeId, joined, name, affiliation, totalPours, badgeId as path FROM User WHERE badgeId = ?', [rfid], function(error, row) {
             if (error) {
                 logger.error(error);
             } else {
@@ -226,11 +227,12 @@ exports.getUserByRFID = function(rfid, callback) {
  *   3. affiliation (string)
  *   4. joined (UTC string)
  *   5. totalPours (integer)
+ *   6. path (string)
  * @param callback
  */
 exports.getLastDrinker = function(callback) {
     if(db != null) {
-        db.get('select u.id, u.name, u.affiliation, u.joined, u.totalPours from User u, KegPours p where u.id = p.userId order by poured desc', function(error, rows) {
+        db.get('select u.name, u.affiliation, u.joined, u.totalPours, u.badgeId as path from User u, KegPours p where u.badgeId = p.userId order by poured desc', function(error, rows) {
             if(error) {
                 logger.error(error);
             } else {
@@ -246,7 +248,7 @@ exports.getLastDrinker = function(callback) {
  */
 exports.getAllTimePourAmountsPerPerson = function(callback) {
     if(db != null) {
-        db.all('select u.name, sum(p.amount) as totalAmount from User u, KegPours p where u.id = p.userId group by u.id order by totalAmount desc', function(error, rows) {
+        db.all('select u.name, sum(p.amount) as totalAmount from User u, KegPours p where u.badgeId = p.userId group by u.badgeId order by totalAmount desc', function(error, rows) {
             if (error) {
                 logger.error(error);
             } else {
@@ -284,7 +286,7 @@ exports.getAllTimePourAmountsPerTime = function(callback) {
  */
 exports.getKegPourAmountsPerPerson = function(callback) {
     if(db != null) {
-        db.all('select u.name, sum(p.amount) as totalAmount from User u, KegPours p, Keg k where u.id = p.userId and p.kegId = (select inKeg.id from Keg inKeg order by inKeg.loaded desc limit 1) group by u.id order by totalAmount desc', function(error, rows) {
+        db.all('select u.name, sum(p.amount) as totalAmount from User u, KegPours p, Keg k where u.badgeId = p.userId and p.kegId = (select inKeg.id from Keg inKeg order by inKeg.loaded desc limit 1) group by u.badgeId order by totalAmount desc', function(error, rows) {
             if (error) {
                 logger.error(error);
             } else {
@@ -301,86 +303,6 @@ exports.getKegPourAmountsPerPerson = function(callback) {
 exports.getKegPourAmountsPerTime = function(callback) {
     if(db != null) {
         db.all('select time(p.poured) as timePoured, sum(p.amount) as totalAmount from KegPours p where p.kegId = (select inKeg.id from Keg inKeg order by inKeg.loaded desc limit 1) group by timePoured order by timePoured', function(error, rows) {
-            if (error) {
-                logger.error(error);
-            } else {
-                _returnValue(callback, rows);
-            }
-        })
-    }
-};
-
-/**
- * Gets user name, id that have pour amounts greater than 10
- * @param callback
- */
-exports.getAllDasBoot = function(callback) {
-    if(db != null) {
-        db.all('select u.name, u.id from User u, KegPours p where u.id = p.userId and p.amount > 10 group by u.id', function(error, rows) {
-            if (error) {
-                logger.error(error);
-            } else {
-                _returnValue(callback, rows);
-            }
-        })
-    }
-};
-
-/**
- * Gets user name, id that have pour amounts less than 2
- * @param callback
- */
-exports.getAllJustToppingOff = function(callback) {
-    if(db != null) {
-        db.all('select u.name, u.id from User u, KegPours p where u.id = p.userId and p.amount < 2 group by u.id', function(error, rows) {
-            if (error) {
-                logger.error(error);
-            } else {
-                _returnValue(callback, rows);
-            }
-        })
-    }
-};
-
-/**
- * Gets user name, id that have pours before noon central time
- * @param callback
- */
-exports.getAllEarlyBird = function(callback) {
-    if(db != null) {
-        db.all('select u.name, u.id from User u, KegPours p where u.id = p.userId and time(p.poured) < "6:00:00" group by u.id', function(error, rows) {
-            if (error) {
-                logger.error(error);
-            } else {
-                _returnValue(callback, rows);
-            }
-        })
-    }
-};
-
-/**
- * Gets user name, id that have pours after 5pm central time
- * @param callback
- */
-exports.getAllNightOwl = function(callback) {
-    if(db != null) {
-        db.all('select u.name, u.id from User u, KegPours p where u.id = p.userId and time(p.poured) > "11:00:00" group by u.id', function(error, rows) {
-            if (error) {
-                logger.error(error);
-            } else {
-                _returnValue(callback, rows);
-            }
-        })
-    }
-};
-
-/**
- * Gets user name, id that have a pour on the weekend
- * @param callback
- */
-exports.getAllWeekendWarrior = function(callback) {
-    if(db != null) {
-        db.all('select u.id, u.name from User u, KegPours p where u.id = p.userId and (date(p.poured) = date(p.poured, "weekday 0") or date(p.poured) = date(p.poured, "weekday 6")) group by u.id', function(error, rows) {
             if (error) {
                 logger.error(error);
             } else {

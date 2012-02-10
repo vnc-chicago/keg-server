@@ -1,7 +1,6 @@
 {
-    /* Debug mode? */
-    "isDebug": true,
-
-    /* Device to listen to */
-    "devicePath": "/dev/ttyACM0"
+    "isDebug": false,
+    "devicePath": "/dev/ttyACM0",
+    "alwaysOpen": false,
+    "hasCamera": false
 }

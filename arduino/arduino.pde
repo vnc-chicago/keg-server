@@ -31,7 +31,6 @@ int calc;
 NewSoftSerial rfid = NewSoftSerial(RFID_IN_PIN, RFID_OUT_PIN);
 char code[11]; // Array to hold tag digits
 int offset = 0; // How far into the tag we've read
-String lastRFID;
 
 // Solenoid
 #define SOLENOID_OUT_PIN 8
@@ -115,10 +114,6 @@ void refreshTemps() {
   sensors.requestTemperatures();
 }
 
-void clearRFID() {
-  lastRFID = "";
-}
-
 void flowMeterInterrupt() {
   flow++;
 }
@@ -187,7 +182,6 @@ void closeSolenoid() {
   digitalWrite(13, LOW);
   digitalWrite(SOLENOID_OUT_PIN, LOW);
   detachInterrupt(0);
-  clearRFID();
 }
 
 void serialHandler() {
@@ -218,13 +212,11 @@ void rfidHandler() {
     // If end of line
     if (c == '\r' || c == '\n') {
       code[offset] = 0;
-      if (c == '\r' && lastRFID != code) {
+      if (c == '\r') {
         // Print out to server
         Serial.print("**TAG_");
         Serial.print(code);
         Serial.println("**");
-
-        lastRFID = code;
       }
       offset = 0;
     } 

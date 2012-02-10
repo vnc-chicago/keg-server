@@ -22,6 +22,10 @@ var allTimePoursPerPersonSeries;
 function startCharts() {
     setTheme();
     chartWidth = $('#chartSection').width();
+    $(window).resize(function() {
+        chartWidth = $('#chartSection').width();
+        resizeChart();
+    });
 }
 
 function initializeCharts() {
@@ -205,9 +209,6 @@ function showAllTimePoursPerTime() {
 }
 
 function resizeChart(chart) {
-    if (!chart) {
-        chart = charts[currentChart];
-    }
     chart.setSize($('#chartSection').width(), $('#chartSection').height(), true);
 }
 

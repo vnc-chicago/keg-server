@@ -24,6 +24,7 @@ exports.start = function(socketsInstance, loggerInstance, mainInstance) {
  * @param keg
  */
 exports.collectCurrentKeg = function(keg) {
+    logger.debug('Web_IO collectCurrentKeg: ' + keg);
     currentKeg = keg;
     _pushStartingData();
 };
@@ -33,6 +34,7 @@ exports.collectCurrentKeg = function(keg) {
  * @param user
  */
 exports.collectLastUser = function(user) {
+    logger.debug('Web_IO collectLastUser: ' + user);
     lastUser = user;
     _pushStartingData();
 };
@@ -41,6 +43,8 @@ exports.collectLastUser = function(user) {
  * Pushes the initial data out to the external server
  */
 function _pushStartingData() {
+    logger.debug('WebIO _pushStartingData - currentKeg: ' + currentKeg);
+    logger.debug('WebIO _pushStartingData - lastUser: ' + lastUser);
     if(currentKeg && lastUser) {
         var obj = {
             currentKeg : currentKeg,
@@ -50,6 +54,7 @@ function _pushStartingData() {
         var request = http.request(_generatePostInfo('/init/data', data));
         request.write(data);
         request.end();
+        logger.debug('Starting data: ' + data);
     }
 }
 
@@ -145,6 +150,13 @@ exports.promptUser = function() {
 };
 
 /**
+ * Prompts user to smile
+ */
+exports.promptForPicture = function() {
+    admin.emit('promptForPic');
+}
+
+/**
  * Pushes to the user that they are created correctly
  */
 exports.createSuccess = function() {
@@ -177,11 +189,11 @@ function _onConnection(client) {
     logger.info('Client connected');
     client.on('disconnect', _onDisconnect);
     admin = client;
-    main.isUserEntry = true;
+    main.STATE['isUserEntry'] = true;
 }
 
 function _onDisconnect() {
     logger.info("Client disconnected");
     admin = null;
-    main.isUserEntry = false;
+    main.STATE['isUserEntry'] = false;
 }

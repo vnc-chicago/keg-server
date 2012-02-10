@@ -14,17 +14,17 @@ function startHandlers() {
     $('#welcomeUser').hide();
     $('#denyUser').hide();
     $('#welcomeUser').dialog({
-    autoOpen:false,
-    modal: true,
-    show: 'fade',
-    hide: 'fade'
-});
+        autoOpen:false,
+        modal: true,
+        show: 'fade',
+        hide: 'fade'
+    });
     $('#denyUser').dialog({
-    autoOpen:false,
-    modal: true,
-    show: 'fade',
-    hide: 'fade'
-});
+        autoOpen:false,
+        modal: true,
+        show: 'fade',
+        hide: 'fade'
+    });
 }
 
 
@@ -54,6 +54,12 @@ function updateUserSection(data) {
 
     $('#userTotalPours').empty();
     $('#userTotalPours').append("Total Pours: " + data.user.totalPours);
+
+    $('#userImage').empty();
+
+    if(data.user.path !== undefined && data.user.path !== '') {
+        $('#userImage').append('<img src="/images/users/' + data.user.path + '.png" />');
+    }
 }
 
 function denyUser(data) {
@@ -80,7 +86,7 @@ function updateKegAmount(amount) {
     } else {
         kegAmount = parseInt(amount);
     }
-    $('#kegAmount').append(kegAmount);
+    $('#kegAmount').append(kegAmount + "oz");
 }
 
 /**
@@ -106,7 +112,7 @@ function updateKeg(data) {
 
 
     $('#kegTitle').empty();
-    $('#kegTitle').append(data.keg.name);
+    $('#kegTitle').append(data.keg.brewer + " " + data.keg.name);
 
     $('#kegInstalled').empty();
     $('#kegInstalled').append(data.keg.loaded);

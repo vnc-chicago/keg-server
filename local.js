@@ -26,12 +26,7 @@ log4js.addAppender(log4js.fileAppender('logs/app.log'));
 
 var logger = log4js.getLogger('default');
 
-var config = JSON.parse(
-    fs.readFileSync("./conf/app_config.json").toString().replace(
-        new RegExp("\\/\\*(.|\\r|\\n)*?\\*\\/", "g"),
-        "" // strip out C-style comments (/* */)
-    )
-);
+var config = JSON.parse(fs.readFileSync("./conf/app_config.json").toString());
 
 logger.debug("CONFIG:");
 for (var prop in config) {
@@ -71,6 +66,11 @@ app.post('/create/user', function(request, response) {
     }, 1000);
 });
 
+app.post('/create/keg', function(request, response) {
+    response.redirect('/');
+    main.createKeg(request.body.keg);
+})
+
 app.get('/500', function(request, response) {
     response.render('500', { title: 'Internal server error' });
 });
@@ -101,6 +101,6 @@ io.configure('production', function() {
     ])
 });
 
-main.start(logger, config["devicePath"], config["isDebug"], io.sockets);
+main.start(logger, config["devicePath"], config["isDebug"], io.sockets, config['hasCamera'], config['alwaysOpen']);
 
 logger.info("Express server listening on port " + app.address().port + " in " + app.settings.env + " mode");
