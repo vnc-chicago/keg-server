@@ -14,7 +14,7 @@ var KegIO = (function() {
         _emitter = Object.create(EventEmitter.prototype);
         _logger = logger;
 
-        if(!Config.isDebug) {
+        if (!Config.isDebug) {
             _port = new SerialPort(Config.devicePath, {
                 parser: serialPort.parsers.readline('\n')
             });
@@ -23,20 +23,22 @@ var KegIO = (function() {
                 parseMessage(data);
             })
         } else {
-            fakeTemp();
-            fakeTag();
+            setTimeout(function() {
+                fakeTemp();
+                fakeTag();
+            }, 5000);
         }
     }
 
     function getEmitter() {
-        if(typeof _emitter === 'undefined') {
+        if (typeof _emitter === 'undefined') {
             _emitter = Object.create(EventEmitter.prototype);
         }
         return _emitter;
     }
 
     function parseMessage(message) {
-        if(!validMessage(message)) {
+        if (!validMessage(message)) {
             _logger.warn('Invalid arduino message: ' + message);
         } else {
             var startSlice = message.indexOf('_') + 1;
@@ -54,6 +56,15 @@ var KegIO = (function() {
         return VALID_MESSAGE.test(message);
     }
 
+    function openValve() {
+        _logger.debug(protocol.REQUEST_OPEN);
+        if (!Config.isDebug) {
+            _port.write(protocol.REQUEST_OPEN);
+        } else {
+            fakeFlow(10);
+        }
+    }
+
     function fakeTemp() {
         setInterval(function() {
             var temp = Math.random() * 10 + 35;
@@ -62,13 +73,46 @@ var KegIO = (function() {
     }
 
     function fakeTag() {
-        parseMessage('**' + protocol.TAG + '_' + '0123456789' + '**');
+        setInterval(function() {
+            var randomUser = Math.floor(Math.random() * 5);
+            var RFID = 'DENYTAG012';
+            switch (randomUser) {
+                case 0:
+                    RFID = '0123456789';
+                    break;
+                case 1:
+                    RFID = '1234567890';
+                    break;
+                case 2:
+                    RFID = '2345678901';
+                    break;
+                case 3:
+                    RFID = '3456789012';
+                    break;
+                default:
+                    break;
+            }
+            parseMessage('**' + protocol.TAG + '_' + RFID + '**');
+        }, 15000);
 
+    }
+
+    function fakeFlow(timeLeft) {
+        var flow = Math.random() * 100;
+        parseMessage('**' + protocol.FLOW + '_' + flow + '**');
+        if (timeLeft >= 0) {
+            setTimeout(function() {
+                fakeFlow(timeLeft - 1);
+            }, 1000);
+        } else {
+            parseMessage('**' + protocol.FLOW + '_END**');
+        }
     }
 
     return {
         getEmitter : getEmitter,
-        start : init
+        start : init,
+        openValve : openValve
     }
 }());
 module.exports = KegIO;

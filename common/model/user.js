@@ -16,7 +16,8 @@ function User(isLocal) {
     this.isLocal = isLocal;
 }
 util.inherits(User, Base);
+module.exports = User;
 
-User.prototype.getByTag = function(tag) {
+User.prototype.byTag = function(tag) {
 
 };

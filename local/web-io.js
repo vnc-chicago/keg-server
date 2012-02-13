@@ -39,6 +39,14 @@ var WebIO = (function() {
         return _emitter;
     }
 
+    function welcomeUser(user) {
+
+    }
+
+    function denyUser(user) {
+
+    }
+
     function _onConnection(client) {
         clients.push(client);
 
@@ -59,7 +67,9 @@ var WebIO = (function() {
 
     return {
         getEmitter : getEmitter,
-        start : init
+        start : init,
+        welcomeUser : welcomeUser,
+        denyUser : denyUser
     }
 
 }());

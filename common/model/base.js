@@ -6,6 +6,7 @@ function Base() {
     this.logger = null;
     this.FULL_KEG = 1984; //oz
 }
+module.exports = Base;
 
 Base.prototype.setLogger = function(loggerInstance) {
     this.logger = loggerInstance;

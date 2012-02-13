@@ -1,7 +1,7 @@
 var WebIO = require('./web-io');
 var KegIO = require('./keg-io');
 var protocol = require('../common/protocol');
-var User = require('../common/model/User');
+var User = require('../common/model/user');
 
 var Main = (function () {
     var _logger;
@@ -22,13 +22,18 @@ var Main = (function () {
 
     function handleTag(tag) {
         // Get user
-        var user = User.getByTag(tag);
+        var user = new User().byTag(tag);
 
         // If user exists
+        if(typeof user !== 'undefined') {
             // Open valve
+            KegIO.openValve();
             // Welcome user
-        // Else
+            WebIO.welcomeUser(user);
+        } else {
             // Deny user
+            WebIO.denyUser();
+        }
     }
 
     function handleFlow(flow) {
