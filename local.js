@@ -10,10 +10,10 @@
  */
 
 var express = require('express');
-var socket = require('socket.io');
 var fs = require('fs');
 var log4js = require('log4js');
-var Config = require('./common/Config.js') 
+var Config = require('./common/config');
+var main = require('./local/main');
 
 
 // Configuration
@@ -50,24 +50,6 @@ app.get('/', function(request, response) {
 
 app.listen(Config.localPort);
 
-// Socket io
-socket = socket.listen(app);
-
-socket.configure(function() {
-    socket.set('log level', 1);
-});
-
-socket.configure('production', function() {
-    socket.enable('browser client minification');
-    socket.enable('browser client etag');
-    socket.enable('browser client gzip');
-    socket.set('transports', [
-        'websocket',
-        'flashsocket',
-        'htmlfile',
-        'xhr-polling',
-        'jsonp-polling'
-    ])
-});
+main.start(app, logger);
 
 logger.info("Express server listening on port " + app.address().port + " in " + app.settings.env + " mode");

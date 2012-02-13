@@ -1,6 +1,5 @@
 var spawn = require('child_process').spawn;
 var fs = require('fs');
-var sys = require('sys');
 var eventEmitter = require('events').EventEmitter;
 
 var PROPERTIES = {
