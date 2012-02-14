@@ -47,6 +47,22 @@ var WebIO = (function() {
 
     }
 
+    function updateFlow(flow) {
+
+    }
+
+    function updateTemp(temp) {
+
+    }
+
+    function updateKeg(keg) {
+
+    }
+
+    function updateStats(stats) {
+
+    }
+
     function _onConnection(client) {
         clients.push(client);
 
@@ -69,7 +85,11 @@ var WebIO = (function() {
         getEmitter : getEmitter,
         start : init,
         welcomeUser : welcomeUser,
-        denyUser : denyUser
+        denyUser : denyUser,
+        updateFlow : updateFlow,
+        updateTemp : updateTemp,
+        updateKeg : updateKeg(),
+        updateStats : updateStats
     }
 
 }());

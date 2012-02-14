@@ -26,7 +26,12 @@ var Config = (function() {
         /**
          * Port external server is listening to
          */
-        externalPort : 80
+        externalPort : 80,
+
+        /**
+         * Path to db
+         */
+        dbPath : './db/keg.sqlite3'
     }
 }());
 module.exports = Config;

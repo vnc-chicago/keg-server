@@ -9,6 +9,7 @@ var KegIO = (function() {
     var _port;
     var _logger;
     var _emitter;
+    var fakePour = 0;
 
     function init(logger) {
         _emitter = Object.create(EventEmitter.prototype);
@@ -23,10 +24,8 @@ var KegIO = (function() {
                 parseMessage(data);
             })
         } else {
-            setTimeout(function() {
-                fakeTemp();
-                fakeTag();
-            }, 5000);
+            fakeTemp();
+            fakeTag();
         }
     }
 
@@ -74,6 +73,7 @@ var KegIO = (function() {
 
     function fakeTag() {
         setInterval(function() {
+            fakePour = 0;
             var randomUser = Math.floor(Math.random() * 5);
             var RFID = 'DENYTAG012';
             switch (randomUser) {
@@ -98,7 +98,8 @@ var KegIO = (function() {
     }
 
     function fakeFlow(timeLeft) {
-        var flow = Math.random() * 100;
+        var flow = Math.random() * 2;
+        fakePour = fakePour + flow;
         parseMessage('**' + protocol.FLOW + '_' + flow + '**');
         if (timeLeft >= 0) {
             setTimeout(function() {
@@ -106,6 +107,7 @@ var KegIO = (function() {
             }, 1000);
         } else {
             parseMessage('**' + protocol.FLOW + '_END**');
+            parseMessage('**' + protocol.POUR + '_' + fakePour + '**');
         }
     }
 

@@ -1,17 +1,12 @@
-var Base = require('./base');
-var util = require('util');
+var Achievement = (function() {
+    var _logger;
 
-/**
- * Model structure for achievements
- */
-function Achievement(isLocal) {
-    this.id = -1;
-    this.name = "";
-    this.description = "";
-
-    if (checkIfLocal(isLocal)) {
-        openDB();
+    function init(logger) {
+        _logger = logger;
     }
-}
-util.inherits(Achievement, Base);
+
+    return {
+        start : init
+    }
+}());
 module.exports = Achievement;

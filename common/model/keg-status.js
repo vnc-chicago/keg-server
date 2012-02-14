@@ -1,16 +1,12 @@
-var Base = require('./base');
-var util = require('util');
+var KegStatus = (function() {
+    var _logger;
 
-/**
- * Model structure for keg statuses
- */
-function KegStatus(isLocal) {
-    this.kegId = 0;
-    this.temp = 0;
-
-    if (checkIfLocal(isLocal)) {
-        openDB();
+    function init(logger) {
+        _logger = logger;
     }
-}
-util.inherits(KegStatus, Base);
+
+    return {
+        start : init
+    }
+}());
 module.exports = KegStatus;

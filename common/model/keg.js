@@ -1,19 +1,34 @@
-var Base = require('./base');
-var util = require('util');
+var sqlite3 = require('sqlite3');
+var Config = require('../config');
 
-/**
- * Model structure for kegs
- */
-function Keg(isLocal) {
-    this.id = -1;
-    this.name = "";
-    this.brewer = "";
-    this.description = "";
-    this.loaded = "";
+var Keg = (function() {
+    var _logger;
 
-    if (checkIfLocal(isLocal)) {
-        openDB();
+    function init(logger) {
+        _logger = logger;
     }
-}
-util.inherits(Keg, Base);
+
+    function getCurrentKeg(callback) {
+        var _db = new sqlite3.Database(Config.dbPath, function(error) {
+            if (error) {
+                _logger.error(error);
+                _db.close();
+                callback(undefined);
+            } else {
+                _db.get('SELECT id, brewer, name, description, amount, loaded FROM Keg ORDER BY loaded DESC', function(error, row) {
+                    if (error) {
+                        _logger.error(error);
+                    }
+                    _db.close();
+                    callback(row);
+                });
+            }
+        });
+    }
+
+    return {
+        start : init,
+        currentKeg : getCurrentKeg
+    }
+}());
 module.exports = Keg;
