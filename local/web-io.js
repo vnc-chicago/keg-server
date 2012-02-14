@@ -1,5 +1,7 @@
 var io = require('socket.io');
+var http = require('http');
 var EventEmitter = require('events').EventEmitter;
+var Config = require('../common/config');
 
 var WebIO = (function() {
     var clients = [];
@@ -40,27 +42,58 @@ var WebIO = (function() {
     }
 
     function welcomeUser(user) {
-
+      var data = JSON.stringify(user);
+      var request = http.request(generatePost('/user/welcome', data));
+      request.write(data);
+      request.end();
     }
 
     function denyUser(user) {
-
+      var data = '';
+      var request = http.request(generatePost('/user/deny', data));
+      request.write(data);
+      request.end();
     }
 
     function updateFlow(flow) {
-
+      var obj = {flow: flow};
+      var data = JSON.stringify(obj);
+      var request = http.request(generatePost('/update/flow', data));
+      request.write(data);
+      request.end();
     }
 
     function updateTemp(temp) {
-
+      var obj = {temp: temp};
+      var data = JSON.stringify(obj);
+      var request = http.request(generatePost('/update/temp', data));
+      request.write(data);
+      request.end();
     }
 
     function updateKeg(keg) {
-
+      var data = JSON.stringify(keg);
+      var request = http.request(generatePost('/update/keg', data));
+      request.write(data);
+      request.end();
     }
 
     function updateStats(stats) {
 
+    }
+
+    function generatePost(path, data) {
+      var postOptions = {
+        host: Config.externalServerUrl,
+        port: Config.externalPortListener,
+        path: path,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Length': data.length
+        }
+      };
+      return postOptions;
     }
 
     function _onConnection(client) {
@@ -88,7 +121,7 @@ var WebIO = (function() {
         denyUser : denyUser,
         updateFlow : updateFlow,
         updateTemp : updateTemp,
-        updateKeg : updateKeg(),
+        updateKeg : updateKeg,
         updateStats : updateStats
     }
 

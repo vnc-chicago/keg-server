@@ -1,3 +1,4 @@
+var Config = require('../common/config');
 var WebIO = require('./web-io');
 var KegIO = require('./keg-io');
 var protocol = require('../common/protocol');
@@ -56,13 +57,13 @@ var Main = (function () {
                 var now = new Date().getTime();
                 var lastUserValid = typeof _lastUser !== 'undefined';
                 var lastUserIsCurrentUser = false;
-                var diff = 100000;
+                var diff = Config.scanTimeout + 1;
                 if (lastUserValid) {
                     lastUserIsCurrentUser = _lastUser.badgeId == user.badgeId;
                     diff = now - _lastUser.timeStamp;
                 }
 
-                if ((lastUserValid && lastUserIsCurrentUser && diff > 30000) || typeof _lastUser === 'undefined' || !lastUserIsCurrentUser) {
+                if ((lastUserValid && lastUserIsCurrentUser && diff > Config.scanTimeout) || typeof _lastUser === 'undefined' || !lastUserIsCurrentUser) {
                     // Store in _currentUser
                     _lastUser = _currentUser;
                     if (typeof _lastUser !== 'undefined') {
@@ -96,10 +97,12 @@ var Main = (function () {
             });
         }
         // Push new stats to web
+        compileAndPushStats();
     }
 
     function handleTemp(temp) {
         // Push temp to web
+        WebIO.updateTemp(temp);
     }
 
     function createUser() {
@@ -114,12 +117,14 @@ var Main = (function () {
         // Push picture to web
     }
 
-    function createKeg() {
+    function createKeg(keg) {
         // Store keg details
+
         // Push keg details to web
+        WebIO.updateKeg(keg);
     }
 
-    function pushStats() {
+    function compileAndPushStats() {
         // Get stats
         // Push stats to web
     }

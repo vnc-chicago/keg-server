@@ -12,8 +12,8 @@ var express = require('express');
 var socket = require('socket.io');
 var fs = require('fs');
 var log4js = require('log4js');
-var main = require('./externalLibs/main.js');
-var Config = require('./common/Config.js');
+var main = require('./external/main.js');
+var Config = require('./common/config.js');
 
 
 // Configuration
@@ -110,7 +110,7 @@ app.post('/update/stats', function(request, response) {
     response.end();
 });
 
-app.listen(Config.externalPort);
+app.listen(Config.externalPortRunner);
 
 // Socket io
 socket = socket.listen(app);

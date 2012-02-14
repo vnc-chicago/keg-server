@@ -12,6 +12,7 @@
 var express = require('express');
 var fs = require('fs');
 var log4js = require('log4js');
+var index = require('./routes/index');
 var Config = require('./common/config');
 var main = require('./local/main');
 
@@ -45,7 +46,8 @@ app.configure('production', function() {
 // Routes
 
 app.get('/', function(request, response) {
-    response.sendfile('./views/index2.html');
+    index.show(request, response);
+    //response.sendfile('./views/index2.html');
 });
 
 app.listen(Config.localPort);

@@ -32,7 +32,7 @@ function welcomeUser(data) {
     //alert("Welcome " + data.user.name);
 
     $('#welcomeUser').empty();
-    $('#welcomeUser').append("<p>Welcome " + data.user.name + "</p>")
+    $('#welcomeUser').append("<p>Welcome " + data.user.firstName + ' ' + data.user.lastName + "</p>")
 
     $('#welcomeUser').dialog('open');
     setTimeout(function() {
@@ -44,7 +44,7 @@ function welcomeUser(data) {
 
 function updateUserSection(data) {
     $('#userName').empty();
-    $('#userName').append("Name: " + data.user.name);
+    $('#userName').append("Name: " + data.user.firstName + ' ' + data.user.lastName);
 
     $('#userAffiliation').empty();
     $('#userAffiliation').append("Affiliation: " + data.user.affiliation);

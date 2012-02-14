@@ -21,17 +21,27 @@ var Config = (function() {
         /**
          * Location of external server to push data to
          */
-        externalServerUrl : 'http://www.beerondemand.com/',
+        externalServerUrl : 'localhost',
 
         /**
          * Port external server is listening to
          */
-        externalPort : 80,
+        externalPortListener : 8080,
+
+        /**
+         * Port external server is running on
+         */
+        externalPortRunner : 8080,
 
         /**
          * Path to db
          */
-        dbPath : './db/keg.sqlite3'
+        dbPath : './db/keg.sqlite3',
+        
+        /**
+         * Timeout for duplicate card scans in ms
+         */
+        scanTimeout : 30000
     }
 }());
 module.exports = Config;
