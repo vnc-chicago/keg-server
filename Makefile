@@ -2,12 +2,14 @@
 # Makefile for keg-server
 #
 
-all: create.db
+all: create.dir
 
 install.dep:
 	npm install
 
-create.db: install.dep
+create.dir: install.dep
 	mkdir -p db
 	mkdir -p logs
-	node setup/recreatedb.js
+
+recreate.db: create.dir
+	node setup/recreate-db-sqlite3.js
