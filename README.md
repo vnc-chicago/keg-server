@@ -11,12 +11,10 @@ This is a project inspired by [keg.io](https://github.com/vnc/keg.io), whom we r
 
 # Configuration
 
-1. Check conf/app_config.json
+1. Check common/config.js
 2. Modify values as necessary
 
 # Running
 
 1. node external.js
 2. node local.js
-
-The local server is running on port 3000 and the external server is running on port 8080.
