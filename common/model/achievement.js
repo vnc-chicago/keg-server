@@ -7,22 +7,27 @@ var Achievement = (function() {
 
     function isFirstPour(user) {
         // Checks in for first time
+        return user.totalPours == 1;
     }
 
     function isDecaUser(user) {
         // Checks in 10 times
+        return user.totalPours == 10;
     }
 
     function isHalfCenturion(user) {
         // Checks in 50 times
+        return user.totalPours == 50;
     }
 
     function isCenturion(user) {
         // Checks in 100 times
+        return user.totalPours == 100;
     }
 
-    function isSixShooter(user) {
+    function isSixShooter(user, callback) {
         // Drinks 72oz all time
+        KegPours.getAllTimePourAmountForUser(user, callback);
     }
 
     function isDoubleSixShooter(user) {
@@ -43,18 +48,24 @@ var Achievement = (function() {
 
     function isEarlyBird() {
         // Checks in before 2pm
+        var now = new Date();
+        return now.getHours() <= 14;
     }
 
     function isInForLongHaul() {
         // Checks in after 6pm
+        var now = new Date();
+        return now.getHours() >= 18;
     }
 
     function isPartyStarter() {
         // First in day
+        KegPours.determineIfFirstPour;
     }
 
     function isTrifecta(user) {
         // Checks in 3 times in day
+        KegPours.getNumberOfPoursForUserToday;
     }
 
     function isGoingLong(user) {
@@ -75,14 +86,18 @@ var Achievement = (function() {
 
     function shouldGoHome() {
         // Checks in on weekend
+        var today = new Date();
+        return today.getDay() == 0 || today.getDay() == 6;
     }
 
     function isChilly(kegTemp) {
         // KegTemp is less than 38 degrees
+        return kegTemp < 38;
     }
 
     function isWarmAndFuzzy(kegTemp) {
         // KegTemp is greater than 40 degress
+        return kegTemp > 40;
     }
 
     function isDrinkingBuddy() {
