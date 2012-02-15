@@ -134,7 +134,7 @@ void openSolenoid() {
 
 void measureFlow() {
   // Convert our pulse frequency to a oz/s and store in lastFlow
-  lastFlow = ((flow * 60) / 7.5) * 0.00939278408;
+  lastFlow = ((flow * 60) / 7.5);
   flow = 0;
 
   if(lastFlow != 0) {    
@@ -152,7 +152,7 @@ void pourHandler() {
   while(idleCount < IDLE_COUNT) {
 
     // Convert our pulse frequency to a oz/s and store in lastFlow
-    lastFlow = ((flow * 60) / 7.5) * 0.00939278408;
+    lastFlow = ((flow * 60) / 7.5);
     flow = 0;
  
     if(lastFlow == 0) {
