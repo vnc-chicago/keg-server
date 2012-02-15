@@ -46,8 +46,30 @@ app.configure('production', function() {
 // Routes
 
 app.get('/', function(request, response) {
-    index.show(request, response);
+    index.show(request, response, main);
     //response.sendfile('./views/index2.html');
+});
+
+app.post('/create/keg', function(request, response) {
+    response.redirect('/');
+    main.createKeg(request.body.keg);
+});
+
+app.post('/create/user', function(request, response) {
+    response.redirect('/');
+
+    setTimeout(function() {
+        main.promptUser(request.body.user);
+    }, 1000)
+});
+
+app.post('/set/admin', function(request, response) {
+    main.setIsUserCreation(!main.getIsUserCreation());
+    response.redirect('/');
+});
+
+app.get('/500', function(request, response) {
+    response.render('500', { title: 'Internal server error' });
 });
 
 app.listen(Config.localPort);

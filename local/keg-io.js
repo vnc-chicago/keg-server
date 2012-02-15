@@ -93,7 +93,7 @@ var KegIO = (function() {
                     break;
             }
             parseMessage('**' + protocol.TAG + '_' + RFID + '**');
-        }, 15000);
+        }, 25000);
 
     }
 

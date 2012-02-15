@@ -1,9 +1,10 @@
 var spawn = require('child_process').spawn;
 var fs = require('fs');
+var Config = require('./config');
 var eventEmitter = require('events').EventEmitter;
 
 var PROPERTIES = {
-    location : '/home/bod-admin/Repositories/keg-server/public/images/users/',
+    location : Config.pictureLocation,
     format : '.png',
     preArgs : ["-r", "200x300", "--no-banner", "--png", "--save"]
 };

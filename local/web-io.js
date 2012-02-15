@@ -1,15 +1,14 @@
 var io = require('socket.io');
+var fs = require('fs');
 var http = require('http');
 var EventEmitter = require('events').EventEmitter;
 var Config = require('../common/config');
 
 var WebIO = (function() {
-    var clients = [];
-    var _emitter;
+    var _client;
     var _logger;
 
     function init(app, logger) {
-        _emitter = Object.create(EventEmitter.prototype);
         _logger = logger;
 
         // Socket io
@@ -34,95 +33,126 @@ var WebIO = (function() {
         io.sockets.on('connection', _onConnection);
     }
 
-    function getEmitter() {
-        if(typeof _emitter === 'undefined') {
-            _emitter = Object.create(EventEmitter.prototype);
-        }
-        return _emitter;
+    function promptForCard() {
+        _client.emit('promptForCard');
+    }
+
+    function promptForPicture() {
+        _client.emit('promptForPic');
+    }
+
+    function pushPicture(picName, callback) {
+        fs.readFile(Config.pictureLocation + picName, 'binary', function(error, file) {
+            if(error) {
+                _client.emit('createFailure', {error: 'Picture failed to transfer'});
+                callback(error);
+            } else {
+                var request = http.request(generatePicturePost());
+                request.write(file, 'binary');
+                request.end();
+            }
+        })
+    }
+
+    function createSuccess() {
+        _client.emit('createSuccess');
+    }
+
+    function createFail(error) {
+        _client.emit('createFailure', {error: error});
     }
 
     function welcomeUser(user) {
-      var data = JSON.stringify(user);
-      var request = http.request(generatePost('/user/welcome', data));
-      request.write(data);
-      request.end();
+        var data = JSON.stringify(user);
+        var request = http.request(generateDataPost('/user/welcome', data));
+        request.write(data);
+        request.end();
     }
 
     function denyUser(user) {
-      var data = '';
-      var request = http.request(generatePost('/user/deny', data));
-      request.write(data);
-      request.end();
+        var data = '';
+        var request = http.request(generateDataPost('/user/deny', data));
+        request.write(data);
+        request.end();
     }
 
     function updateFlow(flow) {
-      var obj = {flow: flow};
-      var data = JSON.stringify(obj);
-      var request = http.request(generatePost('/update/flow', data));
-      request.write(data);
-      request.end();
+        var obj = {flow: flow};
+        var data = JSON.stringify(obj);
+        var request = http.request(generateDataPost('/update/flow', data));
+        request.write(data);
+        request.end();
     }
 
     function updateTemp(temp) {
-      var obj = {temp: temp};
-      var data = JSON.stringify(obj);
-      var request = http.request(generatePost('/update/temp', data));
-      request.write(data);
-      request.end();
+        var obj = {temp: temp};
+        var data = JSON.stringify(obj);
+        var request = http.request(generateDataPost('/update/temp', data));
+        request.write(data);
+        request.end();
     }
 
     function updateKeg(keg) {
-      var data = JSON.stringify(keg);
-      var request = http.request(generatePost('/update/keg', data));
-      request.write(data);
-      request.end();
+        var data = JSON.stringify(keg);
+        var request = http.request(generateDataPost('/update/keg', data));
+        request.write(data);
+        request.end();
     }
 
     function updateStats(stats) {
-
+        var data = JSON.stringify(stats);
+        var request = http.request(generateDataPost('/update/stats', data));
+        request.write(data);
+        request.end();
     }
 
-    function generatePost(path, data) {
-      var postOptions = {
-        host: Config.externalServerUrl,
-        port: Config.externalPortListener,
-        path: path,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': data.length
+    function generateDataPost(path, data) {
+        var postOptions = {
+            host: Config.externalServerUrl,
+            port: Config.externalPortListener,
+            path: path,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Length': data.length
+            }
+        };
+        return postOptions;
+    }
+
+    function generatePicturePost() {
+        var postOptions = {
+            host: Config.externalServerUrl,
+            port: Config.externalPortListener,
+            path: '/send/pic',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'image/png'
+            }
         }
-      };
-      return postOptions;
     }
 
     function _onConnection(client) {
-        clients.push(client);
+        _client = client;
 
         client.on('disconnect', function() {
-            clients.splice(clients.indexOf(client), 1);
-        });
-
-        client.on('createUser', function() {
-            // Create user
-            WebIO.emit('createUser', {user : {}});
-        });
-
-        client.on('createKeg', function() {
-            // Create keg
-            WebIO.emit('createKeg', {keg : {}});
+            _client = null;
         });
     }
 
     return {
-        getEmitter : getEmitter,
         start : init,
+        promptForCard : promptForCard,
+        promptForPic : promptForPicture,
+        createUserSuccess : createSuccess,
+        createUserFail : createFail,
         welcomeUser : welcomeUser,
         denyUser : denyUser,
         updateFlow : updateFlow,
         updateTemp : updateTemp,
         updateKeg : updateKeg,
-        updateStats : updateStats
+        updateStats : updateStats,
+        sendPicture : pushPicture
     }
 
 }());

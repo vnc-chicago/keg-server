@@ -23,7 +23,12 @@ html
 
   body
     .container_12
-        header.grid_3.prefix_9.alpha
+        header.grid_3.suffix_9.alpha
+            form(method="POST", action="/set/admin")
+                .block
+                    label User creation is
+                    label=isUserCreation ? 'on' : 'off'
+                input(type="submit", value="Toggle User Creation")
         .clear
         .grid_12!= body
         footer

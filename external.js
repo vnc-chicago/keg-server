@@ -49,7 +49,7 @@ app.get('/', function(request, response) {
 });
 
 app.post('/init/data', function(request, response) {
-    for(var prop in request.body) {
+    for (var prop in request.body) {
         request.body = prop;
     }
     main.initStats(JSON.parse(request.body));
@@ -57,7 +57,7 @@ app.post('/init/data', function(request, response) {
     response.end();
 });
 app.post('/user/welcome', function(request, response) {
-    for(var prop in request.body) {
+    for (var prop in request.body) {
         request.body = prop;
     }
     main.welcomeUser(JSON.parse(request.body));
@@ -70,7 +70,7 @@ app.post('/user/deny', function(request, response) {
     response.end();
 });
 app.post('/update/flow', function(request, response) {
-    for(var prop in request.body) {
+    for (var prop in request.body) {
         request.body = prop;
     }
     main.updateFlow(JSON.parse(request.body));
@@ -78,7 +78,7 @@ app.post('/update/flow', function(request, response) {
     response.end();
 });
 app.post('/update/amount', function(request, response) {
-    for(var prop in request.body) {
+    for (var prop in request.body) {
         request.body = prop;
     }
     main.updateAmount(JSON.parse(request.body));
@@ -86,7 +86,7 @@ app.post('/update/amount', function(request, response) {
     response.end();
 });
 app.post('/update/temp', function(request, response) {
-    for(var prop in request.body) {
+    for (var prop in request.body) {
         request.body = prop;
     }
     main.updateTemp(JSON.parse(request.body));
@@ -94,7 +94,7 @@ app.post('/update/temp', function(request, response) {
     response.end();
 });
 app.post('/update/keg', function(request, response) {
-    for(var prop in request.body) {
+    for (var prop in request.body) {
         request.body = prop;
     }
     main.updateKeg(JSON.parse(request.body));
@@ -102,7 +102,7 @@ app.post('/update/keg', function(request, response) {
     response.end();
 });
 app.post('/update/stats', function(request, response) {
-    for(var prop in request.body) {
+    for (var prop in request.body) {
         request.body = prop;
     }
     main.updateStats(JSON.parse(request.body));

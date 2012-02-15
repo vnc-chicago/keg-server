@@ -9,6 +9,16 @@ var Config = (function() {
         isDebug : true,
 
         /**
+         * Whether or not has webcam
+         */
+        hasCamera : false,
+
+        /**
+         * Temporary path pictures will be stored in
+         */
+        pictureLocation : '/tmp/',
+
+        /**
          * Path Arduino is connected to
          */
         devicePath : '/dev/ttyACM0',
@@ -37,7 +47,7 @@ var Config = (function() {
          * Path to db
          */
         dbPath : './db/keg.sqlite3',
-        
+
         /**
          * Timeout for duplicate card scans in ms
          */

@@ -15,9 +15,9 @@ var Keg = (function() {
                 _db.close();
                 callback(undefined);
             } else {
-                _db.get('SELECT id, brewer, name, description, amount, loaded FROM Keg ORDER BY loaded DESC', function(error, row) {
-                    if (error) {
-                        _logger.error(error);
+                _db.get('SELECT id, brewer, name, description, amount, loaded FROM Keg ORDER BY loaded DESC', function(error2, row) {
+                    if (error2) {
+                        _logger.error(error2);
                     }
                     _db.close();
                     callback(row);
@@ -26,9 +26,28 @@ var Keg = (function() {
         });
     }
 
+    function updateAmount(pourAmount, callback) {
+        var _db = new sqlite3.Database(Config.dbPath, function(error) {
+            if (error) {
+                _logger.error(error);
+                _db.close();
+                callback(error);
+            } else {
+                _db.run("UPDATE Keg SET amount = amount - ? where id = (select id from Keg order by loaded desc limit 1)", [pourAmount], function(error2) {
+                    if (error2) {
+                        _logger.error(error2);
+                    }
+                    _db.close();
+                    callback(error2);
+                });
+            }
+        });
+    }
+
     return {
         start : init,
-        currentKeg : getCurrentKeg
+        currentKeg : getCurrentKeg,
+        updateAmount : updateAmount
     }
 }());
 module.exports = Keg;

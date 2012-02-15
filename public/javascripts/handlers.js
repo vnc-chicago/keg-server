@@ -71,9 +71,9 @@ function denyUser(data) {
 
 function updateKegFlow(data) {
     //alert("Flow: " + parseInt(data.flow.flow));
-    var flow = parseInt(data.flow.flow);
+    var flow = parseFloat(data.flow.flow);
     if(!isNaN(flow)) {
-        $('#gauge2 .gaugeNeedle').rotate({animateTo: flow});
+        $('#gauge2 .gaugeNeedle').rotate({animateTo: flow * 100});
     }
 }
 
@@ -139,6 +139,8 @@ function updateLastUser(data) {
  * @param data
  */
 function updateAllTimePoursPerPerson(data) {
+    // Flow is done since stats are being updated
+    $('#gauge2 .gaugeNeedle').rotate({animateTo: 0});
     var xAxis = new Array();
     var chartData = new Array();
 
@@ -162,6 +164,8 @@ function updateAllTimePoursPerPerson(data) {
  * @param data
  */
 function updateAllTimePoursPerTime(data) {
+    // Flow is done since stats are being updated
+    $('#gauge2 .gaugeNeedle').rotate({animateTo: 0});
     var xAxis = new Array();
     var chartData = new Array();
 
@@ -185,6 +189,8 @@ function updateAllTimePoursPerTime(data) {
  * @param data
  */
 function updateKegPoursPerTime(data) {
+    // Flow is done since stats are being updated
+    $('#gauge2 .gaugeNeedle').rotate({animateTo: 0});
     var xAxis = new Array();
     var chartData = new Array();
 
@@ -208,6 +214,8 @@ function updateKegPoursPerTime(data) {
  * @param data
  */
 function updateKegPoursPerPerson(data) {
+    // Flow is done since stats are being updated
+    $('#gauge2 .gaugeNeedle').rotate({animateTo: 0});
     var xAxis = new Array();
     var chartData = new Array();
 

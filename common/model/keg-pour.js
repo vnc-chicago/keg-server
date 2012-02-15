@@ -15,9 +15,9 @@ var KegPour = (function() {
                 _db.close();
                 callback(error);
             } else {
-                _db.run('INSERT INTO KegPours (userId, kegId, amount, poured) VALUES(?, ?, ?, strftime("%Y-%m-%d %H:00:00", "now", "localtime"))', [user.badgeId, keg.id, pour], function(error) {
-                    if (error) {
-                        _logger.error(error);
+                _db.run('INSERT INTO KegPours (userId, kegId, amount, poured) VALUES(?, ?, ?, strftime("%Y-%m-%d %H:00:00", "now", "localtime"))', [user.badgeId, keg.id, pour], function(error2) {
+                    if (error2) {
+                        _logger.error(error2);
                     }
                     _db.close();
                     callback(error);
@@ -33,9 +33,9 @@ var KegPour = (function() {
                 _db.close();
                 callback(undefined);
             } else {
-                _db.get('SELECT userId, kegId, amount, poured FROM KegPours ORDER BY poured DESC', function(error, row) {
-                    if (error) {
-                        _logger.error(error);
+                _db.get('SELECT userId, kegId, amount, poured FROM KegPours ORDER BY poured DESC', function(error2, row) {
+                    if (error2) {
+                        _logger.error(error2);
                     }
                     _db.close();
                     callback(row);
