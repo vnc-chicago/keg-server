@@ -96,7 +96,7 @@ function updateKegAmount(amount) {
  */
 function updateKegTemperature(data) {
     var temp = parseInt(data.temp.temp);
-    $('#gauge .gaugeNeedle').rotate({animateTo: temp});
+    $('#gauge .gaugeNeedle').rotate({animateTo: temp * 4});
 }
 
 /**
