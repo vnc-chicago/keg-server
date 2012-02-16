@@ -11,12 +11,6 @@
     width: 50%;
 }
 
-.block {
-    clear: both;
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-
 form {
     padding: 10px;
 }
@@ -27,6 +21,7 @@ fieldset {
     border: 1px solid #666;
     padding: 10px;
 }
+
 legend {
     font-weight: bold;
     padding-left: 10px;
@@ -34,7 +29,10 @@ legend {
 }
 
 label {
-    padding-right: 10px;
     font-weight: bold;
-    vertical-align: middle;
+}
+
+#userAdmin form input[type="submit"], #kegAdmin form input[type="submit"] {
+    margin-top: 10px;
+    margin-left: 368px;
 }

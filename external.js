@@ -49,12 +49,19 @@ app.get('/', function(request, response) {
 });
 
 app.post('/init/data', function(request, response) {
-    for (var prop in request.body) {
-        request.body = prop;
-    }
-    main.initStats(JSON.parse(request.body));
-    response.setHeader("200");
-    response.end();
+    var fullData = '';
+    request.on('data', function(chunk) {
+        fullData += chunk;
+    });
+
+    request.on('end', function() {
+        for (var prop in request.body) {
+            request.body = prop;
+        }
+        main.initStats(JSON.parse(request.body));
+        response.setHeader("200");
+        response.end();
+    });
 });
 app.post('/user/welcome', function(request, response) {
     for (var prop in request.body) {
@@ -121,7 +128,7 @@ app.post('/send/pic', function(request, response) {
         var file = obj.data;
 
         fs.write((Config.externalPictureLocation + picName), file, 'binary', function(error) {
-            if(error) {
+            if (error) {
                 logger.error(error);
             }
         });

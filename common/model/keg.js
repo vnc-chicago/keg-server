@@ -44,10 +44,30 @@ var Keg = (function() {
         });
     }
 
+
+    function _createNew(keg, callback) {
+        var _db = new sqlite3.Database(Config.dbPath, function(error) {
+            if (error) {
+                _logger.error(error);
+                _db.close();
+                callback(error);
+            } else {
+                _db.run('INSERT INTO Keg (brewer, name, description, amount) VALUES (?, ?, ?, ?)', [keg.brewer, keg.name, keg.description, 1984], function(error2) {
+                    if (error2) {
+                        _logger.error(error2);
+                    }
+                    _db.close();
+                    callback(error2);
+                });
+            }
+        });
+    }
+
     return {
         start : init,
         currentKeg : getCurrentKeg,
-        updateAmount : updateAmount
+        updateAmount : updateAmount,
+        createNew : _createNew
     }
 }());
 module.exports = Keg;

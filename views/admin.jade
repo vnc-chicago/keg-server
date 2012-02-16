@@ -3,73 +3,68 @@
         fieldset
             legend User Admin
 
-            .block
-                label First Name
-                input(type="text", name="user[firstName]").input_small
+            label First Name
+            input(type="text", name="user[firstName]", placeholder="Joe").input_full
 
-            .block
-                label Last Name
-                input(type="text", name="user[lastName]").input_small
+            label Last Name
+            input(type="text", name="user[lastName]", placeholder="Smith").input_full
 
-            .block
-                label Please select your Team/Agency
-                select(name="user[affiliation]")
-                    option(value="Administrative") Administrative
-                    option(value="Ad Operations COE") Ad Operations COE
-                    optgroup(label="AOD")
-                        option(value="Activation") Activation
-                        option(value="Brand Relations & Account Planning") Brand Relations & Account Planning
-                        option(value="Emerging Solutions") Emerging Solutions
-                        option(value="Optimization") Optimization
-                        option(value="Platform") Platform
-                        option(value="Planning") Planning
-                        option(value="Leadership") Leadership
-                        option(value="Search - Bid Strategy") Search - Bid Strategy
-                        option(value="Search - Brand Relations") Search - Brand Relations
-                        option(value="Search - Creative Services") Search - Creative Services
-                        option(value="Search - Offshore") Search - Offshore
-                        option(value="Social") Social
-                    optgroup(label="Engineering")
-                        option(value="Benchtools") Benchtools
-                        option(value="COD") COD
-                        option(value="Data") Data
-                        option(value="IOD") IOD
-                    option(value="Finance") Finance
-                    option(value="HR") HR
-                    option(value="Marketing") Marketing
-                    option(value="Product Management") Product Management
-                    option(value="Program Management") Program Management
-                    option(value="The Pool") The Pool
-                    option(value="Ventures/Partnerships") Ventures/Partnerships
-                    optgroup(label="VivaKi Agency")
-                        option(value="Digitas") Digitas
-                        option(value="ZenithOptimedia") ZenithOptimedia
-                        option(value="Performics") Performics
-                        option(value="Starcom MediaVest") Starcom MediaVest
-                        option(value="Razorfish") Razorfish
+            label Please select your Team/Agency
+            select(name="user[affiliation]").input_full
+                option(value="Administrative") Administrative
+                option(value="Ad Operations COE") Ad Operations COE
+                optgroup(label="AOD")
+                    option(value="Activation") Activation
+                    option(value="Brand Relations & Account Planning") Brand Relations & Account Planning
+                    option(value="Emerging Solutions") Emerging Solutions
+                    option(value="Optimization") Optimization
+                    option(value="Platform") Platform
+                    option(value="Planning") Planning
+                    option(value="Leadership") Leadership
+                    option(value="Search - Bid Strategy") Search - Bid Strategy
+                    option(value="Search - Brand Relations") Search - Brand Relations
+                    option(value="Search - Creative Services") Search - Creative Services
+                    option(value="Search - Offshore") Search - Offshore
+                    option(value="Social") Social
+                optgroup(label="Engineering")
+                    option(value="Benchtools") Benchtools
+                    option(value="COD") COD
+                    option(value="Data") Data
+                    option(value="IOD") IOD
+                option(value="Finance") Finance
+                option(value="HR") HR
+                option(value="Marketing") Marketing
+                option(value="Product Management") Product Management
+                option(value="Program Management") Program Management
+                option(value="The Pool") The Pool
+                option(value="Ventures/Partnerships") Ventures/Partnerships
+                optgroup(label="VivaKi Agency")
+                    option(value="Digitas") Digitas
+                    option(value="ZenithOptimedia") ZenithOptimedia
+                    option(value="Performics") Performics
+                    option(value="Starcom MediaVest") Starcom MediaVest
+                    option(value="Razorfish") Razorfish
 
-            .block
-                input(type="submit", value="Create")
+            label Twitter (optional)
+            input(type="text", name="user[twitter").input_full
+              
+            input(type="submit", value="Create")
 
 #kegAdmin
     form(method="POST", action="/create/keg")
         fieldset
             legend Keg Admin
 
-            .block
-                label Brewer
-                input(type="text", name="keg[brewer]").input_small
+            label Brewer
+            input(type="text", name="keg[brewer]").input_full
 
-            .block
-                label Name
-                input(type="text", name="keg[name]").input_small
+            label Name
+            input(type="text", name="keg[name]").input_full
 
-            .block
-                label Description
-                input(type="text", name="keg[description]").input_small
+            label Description
+            input(type="text", name="keg[description]").input_full
 
-            .block
-                input(type="submit", value="Create")
+            input(type="submit", value="Create")
 
 #promptForCard
     p Please scan card

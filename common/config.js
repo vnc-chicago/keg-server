@@ -6,7 +6,7 @@ var Config = (function() {
         /**
          * Whether or not to simulate Arduino messages
          */
-        isDebug : true,
+        isDebug : false,
 
         /**
          * Whether or not debugging admin, only matters if isDebug is true

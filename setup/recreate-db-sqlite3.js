@@ -4,7 +4,7 @@
 
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('./db/keg.sqlite3');
-var isDebug = true;
+var isDebug = false;
 var isInsertPours = false;
 
 db.serialize(function() {

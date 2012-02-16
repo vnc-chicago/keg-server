@@ -17,6 +17,8 @@ var Main = (function () {
     var _firstName;
     var _lastName;
     var _affiliation;
+    var _currentKegLoaded = false;
+    var _lastUserLoaded = false;
 
     function init(app, logger) {
         _logger = logger;
@@ -40,15 +42,20 @@ var Main = (function () {
                         if (typeof user !== 'undefined') {
                             _logger.debug('Last User: ' + user.firstName + ' ' + user.lastName);
                             _lastUser = user;
-                            initStats();
                         }
+                        _lastUserLoaded = true;
+                        initStats();
                     });
+                } else {
+                    _lastUserLoaded = true;
+                    initStats();
                 }
             });
 
             Keg.start(logger);
             Keg.currentKeg(function(keg) {
                 _currentKeg = keg;
+                _currentKegLoaded = true;
                 initStats();
             });
 
@@ -58,7 +65,7 @@ var Main = (function () {
     }
 
     function initStats() {
-        if(typeof _currentKeg !== 'undefined' && typeof _lastUser !== 'undefined') {
+        if(_currentKegLoaded && _lastUserLoaded) {
             var stats = {
                 lastUser : _lastUser,
                 currentKeg : _currentKeg
@@ -218,10 +225,12 @@ var Main = (function () {
 
     function _createKeg(keg) {
         // Store keg details
-
-
-        // Push keg details to web
-        WebIO.updateKeg(keg);
+        Keg.createNew(keg, function(error) {
+            if(!error) {
+                // Push keg details to web
+                WebIO.updateKeg(keg);
+            }
+        });
     }
 
     function compileAndPushStats() {
