@@ -109,7 +109,7 @@ var KegPour = (function() {
         createPour : createNewPour,
         getLast : getLastPour,
         getAllTimePourAmountForUser : getPourAmountForUser,
-        determineIfFirstPour : isFirstPour,
+        isFirstPour : isFirstPour,
         getNumberOfPoursForUserToday : _getNumberOfPoursForUserToday
     };
 }());

@@ -40,6 +40,7 @@ var Main = (function () {
                         if (typeof user !== 'undefined') {
                             _logger.debug('Last User: ' + user.firstName + ' ' + user.lastName);
                             _lastUser = user;
+                            initStats();
                         }
                     });
                 }
@@ -48,15 +49,22 @@ var Main = (function () {
             Keg.start(logger);
             Keg.currentKeg(function(keg) {
                 _currentKeg = keg;
-
-                if (typeof keg !== 'undefined') {
-                    WebIO.updateKeg(keg);
-                }
+                initStats();
             });
 
             Stats.start(logger);
             compileAndPushStats();
         }, 5000);
+    }
+
+    function initStats() {
+        if(typeof _currentKeg !== 'undefined' && typeof _lastUser !== 'undefined') {
+            var stats = {
+                lastUser : _lastUser,
+                currentKeg : _currentKeg
+            };
+            WebIO.pushInitialData(stats);
+        }
     }
 
     function setIsUserCreation(value) {
@@ -105,17 +113,20 @@ var Main = (function () {
             // See if tag exists
             User.byTag(tag, function(user) {
                 if (typeof user === 'undefined') {
-                    var user = {
+                    var userObject = {
                         firstName : _firstName,
                         lastName : _lastName,
                         affiliation : _affiliation,
                         badgeId : tag
                     };
+                    _firstName = '';
+                    _lastName = '';
+                    _affiliation = '';
                     if (Config.hasCamera) {
                         WebIO.promptForPic();
-                        takePicture(user);
+                        takePicture(userObject);
                     } else {
-                        createUser(user);
+                        createUser(userObject, false);
                     }
                 } else {
                     WebIO.createUserFail('Badge is already assigned to someone');
@@ -156,11 +167,11 @@ var Main = (function () {
         WebIO.updateTemp(temp);
     }
 
-    function promptUser(user) {
+    function _promptUser(user) {
         _firstName = user.firstName;
         _lastName = user.lastName;
         _affiliation = user.affiliation;
-        WebIO.promptUser();
+        WebIO.promptForCard();
     }
 
     function takePicture(user) {
@@ -175,26 +186,37 @@ var Main = (function () {
     }
 
     function createUser(user, hasPicture) {
-        // Store user information
-        User.save(user, function(error) {
-            if (typeof error !== 'undefined') {
-                if (hasPicture) {
-                    // Push picture to web
-                    WebIO.sendPicture(user.badgeId + '.png', function(error) {
-                        if (!error) {
-                            WebIO.createUserSuccess();
-                        }
-                    });
+        // Ensure user information is there
+        if (user.hasOwnProperty('badgeId') && user.badgeId != '' &&
+            user.hasOwnProperty('firstName') && user.firstName != '' &&
+            user.hasOwnProperty('lastName') && user.lastName != '' &&
+            user.hasOwnProperty('affiliation') && user.affiliation != '') {
+
+            // Store user information
+            User.save(user, function(error) {
+                if (typeof error !== 'undefined') {
+                    if (hasPicture) {
+                        // Push picture to web
+                        WebIO.sendPicture(user.badgeId, function(error2) {
+                            if (!error2) {
+                                WebIO.createUserSuccess();
+                            } else {
+                                _logger.error(error2);
+                                WebIO.createUserFail(error2);
+                            }
+                        });
+                    } else {
+                        WebIO.createUserSuccess();
+                    }
                 } else {
-                    WebIO.createUserSuccess();
+                    _logger.error(error);
+                    WebIO.createUserFail(error);
                 }
-            } else {
-                WebIO.createUserFail(error);
-            }
-        });
+            });
+        }
     }
 
-    function createKeg(keg) {
+    function _createKeg(keg) {
         // Store keg details
 
 
@@ -203,7 +225,7 @@ var Main = (function () {
     }
 
     function compileAndPushStats() {
-        if(typeof _currentKeg !== 'undefined') {
+        if (typeof _currentKeg !== 'undefined') {
             WebIO.updateKeg(_currentKeg);
         }
 
@@ -230,8 +252,8 @@ var Main = (function () {
         setIsUserCreation : setIsUserCreation,
         getIsUserCreation : getIsUserCreation,
         start : init,
-        promptUser : promptUser,
-        createKeg : createKeg
+        promptUser : _promptUser,
+        createKeg : _createKeg
     }
 }());
 module.exports = Main;

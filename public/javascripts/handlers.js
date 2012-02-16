@@ -74,6 +74,7 @@ function updateKegFlow(data) {
     var flow = parseFloat(data.flow.flow);
     if(!isNaN(flow)) {
         $('#gauge2 .gaugeNeedle').rotate({animateTo: flow * 100});
+    $('#gauge2 .gaugeGlass').rotate({animateTo: flow * 100});
     }
 }
 
@@ -97,6 +98,7 @@ function updateKegAmount(amount) {
 function updateKegTemperature(data) {
     var temp = parseInt(data.temp.temp);
     $('#gauge .gaugeNeedle').rotate({animateTo: temp * 4});
+    $('#gauge .gaugeGlass').rotate({animateTo: temp * 4});
 }
 
 /**
@@ -141,6 +143,7 @@ function updateLastUser(data) {
 function updateAllTimePoursPerPerson(data) {
     // Flow is done since stats are being updated
     $('#gauge2 .gaugeNeedle').rotate({animateTo: 0});
+    $('#gauge2 .gaugeGlass').rotate({animateTo: 0});
     var xAxis = new Array();
     var chartData = new Array();
 
@@ -166,6 +169,7 @@ function updateAllTimePoursPerPerson(data) {
 function updateAllTimePoursPerTime(data) {
     // Flow is done since stats are being updated
     $('#gauge2 .gaugeNeedle').rotate({animateTo: 0});
+    $('#gauge2 .gaugeGlass').rotate({animateTo: 0});
     var xAxis = new Array();
     var chartData = new Array();
 
@@ -191,6 +195,7 @@ function updateAllTimePoursPerTime(data) {
 function updateKegPoursPerTime(data) {
     // Flow is done since stats are being updated
     $('#gauge2 .gaugeNeedle').rotate({animateTo: 0});
+    $('#gauge2 .gaugeGlass').rotate({animateTo: 0});
     var xAxis = new Array();
     var chartData = new Array();
 
@@ -216,6 +221,7 @@ function updateKegPoursPerTime(data) {
 function updateKegPoursPerPerson(data) {
     // Flow is done since stats are being updated
     $('#gauge2 .gaugeNeedle').rotate({animateTo: 0});
+    $('#gauge2 .gaugeGlass').rotate({animateTo: 0});
     var xAxis = new Array();
     var chartData = new Array();
 

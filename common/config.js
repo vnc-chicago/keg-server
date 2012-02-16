@@ -9,14 +9,29 @@ var Config = (function() {
         isDebug : true,
 
         /**
+         * Whether or not debugging admin, only matters if isDebug is true
+         */
+        isAdminDebug : false,
+
+        /**
          * Whether or not has webcam
          */
         hasCamera : false,
 
         /**
+         * Type of image to take
+         */
+        pictureType : '.png',
+
+        /**
          * Temporary path pictures will be stored in
          */
-        pictureLocation : '/tmp/',
+        localPictureLocation : '/tmp/',
+
+        /**
+         * Path user images will be stored in relative to caller file's current location
+         */
+        externalPictureLocation : './public/images/users/',
 
         /**
          * Path Arduino is connected to

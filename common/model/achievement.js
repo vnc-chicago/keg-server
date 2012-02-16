@@ -1,3 +1,5 @@
+var KegPours = require('./keg-pour');
+
 var Achievement = (function() {
     var _logger;
 
@@ -60,12 +62,12 @@ var Achievement = (function() {
 
     function isPartyStarter() {
         // First in day
-        KegPours.determineIfFirstPour;
+        KegPours.isFirstPour();
     }
 
     function isTrifecta(user) {
         // Checks in 3 times in day
-        KegPours.getNumberOfPoursForUserToday;
+        KegPours.getNumberOfPoursForUserToday(user);
     }
 
     function isGoingLong(user) {

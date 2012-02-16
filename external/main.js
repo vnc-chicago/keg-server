@@ -17,6 +17,10 @@ exports.start = function(socketsInstance, loggerInstance) {
 exports.initStats = function(data) {
     currentKeg = data.currentKeg;
     lastUser = data.lastUser;
+    clients.forEach(function(client) {
+        _emitUpdateKeg(currentKeg, client);
+        _emitUpdateLastUser(client);
+    })
 };
 
 exports.welcomeUser = function(user) {

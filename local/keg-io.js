@@ -73,24 +73,28 @@ var KegIO = (function() {
 
     function fakeTag() {
         setInterval(function() {
-            fakePour = 0;
-            var randomUser = Math.floor(Math.random() * 5);
             var RFID = 'DENYTAG012';
-            switch (randomUser) {
-                case 0:
-                    RFID = '0123456789';
-                    break;
-                case 1:
-                    RFID = '1234567890';
-                    break;
-                case 2:
-                    RFID = '2345678901';
-                    break;
-                case 3:
-                    RFID = '3456789012';
-                    break;
-                default:
-                    break;
+            if (Config.isAdminDebug) {
+                RFID = randomTag();
+            } else {
+                fakePour = 0;
+                var randomUser = Math.floor(Math.random() * 5);
+                switch (randomUser) {
+                    case 0:
+                        RFID = '0123456789';
+                        break;
+                    case 1:
+                        RFID = '1234567890';
+                        break;
+                    case 2:
+                        RFID = '2345678901';
+                        break;
+                    case 3:
+                        RFID = '3456789012';
+                        break;
+                    default:
+                        break;
+                }
             }
             parseMessage('**' + protocol.TAG + '_' + RFID + '**');
         }, 25000);
@@ -109,6 +113,16 @@ var KegIO = (function() {
             parseMessage('**' + protocol.FLOW + '_END**');
             parseMessage('**' + protocol.POUR + '_' + fakePour + '**');
         }
+    }
+
+    function randomTag() {
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        var result = '';
+        for (var i = 0; i < 10; i++) {
+            var index = Math.floor((Math.random() * chars.length));
+            result += chars.charAt(index);
+        }
+        return result;
     }
 
     return {

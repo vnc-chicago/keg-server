@@ -33,6 +33,13 @@ var WebIO = (function() {
         io.sockets.on('connection', _onConnection);
     }
 
+    function pushInitialStats(stats) {
+        var data = JSON.stringify(stats);
+        var request = http.request(generateDataPost('/init/data', data));
+        request.write(data);
+        request.end();
+    }
+
     function promptForCard() {
         _client.emit('promptForCard');
     }
@@ -42,13 +49,18 @@ var WebIO = (function() {
     }
 
     function pushPicture(picName, callback) {
-        fs.readFile(Config.pictureLocation + picName, 'binary', function(error, file) {
+        fs.readFile(Config.localPictureLocation + picName + Config.pictureType, 'binary', function(error, file) {
             if(error) {
                 _client.emit('createFailure', {error: 'Picture failed to transfer'});
                 callback(error);
             } else {
-                var request = http.request(generatePicturePost());
-                request.write(file, 'binary');
+                var obj = {
+                    picName : (picName + Config.pictureType),
+                    data : file
+                };
+                var data = JSON.stringify(obj);
+                var request = http.request(generateDataPost('/send/pic', data));
+                request.write(data);
                 request.end();
             }
         })
@@ -107,7 +119,7 @@ var WebIO = (function() {
     }
 
     function generateDataPost(path, data) {
-        var postOptions = {
+        return {
             host: Config.externalServerUrl,
             port: Config.externalPortListener,
             path: path,
@@ -117,19 +129,6 @@ var WebIO = (function() {
                 'Content-Length': data.length
             }
         };
-        return postOptions;
-    }
-
-    function generatePicturePost() {
-        var postOptions = {
-            host: Config.externalServerUrl,
-            port: Config.externalPortListener,
-            path: '/send/pic',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'image/png'
-            }
-        }
     }
 
     function _onConnection(client) {
@@ -142,6 +141,7 @@ var WebIO = (function() {
 
     return {
         start : init,
+        pushInitialData : pushInitialStats,
         promptForCard : promptForCard,
         promptForPic : promptForPicture,
         createUserSuccess : createSuccess,

@@ -4,7 +4,7 @@ var Config = require('./config');
 var eventEmitter = require('events').EventEmitter;
 
 var PROPERTIES = {
-    location : Config.pictureLocation,
+    location : Config.localPictureLocation,
     format : '.png',
     preArgs : ["-r", "200x300", "--no-banner", "--png", "--save"]
 };

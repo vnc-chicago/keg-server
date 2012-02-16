@@ -109,6 +109,24 @@ app.post('/update/stats', function(request, response) {
     response.setHeader("200");
     response.end();
 });
+app.post('/send/pic', function(request, response) {
+    var fullData = '';
+    request.on('data', function(chunk) {
+        fullData += chunk;
+    });
+
+    request.on('end', function() {
+        var obj = JSON.parse(fullData);
+        var picName = obj.picName;
+        var file = obj.data;
+
+        fs.write((Config.externalPictureLocation + picName), file, 'binary', function(error) {
+            if(error) {
+                logger.error(error);
+            }
+        });
+    });
+});
 
 app.listen(Config.externalPortRunner);
 
