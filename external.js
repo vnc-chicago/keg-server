@@ -22,7 +22,7 @@ var app = express.createServer();
 log4js.addAppender(log4js.consoleAppender);
 log4js.addAppender(log4js.fileAppender('logs/app.log'));
 
-var logger = log4js.getLogger('default');
+var logger = log4js.getLogger('external');
 
 app.configure(function() {
     app.set('views', __dirname + '/views');
@@ -119,10 +119,12 @@ app.post('/update/stats', function(request, response) {
 app.post('/send/pic', function(request, response) {
     var fullData = '';
     request.on('data', function(chunk) {
+        logger.debug('Pic data received');
         fullData += chunk;
     });
 
     request.on('end', function() {
+        logger.debug('End pic data');
         var obj = JSON.parse(fullData);
         var picName = obj.picName;
         var file = obj.data;
@@ -132,6 +134,9 @@ app.post('/send/pic', function(request, response) {
                 logger.error(error);
             }
         });
+
+        response.setHeader('200');
+        response.end();
     });
 });
 

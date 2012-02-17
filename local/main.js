@@ -183,7 +183,7 @@ var Main = (function () {
 
     function takePicture(user) {
         setTimeout(function() {
-            logger.debug("Take Picture: " + user.name);
+            _logger.debug("Take Picture: " + user.firstName + user.lastName);
             var cam = new Camera();
             cam.snap(user.badgeId);
             cam.on('done', function() {

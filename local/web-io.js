@@ -34,10 +34,10 @@ var WebIO = (function() {
     }
 
     function pushInitialStats(stats) {
-        var data = JSON.stringify(stats);
+        /*var data = JSON.stringify(stats);
         var request = http.request(generateDataPost('/init/data', data));
         request.write(data);
-        request.end();
+        request.end();*/
     }
 
     function promptForCard() {
@@ -51,9 +51,11 @@ var WebIO = (function() {
     function pushPicture(picName, callback) {
         fs.readFile(Config.localPictureLocation + picName + Config.pictureType, 'binary', function(error, file) {
             if(error) {
+                _logger.error(error);
                 _client.emit('createFailure', {error: 'Picture failed to transfer'});
                 callback(error);
             } else {
+                _logger.debug('Pic Name: ' + picName);
                 var obj = {
                     picName : (picName + Config.pictureType),
                     data : file

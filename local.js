@@ -23,7 +23,7 @@ var app = express.createServer();
 log4js.addAppender(log4js.consoleAppender);
 log4js.addAppender(log4js.fileAppender('logs/app.log'));
 
-var logger = log4js.getLogger('default');
+var logger = log4js.getLogger('local');
 
 app.configure(function() {
     app.set('views', __dirname + '/views');

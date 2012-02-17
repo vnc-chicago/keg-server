@@ -16,7 +16,7 @@ var Config = (function() {
         /**
          * Whether or not has webcam
          */
-        hasCamera : false,
+        hasCamera : true,
 
         /**
          * Type of image to take
