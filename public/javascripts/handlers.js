@@ -71,7 +71,7 @@ function denyUser(data) {
 
 function updateKegFlow(data) {
     //alert("Flow: " + parseInt(data.flow.flow));
-    var flow = parseFloat(data.flow.flow);
+    var flow = formatNumber(data.flow.flow, false);
     if(!isNaN(flow)) {
         $('#gauge2 .gaugeNeedle').rotate({animateTo: flow * 100});
     $('#gauge2 .gaugeGlass').rotate({animateTo: flow * 100});
@@ -83,9 +83,9 @@ function updateKegAmount(amount) {
 
     var kegAmount;
     if(amount.hasOwnProperty("amount")) {
-        kegAmount = parseInt(amount.amount);
+        kegAmount = formatNumber(amount.amount, true);
     } else {
-        kegAmount = parseInt(amount);
+        kegAmount = formatNumber(amount, true);
     }
     $('#kegAmount').append(kegAmount + "oz");
 }
@@ -96,7 +96,7 @@ function updateKegAmount(amount) {
  * @param data
  */
 function updateKegTemperature(data) {
-    var temp = parseInt(data.temp.temp);
+    var temp = formatNumber(data.temp.temp, true);
     $('#gauge .gaugeNeedle').rotate({animateTo: temp * 4});
     $('#gauge .gaugeGlass').rotate({animateTo: temp * 4});
 }
@@ -147,11 +147,13 @@ function updateAllTimePoursPerPerson(data) {
     var xAxis = new Array();
     var chartData = new Array();
 
+    var nameArr = $('#userName').html().split(' ');
+    var name = nameArr[1] + ' ' + nameArr[2];
 
     for (var i = 0; i < data.data.length; i++) {
         var row = data.data[i];
         xAxis.push(row.name);
-        chartData.push(row.totalAmount);
+        chartData.push(formatNumber(row.totalAmount, true));
     }
     allTimePoursPerPersonCategories = xAxis;
     allTimePoursPerPersonSeries = chartData;
@@ -177,7 +179,7 @@ function updateAllTimePoursPerTime(data) {
     for (var i = 0; i < data.data.length; i++) {
         var row = data.data[i];
         xAxis.push(formatTime(row.timePoured));
-        chartData.push(row.totalAmount);
+        chartData.push(formatNumber(row.totalAmount, true));
     }
     allTimePoursPerTimeCategories = xAxis;
     allTimePoursPerTimeSeries = chartData;
@@ -203,7 +205,7 @@ function updateKegPoursPerTime(data) {
     for (var i = 0; i < data.data.length; i++) {
         var row = data.data[i];
         xAxis.push(formatTime(row.timePoured));
-        chartData.push(row.totalAmount);
+        chartData.push(formatNumber(row.totalAmount, true));
     }
     currentKegPoursPerTimeCategories = xAxis;
     currentKegPoursPerTimeSeries = chartData;
@@ -223,18 +225,30 @@ function updateKegPoursPerPerson(data) {
     $('#gauge2 .gaugeNeedle').rotate({animateTo: 0});
     $('#gauge2 .gaugeGlass').rotate({animateTo: 0});
     var xAxis = new Array();
-    var chartData = new Array();
+    var totalAmounts = new Array();
+    var pours = new Array();
 
+    var nameArr = $('#userName').html().split(' ');
+    var name = nameArr[1] + ' ' + nameArr[2];
 
     for (var i = 0; i < data.data.length; i++) {
         var row = data.data[i];
         xAxis.push(row.name);
-        chartData.push(row.totalAmount);
+        totalAmounts.push(formatNumber(row.totalAmount, true));
+        pours.push(formatNumber(row.pours, true));
     }
     currentKegPoursPerPersonCategories = xAxis;
-    currentKegPoursPerPersonSeries = chartData;
+    currentKegPoursPerPersonSeries = totalAmounts;
 
     initializeCharts();
+}
+
+function formatNumber(value, toRound) {
+    var result = parseFloat(value);
+    if(toRound) {
+        result = Math.round(result);
+    }
+    return result;
 }
 
 function formatTime(time) {

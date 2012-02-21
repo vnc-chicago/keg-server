@@ -7,6 +7,8 @@ var User = require('../common/model/user');
 var Keg = require('../common/model/keg');
 var KegPour = require('../common/model/keg-pour');
 var Stats = require('../common/model/stats');
+var Achievement = require('../common/model/achievement');
+var UserAchievement = require('../common/model/user-achievement');
 
 var Main = (function () {
     var _logger;
@@ -40,7 +42,6 @@ var Main = (function () {
                 if (typeof pour !== 'undefined' && pour.hasOwnProperty('userId')) {
                     User.byTag(pour.userId, function(user) {
                         if (typeof user !== 'undefined') {
-                            _logger.debug('Last User: ' + user.firstName + ' ' + user.lastName);
                             _lastUser = user;
                         }
                         _lastUserLoaded = true;
@@ -61,6 +62,10 @@ var Main = (function () {
 
             Stats.start(logger);
             compileAndPushStats();
+
+            Achievement.start(logger);
+            UserAchievement.start(logger);
+
         }, 5000);
     }
 
@@ -98,6 +103,11 @@ var Main = (function () {
                         lastUserIsCurrentUser = _lastUser.badgeId == user.badgeId;
                         diff = now - _lastUser.timeStamp;
                     }
+
+                    _logger.debug('Last user valid: ' + lastUserValid);
+                    _logger.debug('Last is current user: ' + lastUserIsCurrentUser);
+                    _logger.debug('Diff: ' + diff);
+                    _logger.debug('Typeof last user: ' + (typeof _lastUser));
 
                     if ((lastUserValid && lastUserIsCurrentUser && diff > Config.scanTimeout) || typeof _lastUser === 'undefined' || !lastUserIsCurrentUser) {
                         // Store in _currentUser
@@ -153,20 +163,29 @@ var Main = (function () {
     function handlePour(pour) {
         if (typeof _currentUser != 'undefined') {
             // Update current user number pours
-            User.incrementPour(_currentUser, function() {
-                // Update KegPour with new pour
-                KegPour.createPour(_currentUser, _currentKeg, pour, function() {
-                    // Update Keg with new amount
-                    Keg.updateAmount(pour, function() {
-                        Keg.currentKeg(function(keg) {
-                            _currentKeg = keg;
-                            compileAndPushStats();
+            User.incrementPour(_currentUser, function(error, user) {
+                if(error) {
+                    compileAndPushStats();
+                } else {
+                    _currentUser = user;
+                    // Update KegPour with new pour
+                    KegPour.createPour(_currentUser, _currentKeg, pour, function() {
+                        // Update Keg with new amount
+                        Keg.updateAmount(pour, function() {
+                            Keg.currentKeg(function(keg) {
+                                _currentKeg = keg;
+                                Achievement.getAchievementsEarned(_currentUser, function(achievements) {
+                                    UserAchievement.saveAchievements(_currentUser, achievements);
+                                    WebIO.pushAchievements(achievements);
+                                    // Push new stats to web
+                                    compileAndPushStats();
+                                });
+                            });
                         });
                     });
-                });
+                }
             });
         }
-        // Push new stats to web
     }
 
     function handleTemp(temp) {

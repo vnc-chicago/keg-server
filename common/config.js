@@ -6,7 +6,7 @@ var Config = (function() {
         /**
          * Whether or not to simulate Arduino messages
          */
-        isDebug : false,
+        isDebug : true,
 
         /**
          * Whether or not debugging admin, only matters if isDebug is true
@@ -16,7 +16,7 @@ var Config = (function() {
         /**
          * Whether or not has webcam
          */
-        hasCamera : true,
+        hasCamera : false,
 
         /**
          * Type of image to take

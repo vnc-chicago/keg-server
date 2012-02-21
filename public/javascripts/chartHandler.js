@@ -1,8 +1,9 @@
 var charts = [showCurrentKegPoursPerPerson, showCurrentKegPoursPerTime, showAllTimePoursPerPerson, showAllTimePoursPerTime];
 var currentChart = 0;
+var currentChartDisplay;
 var chartsInitialized = false;
 var chartWidth = 460;
-var ROTATE_INTERVAL = 5000;
+var ROTATE_INTERVAL = 15000;
 
 var currentKegPoursPerTime;
 var currentKegPoursPerPerson;
@@ -46,7 +47,7 @@ function rotateCharts() {
 }
 
 function showCurrentKegPoursPerPerson() {
-    currentKegPoursPerPerson = new Highcharts.Chart({
+    currentChartDisplay = currentKegPoursPerPerson = new Highcharts.Chart({
         chart : {
             renderTo : 'chartSection',
             type : 'column',
@@ -69,8 +70,8 @@ function showCurrentKegPoursPerPerson() {
                 data : currentKegPoursPerPersonSeries
             }
         ],
-        tooltip : {            formatter : function() {
-            return this.x + ': ' + this.y;
+        tooltip : { formatter : function() {
+            return this.x + ': ' + this.y + 'oz';
         }
         },
         credits : {
@@ -86,7 +87,7 @@ function showCurrentKegPoursPerPerson() {
 }
 
 function showCurrentKegPoursPerTime() {
-    currentKegPoursPerTime = new Highcharts.Chart({
+    currentChartDisplay = currentKegPoursPerTime = new Highcharts.Chart({
         chart : {
             renderTo : 'chartSection',
             defaultSeriesType : 'line',
@@ -109,9 +110,8 @@ function showCurrentKegPoursPerTime() {
                 data : currentKegPoursPerTimeSeries
             }
         ],
-        tooltip : {
-            formatter : function() {
-                return this.x + ': ' + this.y;
+        tooltip : { formatter : function() {
+                return this.x + ': ' + this.y + 'oz';
             }
         },
         credits : {
@@ -127,7 +127,7 @@ function showCurrentKegPoursPerTime() {
 }
 
 function showAllTimePoursPerPerson() {
-    allTimePoursPerPerson = new Highcharts.Chart({
+    currentChartDisplay = allTimePoursPerPerson = new Highcharts.Chart({
         chart : {
             renderTo : 'chartSection',
             type : 'column',
@@ -150,9 +150,8 @@ function showAllTimePoursPerPerson() {
                 data : allTimePoursPerPersonSeries
             }
         ],
-        tooltip : {
-            formatter : function() {
-                return this.x + ': ' + this.y;
+        tooltip : { formatter : function() {
+                return this.x + ': ' + this.y + 'oz';
             }
         },
         credits : {
@@ -168,7 +167,7 @@ function showAllTimePoursPerPerson() {
 }
 
 function showAllTimePoursPerTime() {
-    allTimePoursPerTime = new Highcharts.Chart({
+    currentChartDisplay = allTimePoursPerTime = new Highcharts.Chart({
         chart : {
             renderTo : 'chartSection',
             defaultSeriesType : 'line',
@@ -191,9 +190,8 @@ function showAllTimePoursPerTime() {
                 data : allTimePoursPerTimeSeries
             }
         ],
-        tooltip : {
-            formatter : function() {
-                return this.x + ': ' + this.y;
+        tooltip : { formatter : function() {
+                return this.x + ': ' + this.y + 'oz';
             }
         },
         credits : {
@@ -209,6 +207,9 @@ function showAllTimePoursPerTime() {
 }
 
 function resizeChart(chart) {
+    if(typeof chart === 'undefined') {
+        chart = currentChartDisplay;
+    }
     chart.setSize($('#chartSection').width(), $('#chartSection').height(), true);
 }
 

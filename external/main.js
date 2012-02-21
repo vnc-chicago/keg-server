@@ -15,8 +15,29 @@ exports.start = function(socketsInstance, loggerInstance) {
 };
 
 exports.initStats = function(data) {
-    currentKeg = data.currentKeg;
-    lastUser = data.lastUser;
+    if(data.currentKeg !== '') {
+        currentKeg = data.currentKeg;
+    } else {
+        currentKeg = {
+            brewer: '',
+            name: '',
+            loaded: '',
+            description: '',
+            amount: 0
+        }
+    }
+    if(data.lastUser !== '') {
+        lastUser = data.lastUser;
+    } else {
+        lastUser = {
+            firstName: '',
+            lastName: '',
+            affiliation: '',
+            joined: '',
+            totalPours: '',
+            path: ''
+        }
+    }
     clients.forEach(function(client) {
         _emitUpdateKeg(currentKeg, client);
         _emitUpdateLastUser(client);
@@ -114,8 +135,9 @@ function _formatPourPerTime(data) {
     var result = new Array();
     for(var obj in data) {
         result.push({
-            "timePoured" : obj,
-            "totalAmount" : data[obj]
+            timePoured : obj,
+            totalAmount : data[obj]['totalAmount'],
+            pours: data[obj]['pours']
         });
     }
     result.sort(function(a, b) {
@@ -128,8 +150,9 @@ function _formatPourPerPerson(data) {
     var result = new Array();
     for(var obj in data) {
         result.push({
-            "name" : obj,
-            "totalAmount" : data[obj]
+            name : obj,
+            totalAmount : data[obj]['totalAmount'],
+            pours: data[obj]['pours']
         });
     }
     result.sort(function(a, b) {

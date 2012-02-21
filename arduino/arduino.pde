@@ -19,6 +19,7 @@ DeviceAddress temp1Address;
 #define FLOW_IN_PIN 2 
 #define FLOW_SAMPLE_RATE 500 // Define a sample rate to measure flow in ms, currently take a measure every .5 sec
 #define IDLE_COUNT 10 // Amount of time to wait in seconds to time out pour
+#define CONVERSION 0.281783523
 int lastFlow = 0;
 int lastPour = 0;
 boolean isInitialTry = true;
@@ -134,7 +135,7 @@ void openSolenoid() {
 
 void measureFlow() {
   // Convert our pulse frequency to a oz/s and store in lastFlow
-  lastFlow = ((flow * 60) / 7.5);
+  lastFlow = ((flow * 60) / 7.5) * CONVERSION;
   flow = 0;
 
   if(lastFlow != 0) {    
@@ -152,7 +153,7 @@ void pourHandler() {
   while(idleCount < IDLE_COUNT) {
 
     // Convert our pulse frequency to a oz/s and store in lastFlow
-    lastFlow = ((flow * 60) / 7.5);
+    lastFlow = ((flow * 60) / 7.5) * CONVERSION;
     flow = 0;
  
     if(lastFlow == 0) {

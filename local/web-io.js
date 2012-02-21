@@ -34,10 +34,16 @@ var WebIO = (function() {
     }
 
     function pushInitialStats(stats) {
-        /*var data = JSON.stringify(stats);
+        if(typeof stats.currentKeg === 'undefined') {
+            stats.currentKeg = '';
+        }
+        if(typeof stats.lastUser === 'undefined') {
+            stats.lastUser = '';
+        }
+        var data = JSON.stringify(stats);
         var request = http.request(generateDataPost('/init/data', data));
         request.write(data);
-        request.end();*/
+        request.end();
     }
 
     function promptForCard() {
@@ -120,6 +126,13 @@ var WebIO = (function() {
         request.end();
     }
 
+    function pushAchievements(achievements) {
+        var data = JSON.stringify(achievements);
+        var request = http.request(generateDataPost('/show/achievements', data));
+        request.write(data);
+        request.end();
+    }
+
     function generateDataPost(path, data) {
         return {
             host: Config.externalServerUrl,
@@ -154,7 +167,8 @@ var WebIO = (function() {
         updateTemp : updateTemp,
         updateKeg : updateKeg,
         updateStats : updateStats,
-        sendPicture : pushPicture
+        sendPicture : pushPicture,
+        pushAchievements: pushAchievements
     }
 
 }());

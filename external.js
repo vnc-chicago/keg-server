@@ -49,19 +49,12 @@ app.get('/', function(request, response) {
 });
 
 app.post('/init/data', function(request, response) {
-    var fullData = '';
-    request.on('data', function(chunk) {
-        fullData += chunk;
-    });
-
-    request.on('end', function() {
-        for (var prop in request.body) {
-            request.body = prop;
-        }
-        main.initStats(JSON.parse(request.body));
-        response.setHeader("200");
-        response.end();
-    });
+    for (var prop in request.body) {
+        request.body = prop;
+    }
+    main.initStats(JSON.parse(request.body));
+    response.setHeader("200");
+    response.end();
 });
 app.post('/user/welcome', function(request, response) {
     for (var prop in request.body) {
@@ -117,27 +110,33 @@ app.post('/update/stats', function(request, response) {
     response.end();
 });
 app.post('/send/pic', function(request, response) {
-    var fullData = '';
-    request.on('data', function(chunk) {
-        logger.debug('Pic data received');
-        fullData += chunk;
+    for (var prop in request.body) {
+        request.body = prop;
+    }
+    var obj = JSON.parse(request.body);
+    var picName = obj.picName;
+    var file = obj.data;
+
+    fs.write((Config.externalPictureLocation + picName), file, 'binary', function(error) {
+        if (error) {
+            logger.error(error);
+        }
     });
 
-    request.on('end', function() {
-        logger.debug('End pic data');
-        var obj = JSON.parse(fullData);
-        var picName = obj.picName;
-        var file = obj.data;
+    response.setHeader('200');
+    response.end();
+});
+app.post('/show/achievements', function(request, response) {
+    for (var prop in request.body) {
+        request.body = prop;
+    }
+    logger.debug('Achievement: ' + request.body);
 
-        fs.write((Config.externalPictureLocation + picName), file, 'binary', function(error) {
-            if (error) {
-                logger.error(error);
-            }
-        });
+    var obj = JSON.parse(request.body);
 
-        response.setHeader('200');
-        response.end();
-    });
+    response.setHeader('200');
+    response.end();
+
 });
 
 app.listen(Config.externalPortRunner);

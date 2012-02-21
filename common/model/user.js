@@ -52,11 +52,12 @@ var User = (function() {
                 callback(error);
             } else {
                 _db.run('UPDATE User SET totalPours = ? where badgeId = ?', [user.totalPours + 1, user.badgeId], function(error2) {
+                    user.totalPours = user.totalPours + 1;
                     if (error2) {
                         _logger.error(error2);
                     }
                     _db.close();
-                    callback(error2);
+                    callback(error2, user);
                 })
             }
         })
