@@ -78,7 +78,7 @@ var KegIO = (function() {
                 RFID = randomTag();
             } else {
                 fakePour = 0;
-                var randomUser = Math.floor(Math.random() * 5);
+                var randomUser = Math.floor(Math.random() * 4);
                 switch (randomUser) {
                     case 0:
                         RFID = '0123456789';
@@ -88,9 +88,6 @@ var KegIO = (function() {
                         break;
                     case 2:
                         RFID = '2345678901';
-                        break;
-                    case 3:
-                        RFID = '3456789012';
                         break;
                     default:
                         break;

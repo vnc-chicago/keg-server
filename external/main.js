@@ -110,6 +110,16 @@ function _emitUpdateLastUser(client) {
     client.emit('lastUserUpdate', {user: lastUser});
 }
 
+exports.showAchievements = function(achievements) {
+    clients.forEach(function(client) {
+        _emitAchievementUpdate(achievements, client);
+    })
+};
+
+function _emitAchievementUpdate(achievements, client) {
+    client.emit('showAchievements', {achievements: achievements});
+}
+
 exports.updateStats = function(stats) {
     for (var prop in stats) {
         if(prop == 'kegPourAmountsPerTime') {

@@ -128,6 +128,7 @@ var WebIO = (function() {
 
     function pushAchievements(achievements) {
         var data = JSON.stringify(achievements);
+        _logger.debug('Achievements: ' + data);
         var request = http.request(generateDataPost('/show/achievements', data));
         request.write(data);
         request.end();

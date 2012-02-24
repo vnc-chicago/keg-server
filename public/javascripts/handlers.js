@@ -9,6 +9,7 @@ socket.on('allTimePoursPerPersonUpdate', updateAllTimePoursPerPerson);
 socket.on('allTimePoursPerTimeUpdate', updateAllTimePoursPerTime);
 socket.on('kegPoursPerPersonUpdate', updateKegPoursPerPerson);
 socket.on('kegPoursPerTimeUpdate', updateKegPoursPerTime);
+socket.on('showAchievements', showAchievements);
 
 function startHandlers() {
     $('#welcomeUser').hide();
@@ -131,6 +132,14 @@ function updateKeg(data) {
  */
 function updateLastUser(data) {
     updateUserSection(data);
+}
+
+function showAchievements(data) {
+    //alert(data);
+    for (var achievement in data.achievements) {
+        var label = data.achievements[achievement].name + ': ' + data.achievements[achievement].description
+        alert(label);
+    }
 }
 
 /**

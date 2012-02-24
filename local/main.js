@@ -43,8 +43,10 @@ var Main = (function () {
                     User.byTag(pour.userId, function(user) {
                         if (typeof user !== 'undefined') {
                             _lastUser = user;
+                            _lastUser.timeStamp = new Date().getTime() - 30000; // set timestamp to now - 30seconds
                         }
                         _lastUserLoaded = true;
+                        _logger.info('Last User: ' + _lastUser.firstName + ' ' + _lastUser.lastName);
                         initStats();
                     });
                 } else {
@@ -57,6 +59,7 @@ var Main = (function () {
             Keg.currentKeg(function(keg) {
                 _currentKeg = keg;
                 _currentKegLoaded = true;
+                _logger.info('Current keg: ' + _currentKeg.name);
                 initStats();
             });
 
@@ -67,10 +70,12 @@ var Main = (function () {
             UserAchievement.start(logger);
 
         }, 5000);
+
+        setInterval(initStats, 86400000);
     }
 
     function initStats() {
-        if(_currentKegLoaded && _lastUserLoaded) {
+        if (_currentKegLoaded && _lastUserLoaded) {
             var stats = {
                 lastUser : _lastUser,
                 currentKeg : _currentKeg
@@ -164,7 +169,7 @@ var Main = (function () {
         if (typeof _currentUser != 'undefined') {
             // Update current user number pours
             User.incrementPour(_currentUser, function(error, user) {
-                if(error) {
+                if (error) {
                     compileAndPushStats();
                 } else {
                     _currentUser = user;
@@ -245,7 +250,7 @@ var Main = (function () {
     function _createKeg(keg) {
         // Store keg details
         Keg.createNew(keg, function(error) {
-            if(!error) {
+            if (!error) {
                 // Push keg details to web
                 WebIO.updateKeg(keg);
             }

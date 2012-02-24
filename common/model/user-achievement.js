@@ -11,11 +11,11 @@ var UserAchievement = (function() {
 
     function saveAchievementsForUser(user, achievements) {
         var userId = user.badgeId;
-        var achievementId = -1;
-        var isAwardedOnce = false;
-
         // Loop through achievements and save to DB if required
         for (var achievement in achievements) {
+            var achievementId = -1;
+            var isAwardedOnce = false;
+            var isAwardedOncePerDay = false;
             switch (achievement) {
                 case 'isDoubleSixShooter':
                     achievementId = Achievement.isDoubleSixShooter;
@@ -53,6 +53,7 @@ var UserAchievement = (function() {
                     break;
                 case 'isTrifecta':
                     achievementId = Achievement.isTrifecta;
+                    isAwardedOncePerDay = true;
                     break;
                 case 'isEarlyBird':
                     achievementId = Achievement.isEarlyBird;
@@ -62,6 +63,7 @@ var UserAchievement = (function() {
                     break;
                 case 'isGoingLong':
                     achievementId = Achievement.isGoingLong;
+                    isAwardedOncePerDay = true;
                     break;
                 case 'isDirtyThirty':
                     isAwardedOnce = true;
@@ -69,16 +71,17 @@ var UserAchievement = (function() {
                     break;
                 case 'isBeautiful':
                     achievementId = Achievement.isBeautiful;
+                    isAwardedOncePerDay = true;
                     break;
             }
 
             if(achievements[achievement] === true && achievementId !== -1) {
-                recordAchievement(userId, achievementId, isAwardedOnce);
+                recordAchievement(userId, achievementId, isAwardedOnce, isAwardedOncePerDay);
             }
         }
     }
 
-    function recordAchievement(userId, achievementId, isAwardedOnce) {
+    function recordAchievement(userId, achievementId, isAwardedOnce, isAwardedOncePerDay) {
         var _db = new sqlite3.Database(Config.dbPath, function(error) {
             if (error) {
                 _logger.error(error);
@@ -86,6 +89,10 @@ var UserAchievement = (function() {
             } else {
                 if (isAwardedOnce) {
                     _db.run('INSERT INTO UserAchievement (userId, achievementId) SELECT $userId, $achievementId FROM UserAchievement WHERE NOT EXISTS (SELECT 1 FROM UserAchievement WHERE userId=$userId and achievementId=$achievementId)', {$userId:userId, $achievementId:achievementId}, function(error2) {
+                        closeDB(_db, error);
+                    })
+                } else if(isAwardedOncePerDay) {
+                    _db.run('INSERT INTO UserAchievement (userId, achievementId) SELECT $userId, $achievementId FROM UserAchievement WHERE NOT EXISTS (SELECT 1 FROM UserAchievement WHERE userId=$userId and achievementId=$achievementId and strftime("%Y-%m-%d", awarded)=strftime("%Y-%m-%d", "now"))', {$userId:userId, $achievementId:achievementId}, function(error2) {
                         closeDB(_db, error);
                     })
                 } else {

@@ -4,7 +4,7 @@
 
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('./db/keg.sqlite3');
-var isDebug = true;
+var isDebug = false;
 var isInsertPours = false;
 
 db.serialize(function() {
@@ -54,7 +54,8 @@ db.serialize(function() {
 
     db.run("create table Achievement ( " +
         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        "name TEXT NOT NULL)", errorHandler);
+        "name TEXT NOT NULL, " +
+        "description TEXT NOT NULL)", errorHandler);
 
     db.run("create table UserAchievement ( " +
         "userId INTEGER NOT NULL, " +
@@ -64,31 +65,30 @@ db.serialize(function() {
         "FOREIGN KEY (achievementId) REFERENCES Achievement(id), " +
         "PRIMARY KEY (userId, achievementId, awarded))", errorHandler);
 
-    db.run("insert into Achievement (name) values ('isDoubleSixShooter')", errorHandler);
-    db.run("insert into Achievement (name) values ('shouldGoHome')", errorHandler);
-    db.run("insert into Achievement (name) values ('isHalfKegger')", errorHandler);
-    db.run("insert into Achievement (name) values ('isHalfCenturion')", errorHandler);
-    db.run("insert into Achievement (name) values ('isCenturion')", errorHandler);
-    db.run("insert into Achievement (name) values ('isDecaUser')", errorHandler);
-    db.run("insert into Achievement (name) values ('isPonyRider')", errorHandler);
-    db.run("insert into Achievement (name) values ('isSixShooter')", errorHandler);
-    db.run("insert into Achievement (name) values ('isFirstPour')", errorHandler);
-    db.run("insert into Achievement (name) values ('isInForLongHaul')", errorHandler);
-    db.run("insert into Achievement (name) values ('isTrifecta')", errorHandler);
-    db.run("insert into Achievement (name) values ('isEarlyBird')", errorHandler);
-    db.run("insert into Achievement (name) values ('isPartyStarter')", errorHandler);
-    db.run("insert into Achievement (name) values ('isGoingLong')", errorHandler);
-    db.run("insert into Achievement (name) values ('isDirtyThirty')", errorHandler);
-    db.run("insert into Achievement (name) values ('isBeautiful')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('The Double Sixer', 'Drank 144oz all time')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('Go Home!', 'Poured over the weekend')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('The Half Barrel', 'Drank 1980oz all time')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('Half Century', 'Poured 50 times')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('Century', 'Poured 100 times')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('The Decade', 'Poured 10 times')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('Pony Up', 'Drank 980oz all time')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('The Sixer', 'Drank 72oz all time')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('First Pour', 'Welcome to the club!')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('For The Long Haul', 'Pour after 6pm')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('The Trifecta', 'Pour 3 times in a day')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('Early Bird', 'Pour before noon')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('Party Starter', 'First pour of the day')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('Going Long', 'Pour 5 times in a day')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('Dirty Thirty', 'Drank 360oz all time')", errorHandler);
+    db.run("insert into Achievement (name, description) values ('Hello Beautiful', 'Pour 7 times in a day')", errorHandler);
 
     if (isDebug) {
         db.run("insert into Keg (brewer, description, name, amount, loaded) values ('Goose Island', 'Tasty brew local to Chicago', '312', 1984, strftime('%Y-%m-01'))", errorHandler);
         db.run("insert into Keg (brewer, description, name, amount, loaded) values ('Samuel Adams', 'Excellent lager with great taste', 'Boston Lager', 1984, strftime('%Y-%m-02'))", errorHandler);
 
-        db.run("insert into User (badgeId, firstName, lastName, affiliation) values ('0123456789', 'Jay', 'Taggart', 'Developer')", errorHandler);
-        db.run("insert into User (badgeId, firstName, lastName, affiliation) values ('1234567890', 'Kurt', 'Stirnkorb', 'Developer')", errorHandler);
-        db.run("insert into User (badgeId, firstName, lastName, affiliation) values ('2345678901', 'Tom', 'White', 'Support')", errorHandler);
-        db.run("insert into User (badgeId, firstName, lastName, affiliation) values ('3456789012', 'Gaylord', 'Yu', 'Fallen Hero')", errorHandler);
+        db.run("insert into User (badgeId, firstName, lastName, affiliation) values ('0123456789', 'Jay', 'Taggart', 'COD')", errorHandler);
+        db.run("insert into User (badgeId, firstName, lastName, affiliation) values ('1234567890', 'Kurt', 'Stirnkorb', 'COD')", errorHandler);
+        db.run("insert into User (badgeId, firstName, lastName, affiliation) values ('2345678901', 'Tom', 'White', 'Product Management')", errorHandler);
 
         if (isInsertPours) {
             db.run("insert into KegPours (userId, kegId, amount, poured) values(1, 1, 8, strftime('%Y-%m-01 13:00:00'))", errorHandler);

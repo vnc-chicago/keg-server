@@ -133,7 +133,7 @@ app.post('/show/achievements', function(request, response) {
     logger.debug('Achievement: ' + request.body);
 
     var obj = JSON.parse(request.body);
-
+    main.showAchievements(obj);
     response.setHeader('200');
     response.end();
 
