@@ -15,7 +15,7 @@ var KegPour = (function() {
                 _db.close();
                 callback(error);
             } else {
-                _db.run('INSERT INTO KegPours (userId, kegId, amount, poured) VALUES(?, ?, ?, strftime("%Y-%m-%d %H:00:00", "now", "localtime"))', [user.badgeId, keg.id, pour], function(error2) {
+                _db.run('INSERT INTO KegPours (userId, kegId, amount) VALUES(?, ?, ?)', [user.badgeId, keg.id, pour], function(error2) {
                     if (error2) {
                         _logger.error(error2);
                     }
@@ -69,13 +69,12 @@ var KegPour = (function() {
                 _db.close();
                 callback(false);
             } else {
-            	var today = new Date();
-                _db.get('SELECT poured FROM KegPours WHERE strftime("%Y", poured) = ? and strftime("%m", poured) = ? and strftime("%d", poured) = ?', [today.getFullYear(), today.getMonth(), today.getDate()], function(error2, row) {
+                _db.all('SELECT poured FROM KegPours WHERE strftime("%Y-%m-%d", poured) = strftime("%Y-%m-%d", "now")', function(error2, rows) {
                     if (error2) {
                         _logger.error(error2);
                     }
                     _db.close();
-                    callback(typeof row === 'undefined');
+                    callback(rows.length === 1);
                 });
             }
         });

@@ -33,7 +33,7 @@ var Stats = (function() {
                 _db.close();
                 callback(undefined);
             } else {
-                _db.all('select time(poured) as timePoured, count(amount) as pours, sum(amount) as totalAmount from KegPours group by timePoured order by timePoured', function(error2, rows) {
+                _db.all('select strftime("%H", poured, "localtime") as timePoured, count(amount) as pours, sum(amount) as totalAmount from KegPours group by timePoured order by timePoured', function(error2, rows) {
                     if (error2) {
                         _logger.error(error2);
                     }
@@ -69,7 +69,7 @@ var Stats = (function() {
                 _db.close();
                 callback(undefined);
             } else {
-                _db.all('select time(p.poured) as timePoured, count(p.amount) as pours, sum(p.amount) as totalAmount from KegPours p where p.kegId = (select inKeg.id from Keg inKeg order by inKeg.loaded desc limit 1) group by timePoured order by timePoured', function(error2, rows) {
+                _db.all('select strftime("%H", p.poured, "localtime") as timePoured, count(p.amount) as pours, sum(p.amount) as totalAmount from KegPours p where p.kegId = (select inKeg.id from Keg inKeg order by inKeg.loaded desc limit 1) group by timePoured order by timePoured', function(error2, rows) {
                     if (error2) {
                         _logger.error(error2);
                     }

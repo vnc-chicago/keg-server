@@ -26,6 +26,12 @@ function startHandlers() {
         show: 'fade',
         hide: 'fade'
     });
+    $('#newAchievements').dialog({
+        autoOpen:false,
+        modal: true,
+        show: 'fade',
+        hide: 'fade'
+    });
 }
 
 
@@ -58,8 +64,18 @@ function updateUserSection(data) {
 
     $('#userImage').empty();
 
-    if(data.user.path !== undefined && data.user.path !== '') {
+    if (data.user.path !== undefined && data.user.path !== '') {
         $('#userImage').append('<img src="/images/users/' + data.user.path + '.png" />');
+    }
+
+    updateUserAchievements(data.user.achievements);
+}
+
+function updateUserAchievements(achievements) {
+    $('#userAchievements').empty();
+    for (var achievement in achievements) {
+        var label = '<p>' + achievement + ': ' + achievements[achievement] + '</p>';
+        $('#userAchievements').append(label);
     }
 }
 
@@ -73,9 +89,9 @@ function denyUser(data) {
 function updateKegFlow(data) {
     //alert("Flow: " + parseInt(data.flow.flow));
     var flow = formatNumber(data.flow.flow, false);
-    if(!isNaN(flow)) {
+    if (!isNaN(flow)) {
         $('#gauge2 .gaugeNeedle').rotate({animateTo: flow * 100});
-    $('#gauge2 .gaugeGlass').rotate({animateTo: flow * 100});
+        $('#gauge2 .gaugeGlass').rotate({animateTo: flow * 100});
     }
 }
 
@@ -83,7 +99,7 @@ function updateKegAmount(amount) {
     $('#kegAmount').empty();
 
     var kegAmount;
-    if(amount.hasOwnProperty("amount")) {
+    if (amount.hasOwnProperty("amount")) {
         kegAmount = formatNumber(amount.amount, true);
     } else {
         kegAmount = formatNumber(amount, true);
@@ -136,9 +152,21 @@ function updateLastUser(data) {
 
 function showAchievements(data) {
     //alert(data);
+
+    $('#newAchievements').empty();
+    var hasNewAchievements = false;
     for (var achievement in data.achievements) {
-        var label = data.achievements[achievement].name + ': ' + data.achievements[achievement].description
-        alert(label);
+        hasNewAchievements = true;
+        var label = '<p>' + data.achievements[achievement].name + ': ' + data.achievements[achievement].description + '</p>';
+        $('#newAchievements').append(label);
+        $('#userAchievements').append(label);
+    }
+
+    if (hasNewAchievements) {
+        $('#newAchievements').dialog('open');
+        setTimeout(function() {
+            $('#newAchievements').dialog('close');
+        }, 5000);
     }
 }
 
@@ -254,7 +282,7 @@ function updateKegPoursPerPerson(data) {
 
 function formatNumber(value, toRound) {
     var result = parseFloat(value);
-    if(toRound) {
+    if (toRound) {
         result = Math.round(result);
     }
     return result;
@@ -263,11 +291,13 @@ function formatNumber(value, toRound) {
 function formatTime(time) {
     var hour = time.split(':')[0];
     var isPM = false;
-    if(hour > 12) {
+    if (hour > 12) {
         hour -= 12;
         isPM = true;
-    } else if(hour == 12) {
+    } else if (hour == 12) {
         isPM = true;
+    } else if (hour == 0) {
+        hour = 12;
     }
 
     hour += ':00';

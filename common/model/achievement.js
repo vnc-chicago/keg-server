@@ -4,21 +4,22 @@ var Config = require('../config');
 
 var Achievement = (function() {
     var _logger;
-    var _isFirstPourSet;
-    var _isDecaUserSet;
-    var _isHalfCenturionSet;
-    var _isCenturionSet;
-    var _sixShooterSet;
-    var _doubleSixShooterSet;
-    var _dirtyThirtySet;
-    var _ponyRiderSet;
-    var _halfKeggerSet;
-    var _trifectaSet;
-    var _goingLongSet;
-    var _beautifulSet;
-    var _firstSet;
-    var _isEarlyBirdSet;
-    var _isInForLongHaulSet;
+    var _isFirstPourSet = false;
+    var _isDecaUserSet = false;
+    var _isHalfCenturionSet = false;
+    var _isCenturionSet = false;
+    var _sixShooterSet = false;
+    var _doubleSixShooterSet = false;
+    var _dirtyThirtySet = false;
+    var _ponyRiderSet = false;
+    var _halfKeggerSet = false;
+    var _trifectaSet = false;
+    var _goingLongSet = false;
+    var _beautifulSet = false;
+    var _firstSet = false;
+    var _isEarlyBirdSet = false;
+    var _isInForLongHaulSet = false;
+    var _shouldGoHomeSet = false;
     var _result;
     var _callback;
 
@@ -39,7 +40,7 @@ var Achievement = (function() {
     function handleDBCallbacks(result) {
         _result = mergeResults(_result, result);
 
-        if (_isFirstPourSet && _isDecaUserSet && _isHalfCenturionSet && _isCenturionSet && _sixShooterSet && _doubleSixShooterSet && _dirtyThirtySet && _ponyRiderSet && _halfKeggerSet && _trifectaSet && _goingLongSet && _beautifulSet && _firstSet && _isEarlyBirdSet && _isInForLongHaulSet) {
+        if (_isFirstPourSet && _isDecaUserSet && _isHalfCenturionSet && _isCenturionSet && _sixShooterSet && _doubleSixShooterSet && _dirtyThirtySet && _ponyRiderSet && _halfKeggerSet && _trifectaSet && _goingLongSet && _beautifulSet && _firstSet && _isEarlyBirdSet && _isInForLongHaulSet && _shouldGoHomeSet) {
             _isFirstPourSet = false;
             _isDecaUserSet = false;
             _isHalfCenturionSet = false;
@@ -55,6 +56,7 @@ var Achievement = (function() {
             _firstSet = false;
             _isEarlyBirdSet = false;
             _isInForLongHaulSet = false;
+            _shouldGoHomeSet = false;
             _callback(_result);
         }
     }
@@ -115,9 +117,7 @@ var Achievement = (function() {
                     }
                 };
                 _isFirstPourSet = true;
-                if(obj.isFirstPour.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             }
         });
     }
@@ -134,9 +134,7 @@ var Achievement = (function() {
                     }
                 };
                 _isDecaUserSet = true;
-                if(obj.isDecaUser.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             }
         });
     }
@@ -153,9 +151,7 @@ var Achievement = (function() {
                     }
                 };
                 _isHalfCenturionSet = true;
-                if(obj.isHalfCenturion.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             }
         });
     }
@@ -172,9 +168,7 @@ var Achievement = (function() {
                     }
                 };
                 _isCenturionSet = true;
-                if(obj.isCenturion.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             }
         });
     }
@@ -185,15 +179,13 @@ var Achievement = (function() {
             getById(Achievement.isSixShooter, function(achievement) {
                 var obj = {
                     isSixShooter: {
-                        awarded: (totalAmount > 72),
+                        awarded: (totalAmount >= 72),
                         name: achievement.name,
                         description: achievement.description
                     }
                 };
                 _sixShooterSet = true;
-                if(obj.isSixShooter.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             });
         });
     }
@@ -204,15 +196,13 @@ var Achievement = (function() {
             getById(Achievement.isDoubleSixShooter, function(achievement) {
                 var obj = {
                     isDoubleSixShooter: {
-                        awarded: (totalAmount > 144),
+                        awarded: (totalAmount >= 144),
                         name: achievement.name,
                         description: achievement.description
                     }
                 };
                 _doubleSixShooterSet = true;
-                if(obj.isDoubleSixShooter.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             });
         });
     }
@@ -223,15 +213,13 @@ var Achievement = (function() {
             getById(Achievement.isDirtyThirty, function(achievement) {
                 var obj = {
                     isDirtyThirty: {
-                        awarded: (totalAmount > 360),
+                        awarded: (totalAmount >= 360),
                         name: achievement.name,
                         description: achievement.description
                     }
                 };
                 _dirtyThirtySet = true;
-                if(obj.isDirtyThirty.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             });
         });
     }
@@ -242,15 +230,13 @@ var Achievement = (function() {
             getById(Achievement.isPonyRider, function(achievement) {
                 var obj = {
                     isPonyRider: {
-                        awarded: (totalAmount > 980),
+                        awarded: (totalAmount >= 980),
                         name: achievement.name,
                         description: achievement.description
                     }
                 };
                 _ponyRiderSet = true;
-                if(obj.isPonyRider.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             });
         });
     }
@@ -261,15 +247,13 @@ var Achievement = (function() {
             getById(Achievement.isHalfKegger, function(achievement) {
                 var obj = {
                     isHalfKegger: {
-                        awarded: (totalAmount > 1980),
+                        awarded: (totalAmount >= 1980),
                         name: achievement.name,
                         description: achievement.description
                     }
                 };
                 _halfKeggerSet = true;
-                if(obj.isHalfKegger.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             });
         });
     }
@@ -280,15 +264,13 @@ var Achievement = (function() {
             var now = new Date();
             var obj = {
                 isEarlyBird: {
-                    awarded: (now.getHours() < 14),
+                    awarded: (now.getHours() <= 14),
                     name: achievement.name,
                     description: achievement.description
                 }
             };
             _isEarlyBirdSet = true;
-            if(obj.isEarlyBird.awarded) {
-                    callback(obj);
-                }
+            callback(obj);
         });
     }
 
@@ -304,9 +286,7 @@ var Achievement = (function() {
                 }
             };
             _isInForLongHaulSet = true;
-            if(obj.isInForLongHaul.awarded) {
-                    callback(obj);
-                }
+            callback(obj);
         });
     }
 
@@ -322,9 +302,7 @@ var Achievement = (function() {
                     }
                 };
                 _firstSet = true;
-                if(obj.isPartyStarter.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             });
         });
     }
@@ -335,15 +313,13 @@ var Achievement = (function() {
             getById(Achievement.isTrifecta, function(achievement) {
                 var obj = {
                     isTrifecta: {
-                        awarded: (numPours > 3),
+                        awarded: (numPours == 3),
                         name: achievement.name,
                         description: achievement.description
                     }
                 };
                 _trifectaSet = true;
-                if(obj.isTrifecta.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             });
         });
     }
@@ -354,15 +330,13 @@ var Achievement = (function() {
             getById(Achievement.isGoingLong, function(achievement) {
                 var obj = {
                     isGoingLong: {
-                        awarded: (numPours > 5),
+                        awarded: (numPours == 5),
                         name: achievement.name,
                         description: achievement.description
                     }
                 };
                 _goingLongSet = true;
-                if(obj.isGoingLong.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             });
         });
     }
@@ -373,15 +347,13 @@ var Achievement = (function() {
             getById(Achievement.isBeautiful, function(achievement) {
                 var obj = {
                     isBeautiful: {
-                        awarded: (numPours > 7),
+                        awarded: (numPours == 7),
                         name: achievement.name,
                         description: achievement.description
                     }
                 };
                 _beautifulSet = true;
-                if(obj.isBeautiful.awarded) {
-                    callback(obj);
-                }
+                callback(obj);
             });
         });
     }
@@ -405,10 +377,8 @@ var Achievement = (function() {
                     description: achievement.description
                 }
             };
-            _beautifulSet = true;
-            if(obj.shouldGoHome.awarded) {
-                    callback(obj);
-                }
+            _shouldGoHomeSet = true;
+            callback(obj);
         });
     }
 
@@ -465,8 +435,5 @@ var Achievement = (function() {
 
 
     }
-}
-    ()
-    )
-    ;
+}());
 module.exports = Achievement;

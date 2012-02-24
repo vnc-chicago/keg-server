@@ -39,14 +39,16 @@ var Main = (function () {
 
             KegPour.start(logger);
             KegPour.getLast(function(pour) {
+                _logger.debug('Last Pour: ' + pour);
                 if (typeof pour !== 'undefined' && pour.hasOwnProperty('userId')) {
+                    _logger.debug('Last Pour User: ' + pour.userId);
                     User.byTag(pour.userId, function(user) {
                         if (typeof user !== 'undefined') {
                             _lastUser = user;
                             _lastUser.timeStamp = new Date().getTime() - 30000; // set timestamp to now - 30seconds
+                            _logger.info('Last User: ' + _lastUser.firstName + ' ' + _lastUser.lastName);
                         }
                         _lastUserLoaded = true;
-                        _logger.info('Last User: ' + _lastUser.firstName + ' ' + _lastUser.lastName);
                         initStats();
                     });
                 } else {
@@ -180,8 +182,9 @@ var Main = (function () {
                             Keg.currentKeg(function(keg) {
                                 _currentKeg = keg;
                                 Achievement.getAchievementsEarned(_currentUser, function(achievements) {
-                                    UserAchievement.saveAchievements(_currentUser, achievements);
-                                    WebIO.pushAchievements(achievements);
+                                    UserAchievement.saveAchievements(_currentUser, achievements, function(savedAchievements){
+                                        WebIO.pushAchievements(savedAchievements);
+                                    });
                                     // Push new stats to web
                                     compileAndPushStats();
                                 });
@@ -251,6 +254,7 @@ var Main = (function () {
         // Store keg details
         Keg.createNew(keg, function(error) {
             if (!error) {
+                _currentKeg = keg;
                 // Push keg details to web
                 WebIO.updateKeg(keg);
             }

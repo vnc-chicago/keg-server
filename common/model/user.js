@@ -15,12 +15,39 @@ var User = (function() {
                 _db.close();
                 callback(undefined);
             } else {
-                _db.get('SELECT badgeId, firstName, lastName, affiliation, twitter, totalPours, joined FROM User WHERE badgeId = ?', [tag], function(error2, row) {
+                _db.get('SELECT firstName, lastName, affiliation, twitter, joined, totalPours FROM User WHERE badgeId = ?', [tag], function(error2, row) {
                     if (error2) {
                         _logger.error(error2);
                     }
-                    _db.close();
-                    callback(row);
+
+                    if (row) {
+                        var obj = {
+                            badgeId: tag,
+                            firstName: row.firstName,
+                            lastName: row.lastName,
+                            affiliation: row.affiliation,
+                            twitter: row.twitter,
+                            joined: row.joined,
+                            totalPours: row.totalPours,
+                            achievements: {}
+                        };
+
+                        _db.all('SELECT ach.name, ach.description FROM Achievement ach, UserAchievement userAch WHERE ach.id = userAch.achievementId and userAch.userId = ?', [tag], function(error3, rows) {
+                            if (error3) {
+                                _logger.error(error3);
+                            }
+                            for (var i = 0; rows && i < rows.length; i++) {
+                                var achievement = rows[i];
+                                obj.achievements[achievement.name] = achievement.description;
+                            }
+
+
+                            _db.close();
+                            callback(obj);
+                        });
+                    } else {
+                        callback(undefined);
+                    }
                 });
             }
         });

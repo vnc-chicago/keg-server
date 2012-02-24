@@ -81,15 +81,16 @@ var KegIO = (function() {
                 var randomUser = Math.floor(Math.random() * 4);
                 switch (randomUser) {
                     case 0:
-                        RFID = '0123456789';
+                        RFID = 'a123456789';
                         break;
                     case 1:
-                        RFID = '1234567890';
+                        RFID = '123456789a';
                         break;
                     case 2:
-                        RFID = '2345678901';
+                        RFID = '23456789a1';
                         break;
                     default:
+                        RFID = 'a123456789';
                         break;
                 }
             }
