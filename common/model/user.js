@@ -32,13 +32,16 @@ var User = (function() {
                             achievements: {}
                         };
 
-                        _db.all('SELECT ach.name, ach.description FROM Achievement ach, UserAchievement userAch WHERE ach.id = userAch.achievementId and userAch.userId = ?', [tag], function(error3, rows) {
+                        _db.all('SELECT ach.name, ach.description, ach.path FROM Achievement ach, UserAchievement userAch WHERE ach.id = userAch.achievementId and userAch.userId = ?', [tag], function(error3, rows) {
                             if (error3) {
                                 _logger.error(error3);
                             }
                             for (var i = 0; rows && i < rows.length; i++) {
                                 var achievement = rows[i];
-                                obj.achievements[achievement.name] = achievement.description;
+                                obj.achievements[achievement.name] = {
+                                    description: achievement.description,
+                                    path: achievement.path
+                                };
                             }
 
 

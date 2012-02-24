@@ -95,7 +95,7 @@ var Achievement = (function() {
                 _logger.error(error);
                 _db.close();
             } else {
-                _db.get("select name, description from Achievement where id=?", [id], function(error, row) {
+                _db.get("select name, description, path from Achievement where id=?", [id], function(error, row) {
                     if (error) {
                         _logger.error(error);
                     }
@@ -113,7 +113,8 @@ var Achievement = (function() {
                     isFirstPour: {
                         awarded: (user.totalPours == 1),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _isFirstPourSet = true;
@@ -130,7 +131,8 @@ var Achievement = (function() {
                     isDecaUser: {
                         awarded: (user.totalPours == 10),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _isDecaUserSet = true;
@@ -147,7 +149,8 @@ var Achievement = (function() {
                     isHalfCenturion: {
                         awarded: (user.totalPours == 50),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _isHalfCenturionSet = true;
@@ -164,7 +167,8 @@ var Achievement = (function() {
                     isCenturion: {
                         awarded: (user.totalPours == 100),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _isCenturionSet = true;
@@ -181,7 +185,8 @@ var Achievement = (function() {
                     isSixShooter: {
                         awarded: (totalAmount >= 72),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _sixShooterSet = true;
@@ -198,7 +203,8 @@ var Achievement = (function() {
                     isDoubleSixShooter: {
                         awarded: (totalAmount >= 144),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _doubleSixShooterSet = true;
@@ -215,7 +221,8 @@ var Achievement = (function() {
                     isDirtyThirty: {
                         awarded: (totalAmount >= 360),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _dirtyThirtySet = true;
@@ -232,7 +239,8 @@ var Achievement = (function() {
                     isPonyRider: {
                         awarded: (totalAmount >= 980),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _ponyRiderSet = true;
@@ -249,7 +257,8 @@ var Achievement = (function() {
                     isHalfKegger: {
                         awarded: (totalAmount >= 1980),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _halfKeggerSet = true;
@@ -266,7 +275,8 @@ var Achievement = (function() {
                 isEarlyBird: {
                     awarded: (now.getHours() <= 14),
                     name: achievement.name,
-                    description: achievement.description
+                    description: achievement.description,
+                    path: achievement.path
                 }
             };
             _isEarlyBirdSet = true;
@@ -282,7 +292,8 @@ var Achievement = (function() {
                 isInForLongHaul: {
                     awarded: (now.getHours() >= 18),
                     name: achievement.name,
-                    description: achievement.description
+                    description: achievement.description,
+                    path: achievement.path
                 }
             };
             _isInForLongHaulSet = true;
@@ -298,7 +309,8 @@ var Achievement = (function() {
                     isPartyStarter: {
                         awarded: (isFirst),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _firstSet = true;
@@ -315,7 +327,8 @@ var Achievement = (function() {
                     isTrifecta: {
                         awarded: (numPours == 3),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _trifectaSet = true;
@@ -332,7 +345,8 @@ var Achievement = (function() {
                     isGoingLong: {
                         awarded: (numPours == 5),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _goingLongSet = true;
@@ -349,7 +363,8 @@ var Achievement = (function() {
                     isBeautiful: {
                         awarded: (numPours == 7),
                         name: achievement.name,
-                        description: achievement.description
+                        description: achievement.description,
+                        path: achievement.path
                     }
                 };
                 _beautifulSet = true;
@@ -374,7 +389,8 @@ var Achievement = (function() {
                 shouldGoHome: {
                     awarded: (today.getDay() == 0 || today.getDay() == 6),
                     name: achievement.name,
-                    description: achievement.description
+                    description: achievement.description,
+                    path: achievement.path
                 }
             };
             _shouldGoHomeSet = true;

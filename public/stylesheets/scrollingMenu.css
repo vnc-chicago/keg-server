@@ -1,0 +1,13 @@
+@charset "utf-8";
+/* scrollingMenu.css */
+
+div.sc_menu_wrapper {position:absolute; height:500px; /* Make bigger than a photo, because we need a place for a scroll-bar. */ width:160px; margin-top:30px; overflow:auto;}
+div.sc_menu {padding:15px 0;}
+.sc_menu a {display:block; margin-bottom:5px; width:130px; border:2px rgb(79, 79, 79) solid; -webkit-border-radius:4px; -moz-border-radius:4px; /* When image support is turned off */ color:#FFF000; background:rgb(79, 79, 79);}
+.sc_menu a:hover {border-color:rgb(130, 130, 130); border-style:dotted;}
+.sc_menu img {display:block; border:none;}
+.sc_menu_wrapper .loading {position:absolute; top:50px; left:10px; margin:0 auto; padding:10px; width:100px; -webkit-border-radius:4px; -moz-border-radius:4px; text-align:center; color:#FFF000; border:1px solid rgb(79, 79, 79); background:#1F1D1D;}
+
+/* Styling tooltip */
+.sc_menu_tooltip {display: block; position: absolute; padding:6px; font-size:12px; color:#FFF000; -webkit-border-radius:4px; -moz-border-radius:4px; border:1px solid rgb(79, 79, 79); background:rgb(0, 0, 0); /* Make background a bit transparent for browsers that support rgba */ background:rgba(0, 0, 0, 0.5);}
+

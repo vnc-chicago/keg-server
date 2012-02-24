@@ -1,12 +1,12 @@
 @charset "utf-8";
 /* gauge2.css */
 
-#gauge {background:url('../images/gaugeBackground3.png'); background-repeat:no-repeat; width:200px; height:150px; position:absolute; right:0; top:370px;}
-#gauge .gaugeBack {background:url('../images/gaugeBack2.png'); background-repeat:no-repeat; width:150px; height:150px; overflow:hidden; z-index:1; position:absolute;}
-#gauge .gaugeNeedle {background:url('../images/gaugeNeedle.png'); background-repeat:no-repeat; width:150px; height:150px; overflow:hidden; z-index:2; position:absolute;}
-#gauge .gaugeGlass {background:url('../images/gaugeGlass.png'); background-repeat:no-repeat; width:150px; height:150px; overflow:hidden; z-index:3; position:absolute;}
+#gauge {background:url('../images/gaugeBackground4.png'); background-repeat:no-repeat; width:150px; height:170px; position:absolute; right:200px; top:0px;}
+#gauge .gaugeBack {background:url('../images/gaugeBack3.png'); background-repeat:no-repeat; width:150px; height:150px; overflow:hidden; z-index:1; position:absolute; top:20px;}
+#gauge .gaugeNeedle {background:url('../images/gaugeNeedle.png'); background-repeat:no-repeat; width:150px; height:150px; overflow:hidden; z-index:2; position:absolute; top:20px;}
+#gauge .gaugeGlass {background:url('../images/gaugeGlass.png'); background-repeat:no-repeat; width:150px; height:150px; overflow:hidden; z-index:3; position:absolute; top:20px;}
 
-#gauge2 {background:url('../images/gaugeBackground3.png'); background-repeat:no-repeat; width:200px; height:150px; position:absolute; right:0; top:555px;}
-#gauge2 .gaugeBack {background:url('../images/gaugeBack2.png'); background-repeat:no-repeat; width:150px; height:150px; overflow:hidden; z-index:1; position:absolute;}
-#gauge2 .gaugeNeedle {background:url('../images/gaugeNeedle.png'); background-repeat:no-repeat; width:150px; height:150px; overflow:hidden; z-index:2; position:absolute;}
-#gauge2 .gaugeGlass {background:url('../images/gaugeGlass.png'); background-repeat:no-repeat; width:150px; height:150px; overflow:hidden; z-index:3; position:absolute;}
+#gauge2 {background:url('../images/gaugeBackground4.png'); background-repeat:no-repeat; width:150px; height:170px; position:absolute; right:20px; top:0px;}
+#gauge2 .gaugeBack {background:url('../images/gaugeBack3.png'); background-repeat:no-repeat; width:150px; height:150px; overflow:hidden; z-index:1; position:absolute; top:20px;}
+#gauge2 .gaugeNeedle {background:url('../images/gaugeNeedle.png'); background-repeat:no-repeat; width:150px; height:150px; overflow:hidden; z-index:2; position:absolute; top:20px;}
+#gauge2 .gaugeGlass {background:url('../images/gaugeGlass.png'); background-repeat:no-repeat; width:150px; height:150px; overflow:hidden; z-index:3; position:absolute; top:20px;}

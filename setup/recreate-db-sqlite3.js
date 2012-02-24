@@ -55,7 +55,8 @@ db.serialize(function() {
     db.run("create table Achievement ( " +
         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
         "name TEXT NOT NULL, " +
-        "description TEXT NOT NULL)", errorHandler);
+        "description TEXT NOT NULL, " +
+        "path TEXT NOT NULL)", errorHandler);
 
     db.run("create table UserAchievement ( " +
         "userId TEXT NOT NULL, " +
@@ -65,22 +66,22 @@ db.serialize(function() {
         "FOREIGN KEY (achievementId) REFERENCES Achievement(id), " +
         "PRIMARY KEY (userId, achievementId, awarded))", errorHandler);
 
-    db.run("insert into Achievement (name, description) values ('The Double Sixer', 'Drank 144oz all time')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('Go Home!', 'Poured over the weekend')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('The Half Barrel', 'Drank 1980oz all time')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('Half Century', 'Poured 50 times')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('Century', 'Poured 100 times')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('The Decade', 'Poured 10 times')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('Pony Up', 'Drank 980oz all time')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('The Sixer', 'Drank 72oz all time')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('First Pour', 'Welcome to the club!')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('For The Long Haul', 'Pour after 6pm')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('The Trifecta', 'Pour 3 times in a day')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('Early Bird', 'Pour before 2pm')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('Party Starter', 'First pour of the day')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('Going Long', 'Pour 5 times in a day')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('Dirty Thirty', 'Drank 360oz all time')", errorHandler);
-    db.run("insert into Achievement (name, description) values ('Hello Beautiful', 'Pour 7 times in a day')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('The Double Sixer', 'Drank 144oz all time', 'theDoubleSixer')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('Go Home!', 'Poured over the weekend', 'goHome')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('The Half Barrel', 'Drank 1980oz all time', 'theHalfBarrel')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('Half Century', 'Poured 50 times', 'halfCentury')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('Century', 'Poured 100 times', 'theCentury')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('The Decade', 'Poured 10 times', 'theDecade')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('Pony Up', 'Drank 980oz all time', 'ponyUp')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('The Sixer', 'Drank 72oz all time', 'theSixer')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('First Pour', 'Welcome to the club!', 'firstPour')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('For The Long Haul', 'Pour after 6pm', 'forTheLongHaul')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('The Trifecta', 'Pour 3 times in a day', 'theTrifecta')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('Early Bird', 'Pour before 2pm', 'earlyBird')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('Party Starter', 'First pour of the day', 'partyStarter')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('Going Long', 'Pour 5 times in a day', 'goingLong')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('Dirty Thirty', 'Drank 360oz all time', 'dirtyThirty')", errorHandler);
+    db.run("insert into Achievement (name, description, path) values ('Hello Beautiful', 'Pour 7 times in a day', 'helloBeautiful')", errorHandler);
 
     if (isDebug) {
         db.run("insert into Keg (brewer, description, name, amount, loaded) values ('Goose Island', 'Tasty brew local to Chicago', '312', 1984, strftime('%Y-%m-01'))", errorHandler);

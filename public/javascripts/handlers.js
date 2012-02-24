@@ -14,6 +14,7 @@ socket.on('showAchievements', showAchievements);
 function startHandlers() {
     $('#welcomeUser').hide();
     $('#denyUser').hide();
+    $('#newAchievements').hide();
     $('#welcomeUser').dialog({
         autoOpen:false,
         modal: true,
@@ -51,16 +52,16 @@ function welcomeUser(data) {
 
 function updateUserSection(data) {
     $('#userName').empty();
-    $('#userName').append("Name: " + data.user.firstName + ' ' + data.user.lastName);
+    $('#userName').append("<p>Member: " + data.user.firstName + ' ' + data.user.lastName + '</p>');
 
     $('#userAffiliation').empty();
-    $('#userAffiliation').append("Affiliation: " + data.user.affiliation);
+    $('#userAffiliation').append("<p>Affiliation: " + data.user.affiliation + '</p>');
 
     $('#userJoined').empty();
-    $('#userJoined').append("Signed Up: " + data.user.joined);
+    $('#userJoined').append("<p>Joined: " + data.user.joined + '</p>');
 
     $('#userTotalPours').empty();
-    $('#userTotalPours').append("Total Pours: " + data.user.totalPours);
+    $('#userTotalPours').append("<p>Total Pours: " + data.user.totalPours + '</p>');
 
     $('#userImage').empty();
 
@@ -72,11 +73,21 @@ function updateUserSection(data) {
 }
 
 function updateUserAchievements(achievements) {
-    $('#userAchievements').empty();
+    $('.slideshow').empty();
     for (var achievement in achievements) {
-        var label = '<p>' + achievement + ': ' + achievements[achievement] + '</p>';
-        $('#userAchievements').append(label);
+        var label = '<p>' + achievement + ': ' + achievements[achievement].description + '</p>';
+        var path = achievements[achievement].path;
+        if(path !== '') {
+            var div = '<div><img src="/images/fluid/achievements/' + path + '.png" />' + achievements[achievement].description + '</div>'
+            $('.slideshow').append(div);
+        } else {
+            $('.slideshow').append(label);
+        }
     }
+    $('.slideshow').cycle({
+        fx: 'fade' // choose your transition type, ex: fade, scrollUp, shuffle, etc...
+    });
+
 }
 
 function denyUser(data) {
@@ -158,8 +169,16 @@ function showAchievements(data) {
     for (var achievement in data.achievements) {
         hasNewAchievements = true;
         var label = '<p>' + data.achievements[achievement].name + ': ' + data.achievements[achievement].description + '</p>';
-        $('#newAchievements').append(label);
-        $('#userAchievements').append(label);
+        var path = data.achievements[achievement].path;
+        if(path !== '') {
+            var img = '<img src="/images/fluid/achievements/' + path + '.png" />';
+            var div = '<div>' + img + data.achievements[achievement].description + '</div>';
+            $('.slideshow').append(div);
+            $('#newAchievements').append(label);
+        } else {
+            $('.slideshow').append(label);
+            $('#newAchievements').append(label);
+        }
     }
 
     if (hasNewAchievements) {
@@ -168,6 +187,10 @@ function showAchievements(data) {
             $('#newAchievements').dialog('close');
         }, 5000);
     }
+    $('.slideshow').cycle({
+        fx: 'fade' // choose your transition type, ex: fade, scrollUp, shuffle, etc...
+    });
+
 }
 
 /**

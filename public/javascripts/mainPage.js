@@ -26,4 +26,8 @@ $(document).ready(function(){
 	$('.buttonRightOff').click(function() {															
 		// Go to next chart.
 	});
+		
+	$(function(){   
+	  makeScrollable("div.sc_menu_wrapper", "div.sc_menu");
+	});
 });	

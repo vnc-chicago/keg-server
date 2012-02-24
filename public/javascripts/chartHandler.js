@@ -22,9 +22,9 @@ var allTimePoursPerPersonSeries;
 
 function startCharts() {
     setTheme();
-    chartWidth = $('#chartSection').width();
+    chartWidth = $('#chart').width();
     $(window).resize(function() {
-        chartWidth = $('#chartSection').width();
+        chartWidth = $('#chart').width();
         resizeChart();
     });
 }
@@ -32,7 +32,7 @@ function startCharts() {
 function initializeCharts() {
     if(!chartsInitialized) {
         chartsInitialized = true;
-        $('#chartSection').fadeOut(charts[currentChart]);
+        $('#chart').fadeOut(charts[currentChart]);
         window.setInterval(rotateCharts, ROTATE_INTERVAL);
     }
 }
@@ -43,13 +43,13 @@ function rotateCharts() {
     } else {
         currentChart++;
     }
-    $('#chartSection').fadeOut(charts[currentChart]);
+    $('#chart').fadeOut(charts[currentChart]);
 }
 
 function showCurrentKegPoursPerPerson() {
     currentChartDisplay = currentKegPoursPerPerson = new Highcharts.Chart({
         chart : {
-            renderTo : 'chartSection',
+            renderTo : 'chart',
             type : 'column',
             width : chartWidth
         },
@@ -81,7 +81,7 @@ function showCurrentKegPoursPerPerson() {
             enabled : false
         }
     });
-    $('#chartSection').fadeIn(function() {
+    $('#chart').fadeIn(function() {
         resizeChart(currentKegPoursPerPerson);
     });
 }
@@ -89,7 +89,7 @@ function showCurrentKegPoursPerPerson() {
 function showCurrentKegPoursPerTime() {
     currentChartDisplay = currentKegPoursPerTime = new Highcharts.Chart({
         chart : {
-            renderTo : 'chartSection',
+            renderTo : 'chart',
             defaultSeriesType : 'line',
             width : chartWidth
         },
@@ -121,7 +121,7 @@ function showCurrentKegPoursPerTime() {
             enabled : false
         }
     });
-    $('#chartSection').fadeIn(function() {
+    $('#chart').fadeIn(function() {
         resizeChart(currentKegPoursPerTime);
     });
 }
@@ -129,7 +129,7 @@ function showCurrentKegPoursPerTime() {
 function showAllTimePoursPerPerson() {
     currentChartDisplay = allTimePoursPerPerson = new Highcharts.Chart({
         chart : {
-            renderTo : 'chartSection',
+            renderTo : 'chart',
             type : 'column',
             width : chartWidth
         },
@@ -161,7 +161,7 @@ function showAllTimePoursPerPerson() {
             enabled : false
         }
     });
-    $('#chartSection').fadeIn(function() {
+    $('#chart').fadeIn(function() {
         resizeChart(allTimePoursPerPerson);
     });
 }
@@ -169,7 +169,7 @@ function showAllTimePoursPerPerson() {
 function showAllTimePoursPerTime() {
     currentChartDisplay = allTimePoursPerTime = new Highcharts.Chart({
         chart : {
-            renderTo : 'chartSection',
+            renderTo : 'chart',
             defaultSeriesType : 'line',
             width : chartWidth
         },
@@ -201,7 +201,7 @@ function showAllTimePoursPerTime() {
             enabled : false
         }
     });
-    $('#chartSection').fadeIn(function() {
+    $('#chart').fadeIn(function() {
         resizeChart(allTimePoursPerTime);
     });
 }
@@ -210,7 +210,7 @@ function resizeChart(chart) {
     if(typeof chart === 'undefined') {
         chart = currentChartDisplay;
     }
-    chart.setSize($('#chartSection').width(), $('#chartSection').height(), true);
+    chart.setSize($('#chart').width(), $('#chart').height(), true);
 }
 
 /** * Gray theme for Highcharts JS * @author Torstein Hønsi */

@@ -5,28 +5,35 @@
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
     <title>Beer On Demand</title>
 
-    <link rel="stylesheet" type="text/css" href="/stylesheets/reset.css"/>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/text.css"/>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui-1.8.17.custom.css"/>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/mainPage.css"/>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/gauge2.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/text.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/jquery-ui-1.8.17.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/mainPage.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/gauge2.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/scrollingMenu.css"/>
 
-    <script src="/socket.io/socket.io.js" type="text/javascript"></script>
+    <script src="socket.io/socket.io.js" type="text/javascript"></script>
     <script type="text/javascript">
         var socket = io.connect();
     </script>
-    <script src="/javascripts//jquery-1.7.min.js" type="text/javascript"></script>
-    <script src="/javascripts/jquery-ui-1.8.17.custom.min.js" type="text/javascript"></script>
-    <script type="text/javascript" src="/javascripts/jQueryRotateCompressed.2.1.js"></script>
-    <script src="/javascripts/jquery.formalize.min.js" type="text/javascript"></script>
-    <script src="/javascripts/highcharts.js" type="text/javascript"></script>
-    <script src="/javascripts/chartHandler.js" type="text/javascript"></script>
-    <script src="/javascripts/handlers.js" type="text/javascript"></script>
+    <script src="javascripts//jquery-1.7.min.js" type="text/javascript"></script>
+    <script src="javascripts/jquery-ui-1.8.17.custom.min.js" type="text/javascript"></script>
+    <script src="javascripts/jQueryRotateCompressed.2.1.js" type="text/javascript"></script>
+    <script src="javascripts/jquery.formalize.min.js" type="text/javascript"></script>
+    <script src="javascripts/highcharts.js" type="text/javascript"></script>
+    <script src="javascripts/chartHandler.js" type="text/javascript"></script>
+    <script src="javascripts/handlers.js" type="text/javascript"></script>
+    <script src="javascripts/mainPage.js" type="text/javascript"></script>
+    <script src="javascripts/jquery.cycle.lite.js" type="text/javascript"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
             startCharts();
             startHandlers();
+			
+			$('.slideshow').cycle({
+				fx: 'fade' // choose your transition type, ex: fade, scrollUp, shuffle, etc...
+			});
         });
     </script>
 
@@ -38,13 +45,10 @@
     <div id="contentWrapper">
         <div id="barRailTop"></div>
         <div id="centerColumnPosition">
-            <img src="/images/fluid/bodTextLogo.png" width="566" height="59" alt="" title="" border="0"/>
+            <img src="images/fluid/bodTextLogo.png" width="566" height="59" alt="" title="" border="0"/>
         </div>
     </div>
     <div id="leftLogo">
-        <div class="image"></div>
-    </div>
-    <div id="rightLogo">
         <div class="image"></div>
     </div>
 </div>
@@ -52,21 +56,32 @@
 <div id="lowerSection">
     <div id="contentWrapper2">
         <div id="contentColumn2">
-            <div id="centerSection">
+            <div id="centerSection" style="float:left;">
                 <div class="top"></div>
-                <div id="chartSection"></div>
                 <div id="userSection">
                     <div id="userImage"></div>
-                    <div id="userName"></div>
-                    <div id="userAffiliation"></div>
-                    <div id="userJoined"></div>
-                    <div id="userTotalPours"></div>
-                    <div id="userAchievements"></div>
+                    <div class="userName">
+                        <div id="userName"></div>
+                        <div id="userAffiliation"></div>
+                        <div id="userJoined"></div>
+                        <div id="userTotalPours"></div>
+                    </div> 
+                    <div class="achievements">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ACHIEVEMENTS
+                        <div class="slideshow" style="margin-top:10px;">
+                        </div>
+                    </div>                         
                 </div>
-                <div id="chartNav">
-                    <div class="buttonLeftOff"></div>
-                    <div class="buttonRightOff"></div>
+               
+                <div id="chartSection">
+                    <div id="chart"></div>
+                    <div id="chartNav">
+                        <div class="buttonLeftOff"></div>
+                        <div class="navSpacer">&nbsp;</div>
+                        <div class="buttonRightOff"></div>
+                    </div>
                 </div>
+                
             </div>
         </div>
     </div>
@@ -92,26 +107,24 @@
 </div>
 
 <div id="gauge">
-    <b>Current Temperature</b>
     <div class="gaugeBack"></div>
     <div class="gaugeNeedle"></div>
     <div class="gaugeGlass"></div>
 </div>
 
 <div id="gauge2">
-    <b>Current Flow</b>
     <div class="gaugeBack"></div>
     <div class="gaugeNeedle"></div>
     <div class="gaugeGlass"></div>
 </div>
 
-<div id="welcomeUser" title="Welcome"></div>
+<div id="welcomeUser"></div>
 
-<div id="denyUser" title="Sorry">
+<div id="denyUser">
     <p>Sorry, you are not in our system, please contact an administrator</p>
 </div>
 
-<div id="newAchievements" title="New Achievements"></div>
+<div id="newAchievements"></div>
 
 </body>
 </html>
