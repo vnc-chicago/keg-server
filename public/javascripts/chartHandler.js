@@ -57,7 +57,8 @@ function showCurrentKegPoursPerPerson() {
             text : 'Current Keg Pour Amounts Per Person'
         },
         xAxis : {
-            categories : currentKegPoursPerPersonCategories
+            categories : currentKegPoursPerPersonCategories,
+            labels : { rotation: -90, align: 'right' }
         },
         yAxis : {
             title : {
@@ -137,7 +138,8 @@ function showAllTimePoursPerPerson() {
             text : 'All Time Pour Amounts Per Person'
         },
         xAxis : {
-            categories : allTimePoursPerPersonCategories
+            categories : allTimePoursPerPersonCategories,
+            labels : { rotation: -90, align: 'right' }
         },
         yAxis : {
             title : {
@@ -250,7 +252,7 @@ function setTheme() {
             labels : {
                 style : {
                     color : '#999',
-                    fontWeight : 'bold'
+                    fontWeight : 'bold',
                 }
             },
             title : {

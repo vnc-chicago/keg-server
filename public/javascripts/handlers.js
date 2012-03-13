@@ -102,7 +102,6 @@ function updateKegFlow(data) {
     var flow = formatNumber(data.flow.flow, false);
     if (!isNaN(flow)) {
         $('#gauge2 .gaugeNeedle').rotate({animateTo: flow * 100});
-        $('#gauge2 .gaugeGlass').rotate({animateTo: flow * 100});
     }
 }
 
@@ -126,7 +125,6 @@ function updateKegAmount(amount) {
 function updateKegTemperature(data) {
     var temp = formatNumber(data.temp.temp, true);
     $('#gauge .gaugeNeedle').rotate({animateTo: temp * 4});
-    $('#gauge .gaugeGlass').rotate({animateTo: temp * 4});
 }
 
 /**
