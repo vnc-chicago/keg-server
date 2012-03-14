@@ -45,7 +45,7 @@ var Main = (function () {
                     User.byTag(pour.userId, function(user) {
                         if (typeof user !== 'undefined') {
                             _lastUser = user;
-                            _lastUser.timeStamp = new Date().getTime() - 30000; // set timestamp to now - 30seconds
+                            _lastUser.timeStamp = new Date().getTime() - Config.scanTimeout; // set timestamp to now - scanTimeout
                             _logger.info('Last User: ' + _lastUser.firstName + ' ' + _lastUser.lastName);
                         }
                         _lastUserLoaded = true;
@@ -73,7 +73,7 @@ var Main = (function () {
 
         }, 5000);
 
-        setInterval(initStats, 86400000);
+        //setInterval(initStats, 86400000);
     }
 
     function initStats() {

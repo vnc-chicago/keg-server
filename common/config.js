@@ -66,7 +66,7 @@ var Config = (function() {
         /**
          * Timeout for duplicate card scans in ms
          */
-        scanTimeout : 30000
+        scanTimeout : 10000
     }
 }());
 module.exports = Config;

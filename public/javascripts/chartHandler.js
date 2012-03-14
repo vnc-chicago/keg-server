@@ -3,7 +3,7 @@ var currentChart = 0;
 var currentChartDisplay;
 var chartsInitialized = false;
 var chartWidth = 460;
-var ROTATE_INTERVAL = 15000;
+var ROTATE_INTERVAL = 30000;
 
 var currentKegPoursPerTime;
 var currentKegPoursPerPerson;
@@ -27,21 +27,54 @@ function startCharts() {
         chartWidth = $('#chart').width();
         resizeChart();
     });
+
+    // Chart left nav button functionality.
+    $('.buttonLeftOff').hover(function() {
+        $(this).removeClass('buttonLeftOff').addClass('buttonLeftOn');
+    });
+
+    $('.buttonLeftOff').mouseout(function() {
+        $(this).removeClass('buttonLeftOn').addClass('buttonLeftOff');
+    });
+
+    $('.buttonLeftOff').click(function() {
+        rotateCharts(false);
+    });
+
+    // Chart right nav button functionality.
+    $('.buttonRightOff').hover(function() {
+        $(this).toggleClass('buttonRightOn');
+    });
+
+    $('.buttonRightOff').click(function() {
+        rotateCharts(true);
+    });
 }
 
+
 function initializeCharts() {
-    if(!chartsInitialized) {
+    if (!chartsInitialized) {
         chartsInitialized = true;
         $('#chart').fadeOut(charts[currentChart]);
-        window.setInterval(rotateCharts, ROTATE_INTERVAL);
+        window.setInterval(function() {
+            rotateCharts(true);
+        }, ROTATE_INTERVAL);
     }
 }
 
-function rotateCharts() {
-    if (currentChart == charts.length - 1) {
-        currentChart = 0;
+function rotateCharts(isForward) {
+    if (isForward) {
+        if (currentChart == charts.length - 1) {
+            currentChart = 0;
+        } else {
+            currentChart++;
+        }
     } else {
-        currentChart++;
+        if (currentChart == 0) {
+            currentChart = charts.length;
+        } else {
+            currentChart--;
+        }
     }
     $('#chart').fadeOut(charts[currentChart]);
 }
@@ -58,7 +91,7 @@ function showCurrentKegPoursPerPerson() {
         },
         xAxis : {
             categories : currentKegPoursPerPersonCategories,
-            labels : { rotation: -90, align: 'right' }
+            labels : { rotation: -45, align: 'right' }
         },
         yAxis : {
             title : {
@@ -112,8 +145,8 @@ function showCurrentKegPoursPerTime() {
             }
         ],
         tooltip : { formatter : function() {
-                return this.x + ': ' + this.y + 'oz';
-            }
+            return this.x + ': ' + this.y + 'oz';
+        }
         },
         credits : {
             enabled : false
@@ -139,7 +172,7 @@ function showAllTimePoursPerPerson() {
         },
         xAxis : {
             categories : allTimePoursPerPersonCategories,
-            labels : { rotation: -90, align: 'right' }
+            labels : { rotation: -45, align: 'right' }
         },
         yAxis : {
             title : {
@@ -153,8 +186,8 @@ function showAllTimePoursPerPerson() {
             }
         ],
         tooltip : { formatter : function() {
-                return this.x + ': ' + this.y + 'oz';
-            }
+            return this.x + ': ' + this.y + 'oz';
+        }
         },
         credits : {
             enabled : false
@@ -193,8 +226,8 @@ function showAllTimePoursPerTime() {
             }
         ],
         tooltip : { formatter : function() {
-                return this.x + ': ' + this.y + 'oz';
-            }
+            return this.x + ': ' + this.y + 'oz';
+        }
         },
         credits : {
             enabled : false
@@ -209,7 +242,7 @@ function showAllTimePoursPerTime() {
 }
 
 function resizeChart(chart) {
-    if(typeof chart === 'undefined') {
+    if (typeof chart === 'undefined') {
         chart = currentChartDisplay;
     }
     chart.setSize($('#chart').width(), $('#chart').height(), true);
@@ -252,7 +285,7 @@ function setTheme() {
             labels : {
                 style : {
                     color : '#999',
-                    fontWeight : 'bold',
+                    fontWeight : 'bold'
                 }
             },
             title : {

@@ -35,7 +35,7 @@ socket.on('createSuccess', function() {
 });
 
 socket.on('createFailure', function(data) {
-    $('#error').replaceWith("<p id='error'>" + data.error + "</p>")
+    $('#error').replaceWith("<p id='error'>" + data.error + "</p>");
     $('#createFailure').dialog('open');
 
     setTimeout(function() {
