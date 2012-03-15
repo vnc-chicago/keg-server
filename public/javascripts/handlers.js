@@ -16,7 +16,7 @@ var currentChart = 0;
 var currentChartDisplay;
 var chartsInitialized = false;
 var chartWidth = 460;
-const ROTATE_INTERVAL = 30000;
+const ROTATE_INTERVAL = 15000;
 
 var currentKegPoursPerTime;
 var currentKegPoursPerPerson;
@@ -33,8 +33,7 @@ var currentKegPoursPerPersonSeries;
 var allTimePoursPerTimeSeries;
 var allTimePoursPerPersonSeries;
 
-var isPartitioned = false;
-const PARTITION_SIZE = 1;
+const PARTITION_SIZE = 15;
 
 function startHandlers() {
     $('#welcomeUser').hide();
@@ -162,6 +161,10 @@ function updateKegTemperature(data) {
  */
 function updateKeg(data) {
     $('#kegImage').empty();
+    $('#kegImage').append('<img id="brewerImage" src="/images/fluid/brewers/' + data.keg.brewer.replace(' ', '') + '.png" alt="' + data.keg.brewer + '" />');
+    $('#brewerImage').error(function() {
+        $(this).hide();
+    });
 
 
     $('#kegTitle').empty();
@@ -238,7 +241,6 @@ function updateAllTimePoursPerPerson(data) {
         xAxis.push(row.name);
         chartData.push(formatNumber(row.totalAmount, true));
     }
-    isPartitioned = isPartitioned && xAxis.length > PARTITION_SIZE;
 
     allTimePoursPerPersonCategories = xAxis;
     allTimePoursPerPersonSeries = chartData;
@@ -265,7 +267,6 @@ function updateAllTimePoursPerTime(data) {
         xAxis.push(formatTime(row.timePoured));
         chartData.push(formatNumber(row.totalAmount, true));
     }
-    isPartitioned = isPartitioned && xAxis.length > PARTITION_SIZE;
 
     allTimePoursPerTimeCategories = xAxis;
     allTimePoursPerTimeSeries = chartData;
@@ -292,7 +293,6 @@ function updateKegPoursPerTime(data) {
         xAxis.push(formatTime(row.timePoured));
         chartData.push(formatNumber(row.totalAmount, true));
     }
-    isPartitioned = isPartitioned && xAxis.length > PARTITION_SIZE;
 
     currentKegPoursPerTimeCategories = xAxis;
     currentKegPoursPerTimeSeries = chartData;
@@ -320,7 +320,6 @@ function updateKegPoursPerPerson(data) {
         totalAmounts.push(formatNumber(row.totalAmount, true));
         pours.push(formatNumber(row.pours, true));
     }
-    isPartitioned = isPartitioned && xAxis.length > PARTITION_SIZE;
 
     currentKegPoursPerPersonCategories = xAxis;
     currentKegPoursPerPersonSeries = totalAmounts;
@@ -397,28 +396,28 @@ function initializeCharts() {
 }
 
 function rotateCharts(isForward) {
-    if (isForward && !isPartitioned) {
-        if (currentChart == charts.length - 1) {
-            currentChart = 0;
-        } else {
-            currentChart++;
-        }
-    }
-    else if (!isPartitioned) {
-        if (currentChart == 0) {
-            currentChart = charts.length - 1;
-        } else {
-            currentChart--;
-        }
-    }
-    if (isPartitioned && currentChartDisplay) {
+    if (currentChartDisplay) {
         var extremes = currentChartDisplay.xAxis[0].getExtremes();
 
-        if (extremes.dataMax >= extremes.max + PARTITION_SIZE) {
-            currentChartDisplay.xAxis[0].setExtremes(extremes.min + PARTITION_SIZE, extremes.max + PARTITION_SIZE);
+        if (extremes.dataMax + .5 >= extremes.max + PARTITION_SIZE && isForward) {
+            currentChartDisplay.xAxis[0].setExtremes(extremes.min + PARTITION_SIZE + .5, Math.min(extremes.max + PARTITION_SIZE + .5, extremes.dataMax));
+        } else if(extremes.dataMin - .5 <= extremes.min - PARTITION_SIZE && !isForward) {
+            currentChartDisplay.xAxis[0].setExtremes(Math.max(extremes.min - PARTITION_SIZE - .5, 0), extremes.max - PARTITION_SIZE - .5);
+        } else if (isForward) {
+            if (currentChart == charts.length - 1) {
+                currentChart = 0;
+            } else {
+                currentChart++;
+            }
+            $('#chart').fadeOut(charts[currentChart]);
+        } else {
+            if (currentChart == 0) {
+                currentChart = charts.length - 1;
+            } else {
+                currentChart--;
+            }
+            $('#chart').fadeOut(charts[currentChart]);
         }
-    } else {
-        $('#chart').fadeOut(charts[currentChart]);
     }
 }
 
@@ -434,7 +433,9 @@ function showCurrentKegPoursPerPerson() {
         },
         xAxis : {
             categories : currentKegPoursPerPersonCategories,
-            labels : { rotation: -45, align: 'right' }
+            labels : { rotation: -45, align: 'right' },
+            min : 0,
+            max : Math.min(PARTITION_SIZE, currentKegPoursPerPersonCategories.length - 1)
         },
         yAxis : {
             title : {
@@ -459,11 +460,6 @@ function showCurrentKegPoursPerPerson() {
         }
     });
 
-    if(isPartitioned) {
-        currentChartDisplay.xAxis[0].setExtremes(0, PARTITION_SIZE);
-        currentChartDisplay.redraw();
-    }
-
     $('#chart').fadeIn(function() {
         resizeChart(currentKegPoursPerPerson);
     });
@@ -480,7 +476,9 @@ function showCurrentKegPoursPerTime() {
             text : 'Current Keg Pour Amounts Per Time'
         },
         xAxis : {
-            categories : currentKegPoursPerTimeCategories
+            categories : currentKegPoursPerTimeCategories,
+            min : 0,
+            max : Math.min(PARTITION_SIZE, currentKegPoursPerTimeCategories.length - 1)
         },
         yAxis : {
             title : {
@@ -505,11 +503,6 @@ function showCurrentKegPoursPerTime() {
         }
     });
 
-    if(isPartitioned) {
-        currentChartDisplay.xAxis[0].setExtremes(0, PARTITION_SIZE);
-        currentChartDisplay.redraw();
-    }
-
     $('#chart').fadeIn(function() {
         resizeChart(currentKegPoursPerTime);
     });
@@ -527,7 +520,9 @@ function showAllTimePoursPerPerson() {
         },
         xAxis : {
             categories : allTimePoursPerPersonCategories,
-            labels : { rotation: -45, align: 'right' }
+            labels : { rotation: -45, align: 'right' },
+            min : 0,
+            max : Math.min(PARTITION_SIZE, allTimePoursPerPersonCategories.length - 1)
         },
         yAxis : {
             title : {
@@ -552,11 +547,6 @@ function showAllTimePoursPerPerson() {
         }
     });
 
-    if(isPartitioned) {
-        currentChartDisplay.xAxis[0].setExtremes(0, PARTITION_SIZE);
-        currentChartDisplay.redraw();
-    }
-
     $('#chart').fadeIn(function() {
         resizeChart(allTimePoursPerPerson);
     });
@@ -573,7 +563,9 @@ function showAllTimePoursPerTime() {
             text : 'All Time Pour Amounts Per Time'
         },
         xAxis : {
-            categories : allTimePoursPerTimeCategories
+            categories : allTimePoursPerTimeCategories,
+            min : 0,
+            max : Math.min(PARTITION_SIZE, allTimePoursPerTimeCategories.length - 1)
         },
         yAxis : {
             title : {
@@ -597,11 +589,6 @@ function showAllTimePoursPerTime() {
             enabled : false
         }
     });
-
-    if(isPartitioned) {
-        currentChartDisplay.xAxis[0].setExtremes(0, PARTITION_SIZE);
-        currentChartDisplay.redraw();
-    }
 
     $('#chart').fadeIn(function() {
         resizeChart(allTimePoursPerTime);
