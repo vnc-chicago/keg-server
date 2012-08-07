@@ -2,18 +2,17 @@ var EventEmitter = require('events').EventEmitter;
 var protocol = require('../common/protocol');
 var serialPort = require('serialport');
 var Config = require('../common/config');
+var winston = require('winston');
 
 var KegIO = (function() {
     var VALID_MESSAGE = /\*{2}.+_.+\*{2}/i;
     var SerialPort = serialPort.SerialPort;
     var _port;
-    var _logger;
     var _emitter;
     var fakePour = 0;
 
     function init(logger) {
         _emitter = Object.create(EventEmitter.prototype);
-        _logger = logger;
 
         if (!Config.isDebug) {
             _port = new SerialPort(Config.devicePath, {
@@ -38,14 +37,14 @@ var KegIO = (function() {
 
     function parseMessage(message) {
         if (!validMessage(message)) {
-            _logger.warn('Invalid arduino message: ' + message);
+            winston.warn('Invalid arduino message: ' + message);
         } else {
             var startSlice = message.indexOf('_') + 1;
             var endSlice = message.indexOf('*', message.indexOf('_'));
             var data = message.slice(startSlice, endSlice);
             var event = message.slice(2, message.indexOf('_'));
 
-            _logger.debug('Keg message: ' + event + ' - ' + data);
+            winston.debug('Keg message: ' + event + ' - ' + data);
 
             _emitter.emit(event, data);
         }
@@ -56,7 +55,7 @@ var KegIO = (function() {
     }
 
     function openValve() {
-        _logger.debug(protocol.REQUEST_OPEN);
+        winston.debug(protocol.REQUEST_OPEN);
         if (!Config.isDebug) {
             _port.write(protocol.REQUEST_OPEN);
         } else {

@@ -3,14 +3,12 @@ var fs = require('fs');
 var http = require('http');
 var EventEmitter = require('events').EventEmitter;
 var Config = require('../common/config');
+var winston = require('winston');
 
 var WebIO = (function() {
     var _client;
-    var _logger;
 
-    function init(app, logger) {
-        _logger = logger;
-
+    function init(app) {
         // Socket io
         io = io.listen(app);
 
@@ -57,11 +55,11 @@ var WebIO = (function() {
     function pushPicture(picName, callback) {
         fs.readFile(Config.localPictureLocation + picName + Config.pictureType, 'binary', function(error, file) {
             if(error) {
-                _logger.error(error);
+                winston.error(error);
                 _client.emit('createFailure', {error: 'Picture failed to transfer'});
                 callback(error);
             } else {
-                _logger.debug('Pic Name: ' + picName);
+                winston.debug('Pic Name: ' + picName);
                 var obj = {
                     picName : (picName + Config.pictureType),
                     data : file
@@ -128,7 +126,7 @@ var WebIO = (function() {
 
     function pushAchievements(achievements) {
         var data = JSON.stringify(achievements);
-        _logger.debug('Achievements: ' + data);
+        winston.debug('Achievements: ' + data);
         var request = http.request(generateDataPost('/show/achievements', data));
         request.write(data);
         request.end();

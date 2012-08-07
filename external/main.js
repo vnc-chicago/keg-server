@@ -1,5 +1,5 @@
+var winston = require('winston');
 var sockets = null,
-    logger = null,
     clients = [],
     kegPourAmountsPerTime,
     allTimePourAmountsPerTime,
@@ -8,10 +8,9 @@ var sockets = null,
     currentKeg,
     lastUser;
 
-exports.start = function(socketsInstance, loggerInstance) {
+exports.start = function(socketsInstance) {
     sockets = socketsInstance;
     sockets.on('connection', _onConnection);
-    logger = loggerInstance;
 };
 
 exports.initStats = function(data) {
@@ -190,8 +189,8 @@ function _emitKegPoursPerTimeUpdate(data, client) {
 function _onConnection(client) {
     clients.push(client);
 
-    if(logger) {
-        logger.info("Client connected: " + client.toString());
+    if(winston) {
+        winston.info("Client connected: " + client.toString());
     }
 
     if(currentKeg) {

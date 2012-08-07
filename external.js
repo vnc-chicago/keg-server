@@ -11,23 +11,18 @@
 var express = require('express');
 var socket = require('socket.io');
 var fs = require('fs');
-var log4js = require('log4js');
+var winston = require('winston');
+var http = require('http');
 var main = require('./external/main.js');
 var Config = require('./common/config.js');
 
 
 // Configuration
-var app = express.createServer();
-
-log4js.addAppender(log4js.consoleAppender);
-log4js.addAppender(log4js.fileAppender('logs/app.log'));
-
-var logger = log4js.getLogger('external');
+var app = express();
 
 app.configure(function() {
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
-    app.use(log4js.connectLogger(logger, { level: log4js.levels.INFO }));
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(app.router);
@@ -119,7 +114,7 @@ app.post('/send/pic', function(request, response) {
 
     fs.write((Config.externalPictureLocation + picName), file, 'binary', function(error) {
         if (error) {
-            logger.error(error);
+            winston.error(error);
         }
     });
 
@@ -130,7 +125,7 @@ app.post('/show/achievements', function(request, response) {
     for (var prop in request.body) {
         request.body = prop;
     }
-    logger.debug('Achievement: ' + request.body);
+    winston.debug('Achievement: ' + request.body);
 
     var obj = JSON.parse(request.body);
     main.showAchievements(obj);
@@ -142,7 +137,7 @@ app.post('/show/achievements', function(request, response) {
 app.listen(Config.externalPortRunner);
 
 // Socket io
-socket = socket.listen(app);
+socket = socket.listen(http.createServer(app));
 
 socket.configure(function() {
     socket.set('log level', 1);
@@ -161,6 +156,4 @@ socket.configure('production', function() {
     ])
 });
 
-main.start(socket.sockets, logger);
-
-logger.info("Express server listening on port " + app.address().port + " in " + app.settings.env + " mode");
+main.start(socket.sockets);

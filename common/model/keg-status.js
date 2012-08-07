@@ -1,8 +1,8 @@
-var KegStatus = (function() {
-    var _logger;
+var winston = require('winston');
 
-    function init(logger) {
-        _logger = logger;
+var KegStatus = (function() {
+
+    function init() {
     }
 
     return {

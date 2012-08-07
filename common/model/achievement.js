@@ -1,9 +1,9 @@
 var KegPours = require('./keg-pour');
 var sqlite3 = require('sqlite3');
 var Config = require('../config');
+var winston = require('winston');
 
 var Achievement = (function() {
-    var _logger;
     var _isFirstPourSet = false;
     var _isDecaUserSet = false;
     var _isHalfCenturionSet = false;
@@ -23,8 +23,7 @@ var Achievement = (function() {
     var _result;
     var _callback;
 
-    function init(logger) {
-        _logger = logger;
+    function init() {
     }
 
     function rollThroughAchievements(user, callback) {
@@ -92,12 +91,12 @@ var Achievement = (function() {
     function getById(id, callback) {
         var _db = new sqlite3.Database(Config.dbPath, function(error) {
             if (error) {
-                _logger.error(error);
+                winston.error(error);
                 _db.close();
             } else {
                 _db.get("select name, description, path from Achievement where id=?", [id], function(error, row) {
                     if (error) {
-                        _logger.error(error);
+                        winston.error(error);
                     }
                     callback(row);
                 })
@@ -421,7 +420,7 @@ var Achievement = (function() {
             if (!result.hasOwnProperty(prop)) {
                 result[prop] = addition[prop];
             } else {
-                _logger.error('Two achievements have same property: ' + prop);
+                winston.error('Two achievements have same property: ' + prop);
             }
         }
 

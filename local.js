@@ -10,25 +10,19 @@
  */
 
 var express = require('express');
+var http = require('http');
 var fs = require('fs');
-var log4js = require('log4js');
 var index = require('./routes/index');
 var Config = require('./common/config');
 var main = require('./local/main');
 
 
 // Configuration
-var app = express.createServer();
-
-log4js.addAppender(log4js.consoleAppender);
-log4js.addAppender(log4js.fileAppender('logs/app.log'));
-
-var logger = log4js.getLogger('local');
+var app = express();
 
 app.configure(function() {
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
-    app.use(log4js.connectLogger(logger, { level: log4js.levels.INFO }));
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(app.router);
@@ -74,6 +68,4 @@ app.get('/500', function(request, response) {
 
 app.listen(Config.localPort);
 
-main.start(app, logger);
-
-logger.info("Express server listening on port " + app.address().port + " in " + app.settings.env + " mode");
+main.start(http.createServer(app));

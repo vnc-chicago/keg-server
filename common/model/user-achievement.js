@@ -1,12 +1,11 @@
 var sqlite3 = require('sqlite3');
 var Config = require('../config');
 var Achievement = require('./achievement');
+var winston = require('winston');
 
 var UserAchievement = (function() {
-    var _logger;
 
-    function init(logger) {
-        _logger = logger;
+    function init() {
     }
 
     function saveAchievementsForUser(user, achievements, callback) {
@@ -27,7 +26,7 @@ var UserAchievement = (function() {
     function recordAchievement(userId, achievements, achievement, callback) {
         var _db = new sqlite3.Database(Config.dbPath, function(error) {
             if (error) {
-                _logger.error(error);
+                winston.error(error);
                 _db.close();
             } else {
                 if (achievements[achievement].awarded) {
@@ -95,7 +94,7 @@ var UserAchievement = (function() {
 
                     _db.all('SELECT userId, achievementId from UserAchievement WHERE userId=? and achievementId=?', [userId, achievementId], function(error2, rows) {
                         if (error2) {
-                            _logger.error(error2);
+                            winston.error(error2);
                         }
 
                         if (rows.length == 0) {
@@ -119,7 +118,7 @@ var UserAchievement = (function() {
 
     function closeDB(db, error) {
         if (error) {
-            _logger.error(error);
+            winston.error(error);
         }
         db.close();
     }

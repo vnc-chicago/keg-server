@@ -9,9 +9,9 @@ var KegPour = require('../common/model/keg-pour');
 var Stats = require('../common/model/stats');
 var Achievement = require('../common/model/achievement');
 var UserAchievement = require('../common/model/user-achievement');
+var winston = require('winston');
 
 var Main = (function () {
-    var _logger;
     var _currentKeg;
     var _currentUser;
     var _lastUser;
@@ -22,31 +22,30 @@ var Main = (function () {
     var _currentKegLoaded = false;
     var _lastUserLoaded = false;
 
-    function init(app, logger) {
-        _logger = logger;
+    function init(app) {
         _isUserCreation = false;
 
         setTimeout(function() {
-            WebIO.start(app, logger);
+            WebIO.start(app);
 
-            KegIO.start(logger);
+            KegIO.start();
             KegIO.getEmitter().on(protocol.TAG, handleTag);
             KegIO.getEmitter().on(protocol.FLOW, handleFlow);
             KegIO.getEmitter().on(protocol.POUR, handlePour);
             KegIO.getEmitter().on(protocol.TEMP, handleTemp);
 
-            User.start(logger);
+            User.start();
 
-            KegPour.start(logger);
+            KegPour.start();
             KegPour.getLast(function(pour) {
-                _logger.debug('Last Pour: ' + pour);
+                winston.debug('Last Pour: ' + pour);
                 if (typeof pour !== 'undefined' && pour.hasOwnProperty('userId')) {
-                    _logger.debug('Last Pour User: ' + pour.userId);
+                    winston.debug('Last Pour User: ' + pour.userId);
                     User.byTag(pour.userId, function(user) {
                         if (typeof user !== 'undefined') {
                             _lastUser = user;
                             _lastUser.timeStamp = new Date().getTime() - Config.scanTimeout; // set timestamp to now - scanTimeout
-                            _logger.info('Last User: ' + _lastUser.firstName + ' ' + _lastUser.lastName);
+                            winston.info('Last User: ' + _lastUser.firstName + ' ' + _lastUser.lastName);
                         }
                         _lastUserLoaded = true;
                         initStats();
@@ -57,19 +56,19 @@ var Main = (function () {
                 }
             });
 
-            Keg.start(logger);
+            Keg.start();
             Keg.currentKeg(function(keg) {
                 _currentKeg = keg;
                 _currentKegLoaded = true;
-                _logger.info('Current keg: ' + _currentKeg.name);
+                winston.info('Current keg: ' + _currentKeg.name);
                 initStats();
             });
 
-            Stats.start(logger);
+            Stats.start();
             compileAndPushStats();
 
-            Achievement.start(logger);
-            UserAchievement.start(logger);
+            Achievement.start();
+            UserAchievement.start();
 
         }, 5000);
 
@@ -100,7 +99,7 @@ var Main = (function () {
             User.byTag(tag, function(user) {
                 // If user exists
                 if (typeof user !== 'undefined') {
-                    _logger.debug('Scanned User : ' + user.firstName + ' ' + user.lastName);
+                    winston.debug('Scanned User : ' + user.firstName + ' ' + user.lastName);
 
                     var now = new Date().getTime();
                     var lastUserValid = typeof _lastUser !== 'undefined';
@@ -111,10 +110,10 @@ var Main = (function () {
                         diff = now - _lastUser.timeStamp;
                     }
 
-                    _logger.debug('Last user valid: ' + lastUserValid);
-                    _logger.debug('Last is current user: ' + lastUserIsCurrentUser);
-                    _logger.debug('Diff: ' + diff);
-                    _logger.debug('Typeof last user: ' + (typeof _lastUser));
+                    winston.debug('Last user valid: ' + lastUserValid);
+                    winston.debug('Last is current user: ' + lastUserIsCurrentUser);
+                    winston.debug('Diff: ' + diff);
+                    winston.debug('Typeof last user: ' + (typeof _lastUser));
 
                     if ((lastUserValid && lastUserIsCurrentUser && diff > Config.scanTimeout) || typeof _lastUser === 'undefined' || !lastUserIsCurrentUser) {
                         // Store in _currentUser
@@ -210,7 +209,7 @@ var Main = (function () {
 
     function takePicture(user) {
         setTimeout(function() {
-            _logger.debug("Take Picture: " + user.firstName + user.lastName);
+            winston.debug("Take Picture: " + user.firstName + user.lastName);
             var cam = new Camera();
             cam.snap(user.badgeId);
             cam.on('done', function() {
@@ -235,7 +234,7 @@ var Main = (function () {
                             if (!error2) {
                                 WebIO.createUserSuccess();
                             } else {
-                                _logger.error(error2);
+                                winston.error(error2);
                                 WebIO.createUserFail(error2);
                             }
                         });
@@ -243,7 +242,7 @@ var Main = (function () {
                         WebIO.createUserSuccess();
                     }
                 } else {
-                    _logger.error(error);
+                    winston.error(error);
                     WebIO.createUserFail(error);
                 }
             });
