@@ -12,6 +12,7 @@
 var express = require('express');
 var http = require('http');
 var fs = require('fs');
+var winston = require('winston');
 var index = require('./routes/index');
 var Config = require('./common/config');
 var main = require('./local/main');
@@ -36,6 +37,17 @@ app.configure('development', function() {
 app.configure('production', function() {
     app.use(express.errorHandler());
 });
+
+// Remove default console output
+winston.remove(winston.transports.Console);
+
+// Add custom logging transports
+winston.add(winston.transports.Console, {
+    colorize: true,
+    timestamp: true,
+    handleExceptions: true,
+    exitOnError: false
+})
 
 // Routes
 

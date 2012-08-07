@@ -37,6 +37,17 @@ app.configure('production', function() {
     app.use(express.errorHandler());
 });
 
+// Remove default console output
+winston.remove(winston.transports.Console);
+
+// Add custom logging transports
+winston.add(winston.transports.Console, {
+    colorize: true,
+    timestamp: true,
+    handleExceptions: true,
+    exitOnError: false
+})
+
 // Routes
 
 app.get('/', function(request, response) {
