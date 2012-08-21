@@ -5,6 +5,8 @@ using namespace Aiko;
 #include <DallasTemperature.h>
 #include <NewSoftSerial.h>
 
+#define LED_PIN 13
+
 // Serial
 String message = "";
 
@@ -20,11 +22,8 @@ DeviceAddress temp1Address;
 #define FLOW_SAMPLE_RATE 500 // Define a sample rate to measure flow in ms, currently take a measure every .5 sec
 #define IDLE_COUNT 10 // Amount of time to wait in seconds to time out pour
 #define CONVERSION 0.281783523
-int lastFlow = 0;
-int lastPour = 0;
-boolean isInitialTry = true;
-volatile int flow;
-int calc;
+volatile int flow = 0;
+boolean flowEnd = false;
 
 // RFID
 #define RFID_IN_PIN 9
@@ -42,8 +41,8 @@ void setup(void) {
   // Start the serial port
   Serial.begin(9600);
 
-  pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
 
   setupSensors();
   setupRFID();
@@ -120,67 +119,43 @@ void flowMeterInterrupt() {
 }
 
 void openSolenoid() {
-  digitalWrite(13, HIGH);
-  isInitialTry = true;
-  lastPour = 0;
-  
+  digitalWrite(LED_PIN, HIGH);
+
   digitalWrite(SOLENOID_OUT_PIN, HIGH);
-  
-  // Create the interrupt if the meter is flowing
+
+  // Create the interrupt for when the meter is flowing
   attachInterrupt(0, flowMeterInterrupt, RISING);
   
-  // Try in case user is super quick
-  measureFlow();
+  while(!flowEnd) {
+    // Wait
+    delay(FLOW_SAMPLE_RATE);
+    
+    // Take a measurement
+    measureFlow();
+  }
+  
+  // Reset our flag
+  flowEnd = false;
 }
 
 void measureFlow() {
-  // Convert our pulse frequency to a oz/s and store in lastFlow
-  lastFlow = ((flow * 60) / 7.5) * CONVERSION;
+  // Convert our pulse frequency to a oz/s
+  int lastFlow = ((flow * 60) / 7.5) * CONVERSION;
   flow = 0;
 
   if(lastFlow != 0) {    
-    lastPour += lastFlow;
     Serial.print("**FLOW_");
     Serial.print(lastFlow);
     Serial.println("**");
+  } 
+  else {
+    flowEnd = true;
+    Serial.println("**FLOW_END**");
   }
-
-  pourHandler();
-}
-
-void pourHandler() {
-  // while idle count < IDLE_COUNT sec
-  while(idleCount < IDLE_COUNT) {
-
-    // Convert our pulse frequency to a oz/s and store in lastFlow
-    lastFlow = ((flow * 60) / 7.5) * CONVERSION;
-    flow = 0;
- 
-    if(lastFlow == 0) {
-      if(!isInitialTry) idleCount++;
-    } 
-    else {
-      lastPour += lastFlow;
-      Serial.print("**FLOW_");
-      Serial.print(lastFlow);
-      Serial.println("**");
-    }
-
-    isInitialTry = false;
-    delay(1000);
-  }
-
-  closeSolenoid();
-  idleCount = 0;
-  Serial.println("**FLOW_END**");
-  Serial.print("**POUR_");
-  Serial.print(lastPour);
-  Serial.println("**");
-  lastPour = 0;
 }
 
 void closeSolenoid() {
-  digitalWrite(13, LOW);
+  digitalWrite(LED_PIN, LOW);
   digitalWrite(SOLENOID_OUT_PIN, LOW);
   detachInterrupt(0);
 }
@@ -194,6 +169,10 @@ void serialHandler() {
     } 
     else if (message ==  "**REQUEST_OPEN**") {
       openSolenoid();
+      message = "";
+    }
+    else if (message == "**REQUEST_CLOSE**") {
+      closeSolenoid();
       message = "";
     }
   }
@@ -227,3 +206,4 @@ void rfidHandler() {
     }
   } 
 }
+
