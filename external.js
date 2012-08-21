@@ -17,7 +17,7 @@ var main = require('./external/main.js');
 var Config = require('./common/config.js');
 
 
-// Configuration
+// Configurationi
 var app = express();
 
 app.configure(function() {
@@ -46,7 +46,7 @@ winston.add(winston.transports.Console, {
     timestamp: true,
     handleExceptions: true,
     exitOnError: false
-})
+});
 
 // Routes
 
@@ -145,10 +145,11 @@ app.post('/show/achievements', function(request, response) {
 
 });
 
-app.listen(Config.externalPortRunner);
+var server = http.createServer(app);
+server.listen(Config.externalPortRunner);
 
 // Socket io
-socket = socket.listen(http.createServer(app));
+socket = socket.listen(server);
 
 socket.configure(function() {
     socket.set('log level', 1);
