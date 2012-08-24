@@ -15,7 +15,9 @@ exports.messages = [exports.FLOW, exports.POUR, exports.TAG, exports.TEMP];
 //	**node --> arduino**
 //
 // * `**REQUEST_TEMP**`	(requests the current temperature)
-// * `**REQUEST_OPEN**`	(requests that the solenoid open to pour some sweet, sweet nectar)
+// * `**REQUEST_OPEN**`	(requests that the solenoid open to pour)
+// * `**REQUEST_CLOSE**`	(requests that the solenoid close)
 
 exports.REQUEST_TEMP = '**REQUEST_TEMP**';
 exports.REQUEST_OPEN = '**REQUEST_OPEN**';
+exports.REQUEST_CLOSE = '**REQUEST_CLOSE**';
